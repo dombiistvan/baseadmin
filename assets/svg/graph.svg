@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 380.5 166.5" style="enable-background:new 0 0 380.5 166.5;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#9B9BA1;}
+	.st1{font-family:'DINPro';font-weight:500;}
+	.st2{font-size:14px;}
+	.st3{fill:none;stroke:#33334E;stroke-width:3;stroke-miterlimit:10;}
+	.st4{fill:none;stroke:#27D5FF;stroke-width:5;stroke-miterlimit:10;}
+</style>
+<g>
+	<text transform="matrix(1 0 0 1 42.918 163.1333)" class="st0 st1 st2">‘18.02</text>
+	<text transform="matrix(0 -1 1 0 11.9844 144.9436)" class="st0 st1 st2">0</text>
+	<text transform="matrix(0 -1 1 0 11.9844 48.6633)" class="st0 st1 st2">100.000</text>
+	<text transform="matrix(1 0 0 1 341.5361 163.1333)" class="st0 st1 st2">‘19.02</text>
+	<line class="st3" x1="42.9" y1="143.6" x2="42.9" y2="137.1"/>
+	<line class="st3" x1="73.5" y1="143.6" x2="73.5" y2="137.1"/>
+	<line class="st3" x1="104" y1="143.6" x2="104" y2="137.1"/>
+	<line class="st3" x1="134.6" y1="143.6" x2="134.6" y2="137.1"/>
+	<line class="st3" x1="165.1" y1="143.6" x2="165.1" y2="137.1"/>
+	<line class="st3" x1="195.7" y1="143.6" x2="195.7" y2="137.1"/>
+	<line class="st3" x1="226.3" y1="143.6" x2="226.3" y2="137.1"/>
+	<line class="st3" x1="256.8" y1="143.6" x2="256.8" y2="137.1"/>
+	<line class="st3" x1="287.4" y1="143.6" x2="287.4" y2="137.1"/>
+	<line class="st3" x1="317.9" y1="143.6" x2="317.9" y2="137.1"/>
+	<line class="st3" x1="348.5" y1="143.6" x2="348.5" y2="137.1"/>
+	<polyline class="st3" points="19.4,0 19.4,143.6 379,143.6 379,137.1 	"/>
+	<polyline class="st4" points="42.9,104.2 58.2,113.5 73.5,38.2 88.8,36 104,7.3 120.1,36.3 134.6,16.7 149.9,117.8 165.1,113.2 
+		183.1,113.5 195.7,111.1 213.4,106.5 226.3,99 242.4,113.8 256.8,100.4 272.4,105.7 287.4,91.7 304.1,113.8 317.9,70.9 333.1,79.2 
+		348.5,47.8 364.6,120.7 379,113.8 	"/>
+</g>
+</svg>

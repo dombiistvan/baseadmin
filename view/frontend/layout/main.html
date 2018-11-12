@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+{{.GetMetaTags}}
+{{.GetCssHtml}}
+{{.GetScriptHtml "header"}}
+    <title>{{.Title}}</title>
+</head>
+<body>
+{{.GetContent}}
+{{.GetScriptHtml "footer"}}
+</body>
+</html>

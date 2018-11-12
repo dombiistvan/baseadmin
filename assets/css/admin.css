@@ -1,0 +1,16 @@
+form.search-form div.form-group{
+  margin: 5px;
+}
+
+form.search-form div.form-group label {
+  min-width: 120px;
+}
+
+form.search-form div.form-group input,
+form.search-form div.form-group select{
+  min-width: 100px;
+}
+
+label+.checkbox-inline{
+  margin-left:30px;
+}

@@ -1,0 +1,8 @@
+<div id="messages">
+    {{range .Success}}
+        <div class="alert alert-success" role="alert">{{.}}</div>
+    {{end}}
+   {{range .Error}}
+       <div class="alert alert-danger" role="alert">{{.}}</div>
+   {{end}}
+</div>

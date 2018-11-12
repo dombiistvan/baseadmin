@@ -1,0 +1,68 @@
+<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">{{.Title}} - {{.Lang}}</a>
+    </div>
+
+{{if .IsLoggedIn}}
+    <ul class="nav navbar-top-links navbar-right">
+        <!-- /.dropdown -->
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user">
+                <li>
+                    <form id="logoutForm"
+                          style="display:none;width:0;height:0;visibility: hidden;overflow: hidden;opacity: 0;"
+                          method="POST" action="{{.LogoutUrl}}">
+                        <input type="submit"/>
+                    </form>
+                    <a href="#" id="logoutBtn" data-fid="logoutForm"><i
+                            class="fa fa-sign-out fa-fw"></i> {{.LogoutLabel}}</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+{{end}}
+
+    <div class="navbar-default sidebar" role="navigation">
+        <div class="sidebar-nav navbar-collapse">
+            <ul class="nav" id="side-menu">
+            {{range .Menu}}
+            {{if .IsVisible}}
+                <li>
+                {{ $length := len .Children }}
+                {{ if gt $length 0 }}
+                    <a href="{{.GetUrl}}">{{if .Icon}}<i class="{{.Icon}}"></i> {{end}}{{.Label}}{{ if gt $length 0 }}
+                        <span class="fa arrow"></span>{{end}}</a>
+                    <ul class="nav nav-second-level">
+                    {{range $child := .Children}}
+                    {{if .IsVisible}}
+                    {{if eq .Type "form"}}
+                        <li>
+                            <form method="POST" action="{{.GetUrl}}">
+                                <button type="submit">{{.Label}}</button>
+                            </form>
+                        </li>
+                    {{else}}
+                        <li>
+                            <a href="{{.GetUrl}}">{{if .Icon}}<i class="{{.Icon}}"></i> {{end}}{{.Label}}</a>
+                        </li>
+                    {{end}}
+                    {{end}}
+                    {{end}}
+                    </ul>
+                {{end}}
+                </li>
+            {{end}}
+            {{end}}
+            </ul>
+        </div>
+    </div>
+</nav>

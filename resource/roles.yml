@@ -1,0 +1,40 @@
+roles:
+  user:
+    title: "<strong>All User Role</strong>"
+    value: "user/*"
+    children:
+      list:
+        title: "List/Search Users"
+        value: "user/list"
+      new:
+        title: "Add User"
+        value: "user/new"
+      edit:
+        title: "Edit User"
+        value: "user/edit"
+      delete:
+        title: "Delete User"
+        value: "user/delete"
+  block:
+    title: "<strong>All Block Roles</strong>"
+    value: "block/*"
+    children:
+      list:
+        title: "List/Search Blocks"
+        value: "block/list"
+      new:
+        title: "Add Block"
+        value: "block/new"
+      edit:
+        title: "Edit Block"
+        value: "block/edit"
+      delete:
+        title: "Delete Block"
+        value: "block/delete"
+  config:
+    title: "<strong>Config</strong>"
+    value: "config/*"
+    children:
+      index:
+        title: "Edit config"
+        value: "config/index"

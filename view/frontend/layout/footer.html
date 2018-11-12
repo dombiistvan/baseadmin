@@ -1,0 +1,18 @@
+<div class="section">
+    <div class="pillarbox">
+        <footer class="footer">
+            <div class="footer__logo"><img src="/assets/images/SF_gr.png"></div>
+            <div class="footer__wrapper">
+                <div class="footer__content">
+                    <div class="footer__links">
+                        {{range .Pages}}
+                        <a class="footer__link" href="{{.GetUrl}}">{{.Name}}</a>
+                        {{end}}
+                    </div>
+                    <div class="footer__info">{{.FooterInfo}}</div>
+                </div>
+                <a href="{{.BrandUrl}}" target="_blank"><img src="/assets/images/brand.svg"></a>
+            </div>
+        </footer>
+    </div>
+</div>

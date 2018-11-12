@@ -71,16 +71,26 @@ func CanAccess(role string, session *Session) bool {
 		return true //anyone
 		break
 	case "!@":
-		//only NOT logged in user @TODO make it works
 		PrintlnIf("Logged out user allowed", GetConfig().Mode.Debug)
 		if session.IsLoggedIn() == false {
 			return true
 		}
 		break
 	case "@":
-		//only logged in user @TODO make it works
-		PrintlnIf("Loggedin user is allowed (admin users)", GetConfig().Mode.Debug)
+		PrintlnIf("Loggedin user is allowed", GetConfig().Mode.Debug)
 		if session.IsLoggedIn() {
+			return true
+		}
+		break
+	case "!@a":
+		PrintlnIf("Logged out user allowed", GetConfig().Mode.Debug)
+		if session.IsAdmin() == false {
+			return true
+		}
+		break
+	case "@a":
+		PrintlnIf("Loggedin user is allowed", GetConfig().Mode.Debug)
+		if session.IsAdmin() {
 			return true
 		}
 		break

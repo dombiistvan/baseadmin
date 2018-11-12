@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-const letterCharset = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const letterCharset = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const charset = letterCharset + "0123456789"
 
 var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))

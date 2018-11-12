@@ -1,6 +1,6 @@
 package admin
 
-type Messages struct{
-	Error []string
+type Messages struct {
+	Error   []string
 	Success []string
 }

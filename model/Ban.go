@@ -1,30 +1,30 @@
 package model
 
 import (
-	"time"
-	"fmt"
-	"reflect"
 	"base/db"
 	h "base/helper"
+	"fmt"
 	"github.com/go-gorp/gorp"
+	"reflect"
+	"time"
 )
 
 type Ban struct {
 	Id         int64     `db:"id, primarykey, autoincrement"`
 	RemoteAddr string    `db:"remote_address, size:100"`
-	Until     time.Time `db:"until"`
+	Until      time.Time `db:"until"`
 }
 
 func (_ Ban) IsLanguageModel() bool {
-	return false;
+	return false
 }
 
 func (_ Ban) GetTable() string {
-	return "ban";
+	return "ban"
 }
 
 func (_ Ban) GetPrimaryKey() []string {
-	return []string{"id"};
+	return []string{"id"}
 }
 
 func (b Ban) BuildStructure(dbmap *gorp.DbMap) {
@@ -56,15 +56,15 @@ func (b Ban) BuildStructure(dbmap *gorp.DbMap) {
 }
 
 func (b Ban) IsBanned(RemoteAddress string) bool {
-	var ban Ban;
-	var query string = fmt.Sprintf("SELECT * FROM %v WHERE `remote_address` = '%s' AND `until` >= '%s' ORDER BY `until` DESC LIMIT 1",b.GetTable(), RemoteAddress, h.GetTimeNow().Round(time.Second).Format(MYSQL_TIME_FORMAT));
-	var err  error = db.DbMap.SelectOne(&ban,query);
-	h.Error(err,"",h.ERROR_LVL_ERROR);
-	h.PrintlnIf(query,h.GetConfig().Mode.Debug);
+	var ban Ban
+	var query string = fmt.Sprintf("SELECT * FROM %v WHERE `remote_address` = '%s' AND `until` >= '%s' ORDER BY `until` DESC LIMIT 1", b.GetTable(), RemoteAddress, h.GetTimeNow().Round(time.Second).Format(MYSQL_TIME_FORMAT))
+	var err error = db.DbMap.SelectOne(&ban, query)
+	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 
-	return ban.Id!=0;
+	return ban.Id != 0
 }
 
-func (_ Ban) IsAutoIncrement() bool{
-	return true;
+func (_ Ban) IsAutoIncrement() bool {
+	return true
 }

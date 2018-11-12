@@ -5,7 +5,7 @@ import (
 )
 
 type Ajax struct {
-	Success bool `json:"success"`
-	Html    template.HTML `json:"html"`
-	Data	map[string]interface{} `json:"data"`
+	Success bool                   `json:"success"`
+	Html    template.HTML          `json:"html"`
+	Data    map[string]interface{} `json:"data"`
 }

@@ -1,27 +1,27 @@
 package helper
 
 import (
-	"io/ioutil"
 	"gopkg.in/yaml.v2"
+	"io/ioutil"
 )
 
 type UserGroups []UserGroup
 
-func(ug UserGroups) GetOptions(defOption map[string]string) []map[string]string{
-	var options []map[string]string;
+func (ug UserGroups) GetOptions(defOption map[string]string) []map[string]string {
+	var options []map[string]string
 
-	if(defOption != nil){
-		options = append(options,defOption);
+	if defOption != nil {
+		options = append(options, defOption)
 	}
 
-	for _,g := range ug{
-		options = append(options,map[string]string{
+	for _, g := range ug {
+		options = append(options, map[string]string{
 			"value": g.Value,
 			"label": g.Label,
-		});
+		})
 	}
 
-	return options;
+	return options
 }
 
 type UserGroup struct {
@@ -47,7 +47,7 @@ type Conf struct {
 		Image       string `yml:"image"`
 	} `yml:"og"`
 	Environment string `yml:"environment"`
-	Db struct {
+	Db          struct {
 		Environment map[string]struct {
 			Host     string `yml:"host"`
 			Username string `yml:"username"`
@@ -78,7 +78,7 @@ type Conf struct {
 	} `yml:"cache"`
 	AdminRouter  string            `yml:"adminrouter"`
 	ConfigValues map[string]string `yml:"configvalues"`
-	Language struct {
+	Language     struct {
 		Allowed []string `yml:"allowed"`
 	} `yml:"language"`
 	Ug UserGroups `yml:"ug"`
@@ -87,29 +87,29 @@ type Conf struct {
 var ConfigFilePath string = "./resource/config.yml"
 
 func GetConfig() Conf {
-	Config, err := parseConfig();
-	if (nil != err) {
-		Error(err, "Could not retrieve config", ERROR_LVL_ERROR);
+	Config, err := parseConfig()
+	if nil != err {
+		Error(err, "Could not retrieve config", ERROR_LVL_ERROR)
 	}
-	return Config;
+	return Config
 }
 
 func parseConfig() (Conf, error) {
-	var Config Conf;
-	var err error;
-	var dat []byte;
-	dat, err = ioutil.ReadFile(ConfigFilePath);
-	Error(err, "", ERROR_LVL_ERROR);
-	if (err != nil) {
+	var Config Conf
+	var err error
+	var dat []byte
+	dat, err = ioutil.ReadFile(ConfigFilePath)
+	Error(err, "", ERROR_LVL_ERROR)
+	if err != nil {
 		Error(err, "", ERROR_LVL_ERROR)
 	}
 
 	err = yaml.Unmarshal(dat, &Config)
-	Error(err, "", ERROR_LVL_ERROR);
-	if (err != nil) {
-		return Conf{}, err;
+	Error(err, "", ERROR_LVL_ERROR)
+	if err != nil {
+		return Conf{}, err
 	}
 
-	Config.Cache.Dir = TrimPath(Config.Cache.Dir);
-	return Config, nil;
+	Config.Cache.Dir = TrimPath(Config.Cache.Dir)
+	return Config, nil
 }

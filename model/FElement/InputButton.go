@@ -11,88 +11,88 @@ const (
 )
 
 type InputButton struct {
-	Label       string
-	Name        string
-	Id          string
-	Class       string
-	Disabled    bool
-	Note        string
-	Submit		bool
-	PullLeft bool
-	PullRight bool
+	Label      string
+	Name       string
+	Id         string
+	Class      string
+	Disabled   bool
+	Note       string
+	Submit     bool
+	PullLeft   bool
+	PullRight  bool
 	Attributes map[string]string
 }
 
-func (b *InputButton) AddAttribute(attribute string, value string){
-	if(b.Attributes == nil){
-		b.Attributes = map[string]string{};
+func (b *InputButton) AddAttribute(attribute string, value string) {
+	if b.Attributes == nil {
+		b.Attributes = map[string]string{}
 	}
-	attributes,ok := b.Attributes[attribute];
-	if(ok){
-		b.Attributes[attribute] = attributes + " " + value;
+	attributes, ok := b.Attributes[attribute]
+	if ok {
+		b.Attributes[attribute] = attributes + " " + value
 	} else {
-		b.Attributes[attribute] = value;
+		b.Attributes[attribute] = value
 	}
 }
 
 func (b InputButton) Render(errs map[string]error) string {
-	h.PrintlnIf("Rendering button",h.GetConfig().Mode.Debug);
-	var replaces map[string]string = make(map[string]string);
-	output := INPUT_BUTTON_TEMPLATE;
+	h.PrintlnIf("Rendering button", h.GetConfig().Mode.Debug)
+	var replaces map[string]string = make(map[string]string)
+	output := INPUT_BUTTON_TEMPLATE
 
-	replaces["%label%"] = b.Label;
+	replaces["%label%"] = b.Label
 
-	replaces["%note%"] = "";
-	if(b.Note != ""){
-		replaces["%note%"] = h.Replace(NOTE_TEMPLATE,[]string{"%note%"},[]string{b.Note});
+	replaces["%note%"] = ""
+	if b.Note != "" {
+		replaces["%note%"] = h.Replace(NOTE_TEMPLATE, []string{"%note%"}, []string{b.Note})
 	}
 
-	replaces["%class%"] = b.Class;
+	replaces["%class%"] = b.Class
 
-	replaces["%subtype%"] = "success";
-	if(b.Submit == true){
-		replaces["%subtype%"] = "primary";
+	replaces["%subtype%"] = "success"
+	if b.Submit == true {
+		replaces["%subtype%"] = "primary"
 	}
 
-	replaces["%attrs%"] = "";
-	var attr []string;
+	replaces["%attrs%"] = ""
+	var attr []string
 
-	for attrKey,attrValue := range b.Attributes{
-		attr = append(attr, h.HtmlAttribute(attrKey, attrValue));
-	}
-
-	if (b.Name != "") {
-		attr = append(attr, h.HtmlAttribute("name", b.Name));
-	}
-	if (b.Id != "") {
-		attr = append(attr, h.HtmlAttribute("id", b.Id));
-	}
-	if (b.Disabled == true) {
-		attr = append(attr, h.HtmlAttribute("disabled", "disabled"));
+	for attrKey, attrValue := range b.Attributes {
+		attr = append(attr, h.HtmlAttribute(attrKey, attrValue))
 	}
 
-	var btnType = "button";
-	if (b.Submit == true) {
+	if b.Name != "" {
+		attr = append(attr, h.HtmlAttribute("name", b.Name))
+	}
+	if b.Id != "" {
+		attr = append(attr, h.HtmlAttribute("id", b.Id))
+	}
+	if b.Disabled == true {
+		attr = append(attr, h.HtmlAttribute("disabled", "disabled"))
+	}
+
+	var btnType = "button"
+	if b.Submit == true {
 		btnType = "submit"
 	}
 
-	attr = append(attr, h.HtmlAttribute("type", btnType));
+	attr = append(attr, h.HtmlAttribute("type", btnType))
 
-	replaces["%attrs%"] = strings.Join(attr," ");
+	replaces["%attrs%"] = strings.Join(attr, " ")
 
-	for i,v := range replaces{
-		output = h.Replace(output,[]string{i},[]string{v});
+	for i, v := range replaces {
+		output = h.Replace(output, []string{i}, []string{v})
 	}
 
-	var pull string = "";
-	if(b.PullLeft){
-		pull = "left";
-	} else if(b.PullRight){
-		pull = "right";
+	var pull string = ""
+	if b.PullLeft {
+		pull = "left"
+	} else if b.PullRight {
+		pull = "right"
 	}
-	return GroupRender(output, b.HasPreOrPost(),false, nil, pull);
+	return GroupRender(output, b.HasPreOrPost(), false, nil, pull)
 }
 
 func (b InputButton) HasPreOrPost() bool {
-	return false;
+	return false
 }

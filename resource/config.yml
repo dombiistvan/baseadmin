@@ -9,7 +9,7 @@ environment: local
 db:
   environment:
     local:
-      host: "localhost"
+      host: "databasehost"
       name: "dadabasename"
       username: "databaseuser"
       password: "databasepassword"
@@ -28,35 +28,31 @@ mode:
   live: false
   debug: true
   rebuild_structure: false
-  rebuild_data0: false
+  rebuild_data: false
 cache:
   enabled: false
+  dir: view/cache
 adminrouter: admin
 og:
-  url: "http://www.domain.com"
-  type: "website"
-  title: "OG MyWebsite"
-  description: "OG Description"
-  image: "/opengraph/image/path.png"
+  url: "OG Url"
+  type: website
+  title: "Site Default Name"
+  description: "Site Default Description"
+  image: "/opengraph/default/image.png"
 ug:
-  - value: "user_group1"
+  - value: "usergroup1"
     label: "User Group 1"
-    description: "User Group Description 1"
+    description: "User Group 1 Description"
     default: true
-  - value: "user_group2"
+  - value: "usergroup2"
     label: "User Group 2"
-    description: "User Group Description 2"
+    description: "User Group 2 Description"
     default: false
   - value: "admin"
     label: "Admin"
     description: "Admin"
     default: false
-  - value: "other"
-    label: "Other (can not be classified)"
-    description: "Other"
-    default: false
 language:
   allowed:
     - hu
     - en
-notificationtargets: ["notificationtarget@mail.com"]

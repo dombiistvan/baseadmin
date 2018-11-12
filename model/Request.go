@@ -1,11 +1,11 @@
 package model
 
 import (
-	"time"
 	"fmt"
+	"github.com/go-gorp/gorp"
 	"reflect"
 	h "stealth-fighter/helper"
-	"github.com/go-gorp/gorp"
+	"time"
 )
 
 type Request struct {
@@ -17,15 +17,15 @@ type Request struct {
 }
 
 func (_ Request) IsLanguageModel() bool {
-	return false;
+	return false
 }
 
 func (_ Request) GetTable() string {
-	return "request";
+	return "request"
 }
 
 func (_ Request) GetPrimaryKey() []string {
-	return []string{"id"};
+	return []string{"id"}
 }
 
 func (r Request) BuildStructure(dbmap *gorp.DbMap) {
@@ -56,6 +56,6 @@ func (r Request) BuildStructure(dbmap *gorp.DbMap) {
 	dbmap.CreateIndex()
 }
 
-func (_ Request) IsAutoIncrement() bool{
-	return true;
+func (_ Request) IsAutoIncrement() bool {
+	return true
 }

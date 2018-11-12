@@ -1,13 +1,13 @@
 package model
 
 import (
+	"base/helper"
 	"fmt"
 	"github.com/valyala/fasthttp"
+	"math"
 	"net/url"
-	"base/helper"
 	"strconv"
 	"strings"
-	"math"
 )
 
 const PAGER_PREV_TEMPLATE = `<li>
@@ -62,7 +62,7 @@ func (p Pager) getLinkToPage(toPage int) string {
 }
 
 func (p *Pager) calcMaxPage() int {
-	return int(math.Ceil(float64(p.ReocordCount) / float64(p.Limit)));
+	return int(math.Ceil(float64(p.ReocordCount) / float64(p.Limit)))
 }
 
 func (p *Pager) getStartPage() int {

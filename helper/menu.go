@@ -1,9 +1,9 @@
 package helper
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"fmt"
 )
 
 var MenuFilePath string = "./resource/menu.yml"
@@ -19,11 +19,11 @@ type MenuGroup struct {
 }
 
 func (mg MenuGroup) GetUrl() string {
-	return GetUrl(mg.Url, nil,true,"admin");
+	return GetUrl(mg.Url, nil, true, "admin")
 }
 
 func (mg *MenuGroup) SetIsVisible(visible bool) {
-	mg.IsVisible = visible;
+	mg.IsVisible = visible
 }
 
 type MenuItem struct {
@@ -36,11 +36,11 @@ type MenuItem struct {
 }
 
 func (mi MenuItem) GetUrl() string {
-	return GetUrl(mi.Url,  nil,true,"admin");
+	return GetUrl(mi.Url, nil, true, "admin")
 }
 
 func (mi *MenuItem) SetIsVisible(visible bool) {
-	mi.IsVisible = visible;
+	mi.IsVisible = visible
 }
 
 type Menu struct {
@@ -48,20 +48,20 @@ type Menu struct {
 	LogoutUrl   string
 	LogoutLabel string
 	IsLoggedIn  bool
-	Title string
-	Lang string
+	Title       string
+	Lang        string
 }
 
 func (m *Menu) Init(session *Session) {
 	for gi, group := range m.Menu {
 		for ii, item := range group.Children {
 			item.SetIsVisible(CanAccess(item.Visibility, session))
-			group.Children[ii] = item;
+			group.Children[ii] = item
 		}
-		group.SetIsVisible(CanAccess(group.Visibility, session));
-		m.Menu[gi] = group;
+		group.SetIsVisible(CanAccess(group.Visibility, session))
+		m.Menu[gi] = group
 	}
-	m.appendLang(session);
+	m.appendLang(session)
 }
 
 func (m *Menu) appendLang(session *Session) {
@@ -75,54 +75,54 @@ func (m *Menu) appendLang(session *Session) {
 		session.IsLoggedIn(),
 	}
 
-	langGroup.Children = map[int]MenuItem{};
-	for _,lc := range Lang.GetAvailableLanguageCodes() {
+	langGroup.Children = map[int]MenuItem{}
+	for _, lc := range Lang.GetAvailableLanguageCodes() {
 		langGroup.Children[len(langGroup.Children)] = MenuItem{
 			lc,
-				GetUrl("user/switchlanguage",[]string{lc},false,"admin"),
+			GetUrl("user/switchlanguage", []string{lc}, false, "admin"),
 			"",
 			"@",
 			"fa fa-flag",
 			session.IsLoggedIn(),
-		};
+		}
 	}
 
-	m.Menu = append(m.Menu, langGroup);
+	m.Menu = append(m.Menu, langGroup)
 }
 
 func GetMenu(session *Session) Menu {
-	var menu Menu;
-	succ, err := parseMenu(&menu);
-	if (nil != err || !succ) {
-		Error(err, "", ERROR_LVL_ERROR);
+	var menu Menu
+	succ, err := parseMenu(&menu)
+	if nil != err || !succ {
+		Error(err, "", ERROR_LVL_ERROR)
 	}
 
-	if (succ) {
-		menu.Init(session);
+	if succ {
+		menu.Init(session)
 	}
 
-	menu.LogoutUrl = GetUrl("user/logout",  nil,true,"admin");
-	menu.LogoutLabel = "Log out";
-	menu.IsLoggedIn = session.IsLoggedIn();
+	menu.LogoutUrl = GetUrl("user/logout", nil, true, "admin")
+	menu.LogoutLabel = "Log out"
+	menu.IsLoggedIn = session.IsLoggedIn()
 
-	menu.Title = GetConfig().Og.Title;
-	menu.Lang = fmt.Sprintf("[%v]",session.GetActiveLang());
+	menu.Title = GetConfig().Og.Title
+	menu.Lang = fmt.Sprintf("[%v]", session.GetActiveLang())
 
-	return menu;
+	return menu
 }
 
 func parseMenu(menu *Menu) (bool, error) {
-	dat, err := ioutil.ReadFile(MenuFilePath);
-	Error(err, "Menu file reading error", ERROR_LVL_ERROR);
-	if (err != nil) {
-		return false, err;
+	dat, err := ioutil.ReadFile(MenuFilePath)
+	Error(err, "Menu file reading error", ERROR_LVL_ERROR)
+	if err != nil {
+		return false, err
 	}
 
 	err = yaml.Unmarshal(dat, menu)
-	Error(err, "Yaml reading error", ERROR_LVL_ERROR);
-	if (err != nil) {
-		return false, err;
+	Error(err, "Yaml reading error", ERROR_LVL_ERROR)
+	if err != nil {
+		return false, err
 	}
 
-	return true, nil;
+	return true, nil
 }

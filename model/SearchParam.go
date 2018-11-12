@@ -1,12 +1,12 @@
 package model
 
 import (
+	h "base/helper"
 	"base/model/FElement"
 	"fmt"
-	h "base/helper"
 	"github.com/valyala/fasthttp"
-	"strings"
 	"html"
+	"strings"
 )
 
 type SearchParam struct {
@@ -20,24 +20,24 @@ type SearchParam struct {
 func (sp SearchParam) GetInputsByType(ctx *fasthttp.RequestCtx) []FormElement {
 	switch sp.Type {
 	case "number":
-		return sp.GetNumberInputs(ctx);
-		break;
+		return sp.GetNumberInputs(ctx)
+		break
 	case "number_range":
-		return sp.GetNumberRangeInputs(ctx);
-		break;
+		return sp.GetNumberRangeInputs(ctx)
+		break
 	case "text":
-		return sp.GetTextInput(ctx);
-		break;
+		return sp.GetTextInput(ctx)
+		break
 	case "select":
-		return sp.GetSelectInput(ctx);
-		break;
+		return sp.GetSelectInput(ctx)
+		break
 	case "bool":
 		tempSp := sp.getBoolTempSp(ctx)
-		return tempSp.GetInputsByType(ctx);
-		break;
+		return tempSp.GetInputsByType(ctx)
+		break
 	}
 
-	return []FormElement{};
+	return []FormElement{}
 }
 
 func (sp SearchParam) getBoolTempSp(ctx *fasthttp.RequestCtx) SearchParam {
@@ -62,13 +62,13 @@ func (sp SearchParam) getBoolTempSp(ctx *fasthttp.RequestCtx) SearchParam {
 				},
 			},
 		},
-	};
+	}
 
-	return tempSp;
+	return tempSp
 }
 
 func (sp SearchParam) GetSelectInput(ctx *fasthttp.RequestCtx) []FormElement {
-	var elements []FormElement;
+	var elements []FormElement
 	inpSelect := FElement.InputSelect{
 		sp.Label,
 		sp.Name,
@@ -81,17 +81,17 @@ func (sp SearchParam) GetSelectInput(ctx *fasthttp.RequestCtx) []FormElement {
 		sp.Option["options"].([]map[string]string),
 		"",
 	}
-	var value []string;
-	if (len(ctx.QueryArgs().Peek(inpSelect.Name)) > 0) {
-		value = append(value, string(ctx.QueryArgs().Peek(inpSelect.Name)));
+	var value []string
+	if len(ctx.QueryArgs().Peek(inpSelect.Name)) > 0 {
+		value = append(value, string(ctx.QueryArgs().Peek(inpSelect.Name)))
 	}
-	inpSelect.Value = value;
-	elements = append(elements, inpSelect);
-	return elements;
+	inpSelect.Value = value
+	elements = append(elements, inpSelect)
+	return elements
 }
 
 func (sp SearchParam) GetNumberRangeInputs(ctx *fasthttp.RequestCtx) []FormElement {
-	var elements []FormElement;
+	var elements []FormElement
 	inpFrom := FElement.InputText{
 		fmt.Sprintf("%v from", sp.Label),
 		fmt.Sprintf("%v", sp.Name),
@@ -107,10 +107,10 @@ func (sp SearchParam) GetNumberRangeInputs(ctx *fasthttp.RequestCtx) []FormEleme
 		sp.GetString("preFAIcon"),
 		sp.GetString("postFAIcon"),
 	}
-	if (len(ctx.QueryArgs().PeekMulti(inpFrom.Name)) > 0) {
+	if len(ctx.QueryArgs().PeekMulti(inpFrom.Name)) > 0 {
 		inpFrom.Value = string(ctx.QueryArgs().PeekMulti(inpFrom.Name)[0])
 	}
-	elements = append(elements, inpFrom);
+	elements = append(elements, inpFrom)
 	inpTo := FElement.InputText{
 		fmt.Sprintf("%v to", sp.Label),
 		fmt.Sprintf("%v", sp.Name),
@@ -126,15 +126,15 @@ func (sp SearchParam) GetNumberRangeInputs(ctx *fasthttp.RequestCtx) []FormEleme
 		sp.GetString("preFAIcon"),
 		sp.GetString("postFAIcon"),
 	}
-	if (len(ctx.QueryArgs().PeekMulti(inpTo.Name)) > 0) {
+	if len(ctx.QueryArgs().PeekMulti(inpTo.Name)) > 0 {
 		inpTo.Value = string(ctx.QueryArgs().PeekMulti(inpTo.Name)[1])
 	}
-	elements = append(elements, inpTo);
-	return elements;
+	elements = append(elements, inpTo)
+	return elements
 }
 
 func (sp SearchParam) GetNumberInputs(ctx *fasthttp.RequestCtx) []FormElement {
-	var elements []FormElement;
+	var elements []FormElement
 	inp := FElement.InputText{
 		sp.Label,
 		sp.Name,
@@ -150,15 +150,15 @@ func (sp SearchParam) GetNumberInputs(ctx *fasthttp.RequestCtx) []FormElement {
 		sp.GetString("preFAIcon"),
 		sp.GetString("postFAIcon"),
 	}
-	if (len(ctx.QueryArgs().Peek(inp.Name)) > 0) {
+	if len(ctx.QueryArgs().Peek(inp.Name)) > 0 {
 		inp.Value = string(ctx.QueryArgs().Peek(inp.Name))
 	}
-	elements = append(elements, inp);
-	return elements;
+	elements = append(elements, inp)
+	return elements
 }
 
 func (sp SearchParam) GetTextInput(ctx *fasthttp.RequestCtx) []FormElement {
-	var elements []FormElement;
+	var elements []FormElement
 	inpText := FElement.InputText{
 		sp.Label,
 		sp.Name,
@@ -175,80 +175,80 @@ func (sp SearchParam) GetTextInput(ctx *fasthttp.RequestCtx) []FormElement {
 		sp.GetString("postFAIcon"),
 	}
 	inpText.Value = string(ctx.QueryArgs().Peek(inpText.Name))
-	elements = append(elements, inpText);
-	return elements;
+	elements = append(elements, inpText)
+	return elements
 }
 
 func (sp SearchParam) GetSpId(postFix string) string {
-	return fmt.Sprintf("search_param_%v_%v_%v", sp.Name, postFix, h.GetTimeNow().Unix());
+	return fmt.Sprintf("search_param_%v_%v_%v", sp.Name, postFix, h.GetTimeNow().Unix())
 }
 
 func (sp SearchParam) GetString(key string) string {
-	val := h.GetOption(sp.Option, key);
-	if (val == nil) {
-		return "";
+	val := h.GetOption(sp.Option, key)
+	if val == nil {
+		return ""
 	}
 
-	return val.(string);
+	return val.(string)
 }
 
 func (sp SearchParam) GetStrings(key string) []string {
-	val := h.GetOption(sp.Option, key);
-	if (val == nil) {
-		return []string{};
+	val := h.GetOption(sp.Option, key)
+	if val == nil {
+		return []string{}
 	}
 
-	return val.([]string);
+	return val.([]string)
 }
 
 func (sp SearchParam) GetBool(key string) bool {
-	val := h.GetOption(sp.Option, key);
-	if (val == nil) {
-		return false;
+	val := h.GetOption(sp.Option, key)
+	if val == nil {
+		return false
 	}
 
-	return val.(bool);
+	return val.(bool)
 }
 
 func (sp SearchParam) GetSqlPart(ctx *fasthttp.RequestCtx) string {
 	switch sp.Type {
 	case "number_range":
-		if (len(ctx.QueryArgs().PeekMulti(sp.Name)) > 0) {
-			valueF := string(ctx.QueryArgs().PeekMulti(sp.Name)[0]);
-			valueT := string(ctx.QueryArgs().PeekMulti(sp.Name)[1]);
-			var wheres []string;
-			if(valueF != ""){
-				wheres = append(wheres,fmt.Sprintf(`%v >= %v`,sp.DbField,html.EscapeString(valueF)));
+		if len(ctx.QueryArgs().PeekMulti(sp.Name)) > 0 {
+			valueF := string(ctx.QueryArgs().PeekMulti(sp.Name)[0])
+			valueT := string(ctx.QueryArgs().PeekMulti(sp.Name)[1])
+			var wheres []string
+			if valueF != "" {
+				wheres = append(wheres, fmt.Sprintf(`%v >= %v`, sp.DbField, html.EscapeString(valueF)))
 			}
-			if(valueT != ""){
-				wheres = append(wheres,fmt.Sprintf(`%v <= %v`,sp.DbField,html.EscapeString(valueT)));
+			if valueT != "" {
+				wheres = append(wheres, fmt.Sprintf(`%v <= %v`, sp.DbField, html.EscapeString(valueT)))
 			}
-			return strings.Join(wheres," AND ");
+			return strings.Join(wheres, " AND ")
 		}
-		break;
+		break
 	case "number":
-		if (len(ctx.QueryArgs().Peek(sp.Name)) > 0) {
-			value := string(ctx.QueryArgs().Peek(sp.Name));
-			return fmt.Sprintf(`%v = %v`, sp.DbField, html.EscapeString(value));
+		if len(ctx.QueryArgs().Peek(sp.Name)) > 0 {
+			value := string(ctx.QueryArgs().Peek(sp.Name))
+			return fmt.Sprintf(`%v = %v`, sp.DbField, html.EscapeString(value))
 		}
-		break;
+		break
 	case "text":
-		if (len(ctx.QueryArgs().Peek(sp.Name)) > 0) {
-			value := string(ctx.QueryArgs().Peek(sp.Name));
-			return fmt.Sprintf(`INSTR(%v,"%v") != 0`, sp.DbField, html.EscapeString(value));
+		if len(ctx.QueryArgs().Peek(sp.Name)) > 0 {
+			value := string(ctx.QueryArgs().Peek(sp.Name))
+			return fmt.Sprintf(`INSTR(%v,"%v") != 0`, sp.DbField, html.EscapeString(value))
 		}
 	case "bool":
-		return sp.getBoolTempSp(ctx).GetSqlPart(ctx);
-		break;
+		return sp.getBoolTempSp(ctx).GetSqlPart(ctx)
+		break
 	case "select":
-		if (len(ctx.QueryArgs().Peek(sp.Name)) > 0) {
-			value := string(ctx.QueryArgs().Peek(sp.Name));
-			return fmt.Sprintf(`%v = "%v"`, sp.DbField, html.EscapeString(value));
+		if len(ctx.QueryArgs().Peek(sp.Name)) > 0 {
+			value := string(ctx.QueryArgs().Peek(sp.Name))
+			return fmt.Sprintf(`%v = "%v"`, sp.DbField, html.EscapeString(value))
 		}
-		break;
+		break
 	default:
-		break;
+		break
 	}
 
-	return "";
+	return ""
 }

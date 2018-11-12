@@ -1,13 +1,13 @@
 package model
 
 import (
-	"time"
-	"fmt"
-	"reflect"
-	h "base/helper"
 	dbhelper "base/db"
-	"github.com/go-gorp/gorp"
+	h "base/helper"
 	"database/sql"
+	"fmt"
+	"github.com/go-gorp/gorp"
+	"reflect"
+	"time"
 )
 
 type Upgrade struct {
@@ -17,59 +17,59 @@ type Upgrade struct {
 }
 
 func (_ Upgrade) IsLanguageModel() bool {
-	return false;
+	return false
 }
 
 func (_ Upgrade) GetTable() string {
-	return "upgrade";
+	return "upgrade"
 }
 
 func (_ Upgrade) GetPrimaryKey() []string {
-	return []string{"id"};
+	return []string{"id"}
 }
 
 func (u Upgrade) Upgrade() {
-	u.CheckStructure();
-	u.runScripts();
+	u.CheckStructure()
+	u.runScripts()
 }
 
 func (u Upgrade) runScripts() {
-	var err error;
+	var err error
 	for _, is := range GetInstallerFunctions() {
 		err = u.runScript(is["id"].(string), is["func"].(func() error))
-		if (err != nil) {
-			fmt.Println(fmt.Sprintf("Installer script occured error: %s", err.Error()));
-			break;
+		if err != nil {
+			fmt.Println(fmt.Sprintf("Installer script occured error: %s", err.Error()))
+			break
 		}
 	}
 }
 
 func (u Upgrade) runScript(identifer string, tocall func() error) error {
-	var un Upgrade;
+	var un Upgrade
 	err := dbhelper.DbMap.SelectOne(
 		&un,
 		fmt.Sprintf("SELECT * FROM %s WHERE name = ?", un.GetTable()),
 		identifer,
 	)
 
-	if (err != nil && err != sql.ErrNoRows) {
-		return err;
-	}
-
-	if (un.Id > 0) {
-		return nil
-	}
-
-	err = tocall();
-
-	if (err != nil) {
+	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
 
-	un.Name = identifer;
-	un.AppliedAt = time.Now().Round(time.Second);
+	if un.Id > 0 {
+		return nil
+	}
 
-	err = dbhelper.DbMap.Insert(&un);
+	err = tocall()
+
+	if err != nil {
+		return err
+	}
+
+	un.Name = identifer
+	un.AppliedAt = time.Now().Round(time.Second)
+
+	err = dbhelper.DbMap.Insert(&un)
 
 	return err
 }
@@ -79,13 +79,13 @@ func (u Upgrade) InstallTable() error {
 }
 
 func (u Upgrade) CheckStructure() {
-	conf := h.GetConfig();
-	dbenv := conf.Db.Environment[conf.Environment];
-	var tables string;
-	row := dbhelper.DbMap.QueryRow(fmt.Sprintf("SHOW TABLES FROM `%s` WHERE `tables_in_%s` LIKE '%s'", dbenv.Name, dbenv.Name, u.GetTable()));
-	err := row.Scan(&tables);
-	if (err == sql.ErrNoRows) {
-		u.BuildStructure(dbhelper.DbMap);
+	conf := h.GetConfig()
+	dbenv := conf.Db.Environment[conf.Environment]
+	var tables string
+	row := dbhelper.DbMap.QueryRow(fmt.Sprintf("SHOW TABLES FROM `%s` WHERE `tables_in_%s` LIKE '%s'", dbenv.Name, dbenv.Name, u.GetTable()))
+	err := row.Scan(&tables)
+	if err == sql.ErrNoRows {
+		u.BuildStructure(dbhelper.DbMap)
 	}
 }
 
@@ -118,5 +118,5 @@ func (u Upgrade) BuildStructure(dbmap *gorp.DbMap) {
 }
 
 func (_ Upgrade) IsAutoIncrement() bool {
-	return true;
+	return true
 }

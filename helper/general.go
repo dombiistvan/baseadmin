@@ -32,32 +32,32 @@ var (
 	}
 )
 
-func PrintlnIf(txt string, condition bool){
-	if(condition){
-		log.Println(txt);
+func PrintlnIf(txt string, condition bool) {
+	if condition {
+		log.Println(txt)
 	}
 }
 
-func GetOption(object map[string]interface{},key string) interface{}{
-	val,ok := object[key];
-	if(ok){
-		switch val.(type){
+func GetOption(object map[string]interface{}, key string) interface{} {
+	val, ok := object[key]
+	if ok {
+		switch val.(type) {
 		case string:
-			return val.(string);
-			break;
+			return val.(string)
+			break
 		case []string:
-			return val.([]string);
-			break;
+			return val.([]string)
+			break
 		case int:
-			return val.(int);
-			break;
+			return val.(int)
+			break
 		case bool:
-			return val.(bool);
-			break;
+			return val.(bool)
+			break
 		default:
-			return val;
-			break;
+			return val
+			break
 		}
 	}
-	return nil;
+	return nil
 }

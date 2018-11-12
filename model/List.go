@@ -1,14 +1,14 @@
 package model
 
 import (
-	"fmt"
-	"github.com/valyala/fasthttp"
 	"base/db"
 	h "base/helper"
 	"base/model/FElement"
-	"strings"
-	"strconv"
+	"fmt"
+	"github.com/valyala/fasthttp"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 const LIST_TEMPLATE = `%search%%pager%<table width="100%" class="table %class%" id="%id%">%header%%body%</table>%pager%`
@@ -19,7 +19,7 @@ const DISPLAY_MESSAGE_NO_RESULT = "Unfortunately there are no matching results."
 
 type List struct {
 	Table         string
-	JoinTable     []map[string]string;
+	JoinTable     []map[string]string
 	PrimaryKey    []string
 	LanguageModel bool
 	Language      string
@@ -40,7 +40,7 @@ func (l *List) Init(ctx *fasthttp.RequestCtx, dbInterface DbInterface, lang stri
 	l.OrderParam = "order"
 	l.OrderDirParam = "dir"
 	l.DefaultLimit = 20
-	l.Table = dbInterface.GetTable();
+	l.Table = dbInterface.GetTable()
 	l.PrimaryKey = dbInterface.GetPrimaryKey()
 	l.LanguageModel = dbInterface.IsLanguageModel()
 	l.Language = lang
@@ -78,21 +78,21 @@ func (l *List) GetPagerHtml() string {
 func (l *List) GetOrder() string {
 	order := string(l.Ctx.QueryArgs().Peek(l.OrderParam))
 	if order == "" {
-		order = l.PrimaryKey[0];
+		order = l.PrimaryKey[0]
 	}
 	return order
 }
 
 func (l List) GetDefaultOrderDir() string {
-	return "DESC";
+	return "DESC"
 }
 
 func (l *List) GetOrderDir() string {
-	orderdir := strings.ToLower(strings.Trim(string(l.Ctx.QueryArgs().Peek(l.OrderDirParam)), " "));
-	if (orderdir == "asc" || orderdir == "desc") {
-		return strings.ToUpper(orderdir);
+	orderdir := strings.ToLower(strings.Trim(string(l.Ctx.QueryArgs().Peek(l.OrderDirParam)), " "))
+	if orderdir == "asc" || orderdir == "desc" {
+		return strings.ToUpper(orderdir)
 	}
-	return l.GetDefaultOrderDir();
+	return l.GetDefaultOrderDir()
 }
 
 func (l *List) GetCount() int64 {
@@ -101,35 +101,35 @@ func (l *List) GetCount() int64 {
 		where = fmt.Sprintf(" WHERE %v", where)
 	}
 	query := fmt.Sprintf("SELECT COUNT(m.id) FROM %v%v", l.GetTablesSql(), where)
-	h.PrintlnIf(query, h.GetConfig().Mode.Debug);
+	h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 	count, err := db.DbMap.SelectInt(query)
 	h.Error(err, "", h.ERROR_LVL_ERROR)
 	return count
 }
 
 func (l *List) AddJoin(joinType string, table string, alias string, on string) {
-	var tableRow map[string]string;
+	var tableRow map[string]string
 	tableRow = map[string]string{
 		"type":  joinType,
 		"table": table,
 		"alias": alias,
 		"on":    on,
-	};
-	l.JoinTable = append(l.JoinTable, tableRow);
+	}
+	l.JoinTable = append(l.JoinTable, tableRow)
 }
 
 func (l *List) GetTablesSql() string {
-	var tableSql string = fmt.Sprintf("%v as m", l.Table);
+	var tableSql string = fmt.Sprintf("%v as m", l.Table)
 	for _, tableRow := range l.JoinTable {
-		alias := tableRow["alias"];
-		if (alias == tableRow["table"]) {
-			alias = "";
+		alias := tableRow["alias"]
+		if alias == tableRow["table"] {
+			alias = ""
 		}
-		tableSql += fmt.Sprintf(" %v JOIN %v %v ON %v", tableRow["type"], tableRow["table"], alias, tableRow["on"]);
+		tableSql += fmt.Sprintf(" %v JOIN %v %v ON %v", tableRow["type"], tableRow["table"], alias, tableRow["on"])
 	}
 
-	h.PrintlnIf(tableSql, h.GetConfig().Mode.Debug);
-	return tableSql;
+	h.PrintlnIf(tableSql, h.GetConfig().Mode.Debug)
+	return tableSql
 }
 
 func (l *List) GetLimitString() string {
@@ -137,48 +137,48 @@ func (l *List) GetLimitString() string {
 }
 
 func (l List) GetOrderLink(col string) string {
-	var dir, newDir string = strings.ToLower(l.GetOrderDir()), "";
-	var ord string = l.GetOrder();
-	if (strings.ToLower(ord) != strings.ToLower(col)) {
-		newDir = l.GetDefaultOrderDir();
-	} else if (dir == "desc") {
-		newDir = "asc";
+	var dir, newDir string = strings.ToLower(l.GetOrderDir()), ""
+	var ord string = l.GetOrder()
+	if strings.ToLower(ord) != strings.ToLower(col) {
+		newDir = l.GetDefaultOrderDir()
+	} else if dir == "desc" {
+		newDir = "asc"
 	} else {
-		newDir = "desc";
+		newDir = "desc"
 	}
 
-	var data map[string]string;
+	var data map[string]string
 	data = map[string]string{
 		"scheme": string(l.Ctx.Request.URI().Scheme()),
 		"host":   string(l.Ctx.Request.URI().Host()),
 		"path":   string(l.Ctx.Request.URI().Path()),
-	};
+	}
 
-	var newURL string = fmt.Sprintf("%v://%v%v",data["scheme"],data["host"],data["path"]);
+	var newURL string = fmt.Sprintf("%v://%v%v", data["scheme"], data["host"], data["path"])
 
 	u, _ := url.Parse(newURL)
 	q := u.Query()
 	q.Set(l.OrderParam, col)
-	q.Set(l.OrderDirParam, newDir);
+	q.Set(l.OrderDirParam, newDir)
 	u.RawQuery = q.Encode()
 
-	return u.String();
+	return u.String()
 }
 
 func (l *List) Render(headers []map[string]string, rows []map[string]string, options map[string]string) string {
 	var replace map[string]string = make(map[string]string)
 	var headerEntries []string = []string{}
 	for i := 0; i < len(headers); i++ {
-		order, ok := headers[i]["order"];
-		var orderable bool = false;
-		var err error;
+		order, ok := headers[i]["order"]
+		var orderable bool = false
+		var err error
 		orderable, err = strconv.ParseBool(order)
-		if (!ok || err != nil) {
-			orderable = false;
+		if !ok || err != nil {
+			orderable = false
 		}
-		var title string = headers[i]["title"];
-		if (orderable) {
-			title = fmt.Sprintf(`<a href="%v">%v</a>`, l.GetOrderLink(headers[i]["col"]), title);
+		var title string = headers[i]["title"]
+		if orderable {
+			title = fmt.Sprintf(`<a href="%v">%v</a>`, l.GetOrderLink(headers[i]["col"]), title)
 		}
 		headerEntries = append(headerEntries, h.Replace(`<th class="%col%">%title%</th>`, []string{"%col%", "%title%"}, []string{headers[i]["col"], title}))
 	}
@@ -248,7 +248,7 @@ func (l *List) GetSearchHtml() string {
 	Submit := FElement.InputButton{"Search", "search", "search_btn", "", false, "", true, false, true, nil}
 	btnFieldSet.AddElement(Submit)
 	form := Form{string(l.Ctx.Path()), "GET", false, []Fieldset{searchFieldSet, btnFieldSet}, true, nil, nil}
-	form.AddClass("search-form");
+	form.AddClass("search-form")
 	return form.Render()
 }
 

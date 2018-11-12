@@ -2,8 +2,8 @@ package FElement
 
 import (
 	h "base/helper"
-	"strings"
 	"html"
+	"strings"
 )
 
 const (
@@ -30,53 +30,53 @@ type InputRadio struct {
 }
 
 func (r InputRadio) Render(errs map[string]error) string {
-	h.PrintlnIf("Rendering radio", h.GetConfig().Mode.Debug);
-	var replaces map[string]string = make(map[string]string);
-	output := INPUT_RADIO_TEMPLATE;
-	if(r.DisplayInline){
-		output = INPUT_RADIO_TEMPLATE_INLINE;
+	h.PrintlnIf("Rendering radio", h.GetConfig().Mode.Debug)
+	var replaces map[string]string = make(map[string]string)
+	output := INPUT_RADIO_TEMPLATE
+	if r.DisplayInline {
+		output = INPUT_RADIO_TEMPLATE_INLINE
 	}
 
-	var inpErrors []error;
-	inpError, contains := errs[r.Name];
-	if(contains){
-		inpErrors = append(inpErrors, inpError);
+	var inpErrors []error
+	inpError, contains := errs[r.Name]
+	if contains {
+		inpErrors = append(inpErrors, inpError)
 	}
 
 	replaces["%label%"] = r.Label
 
-	replaces["%class%"] = r.Class;
-	replaces["%attrs%"] = "";
-	var attr []string;
-	attr = append(attr, h.HtmlAttribute("type", "radio"));
-	if (r.Name != "") {
-		attr = append(attr, h.HtmlAttribute("name", r.Name));
+	replaces["%class%"] = r.Class
+	replaces["%attrs%"] = ""
+	var attr []string
+	attr = append(attr, h.HtmlAttribute("type", "radio"))
+	if r.Name != "" {
+		attr = append(attr, h.HtmlAttribute("name", r.Name))
 	}
-	if (r.Id != "") {
-		attr = append(attr, h.HtmlAttribute("id", r.Id));
+	if r.Id != "" {
+		attr = append(attr, h.HtmlAttribute("id", r.Id))
 	}
-	if (r.Value != "") {
-		attr = append(attr, h.HtmlAttribute("value", html.EscapeString(r.Value)));
+	if r.Value != "" {
+		attr = append(attr, h.HtmlAttribute("value", html.EscapeString(r.Value)))
 	}
-	if (r.Value != "" && r.SelectedValue != "" && r.Value == r.SelectedValue) {
-		attr = append(attr, h.HtmlAttribute("checked", "checked"));
+	if r.Value != "" && r.SelectedValue != "" && r.Value == r.SelectedValue {
+		attr = append(attr, h.HtmlAttribute("checked", "checked"))
 	}
-	if (r.Disabled == true) {
-		attr = append(attr, h.HtmlAttribute("disabled", "disabled"));
+	if r.Disabled == true {
+		attr = append(attr, h.HtmlAttribute("disabled", "disabled"))
 	}
-	if (r.Readonly == true) {
-		attr = append(attr, h.HtmlAttribute("readonly", "readonly"));
+	if r.Readonly == true {
+		attr = append(attr, h.HtmlAttribute("readonly", "readonly"))
 	}
 
-	replaces["%attrs%"] = strings.Join(attr, " ");
+	replaces["%attrs%"] = strings.Join(attr, " ")
 
 	for i, v := range replaces {
-		output = h.Replace(output, []string{i}, []string{v});
+		output = h.Replace(output, []string{i}, []string{v})
 	}
 
-	return GroupRender(output, r.HasPreOrPost(),false,inpErrors,"");
+	return GroupRender(output, r.HasPreOrPost(), false, inpErrors, "")
 }
 
 func (r InputRadio) HasPreOrPost() bool {
-	return false;
+	return false
 }

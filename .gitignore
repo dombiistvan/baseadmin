@@ -1,4 +1,5 @@
 system/*
 vendor/*
+.idea/*
 base
 main

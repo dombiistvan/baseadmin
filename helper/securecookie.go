@@ -17,15 +17,10 @@ type Session struct {
 }
 
 const USER_SESSION_LOGGEDIN_KEY = "loggedin"
-
 const USER_SESSION_ID_KEY = "uid"
-
 const USER_SESSION_ADMIN_KEY = "a"
-
 const USER_SESSION_SUPERADMIN_KEY = "sa"
-
 const USER_SESSION_ROLE_KEY = "role"
-
 const USER_SESSION_KEEP_LOGGED_IN = "kli"
 
 var (

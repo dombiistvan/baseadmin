@@ -47,7 +47,7 @@ type Conf struct {
 		Image       string `yml:"image"`
 	} `yml:"og"`
 	Environment string `yml:"environment"`
-	Db          struct {
+	Db struct {
 		Environment map[string]struct {
 			Host     string `yml:"host"`
 			Username string `yml:"username"`
@@ -74,11 +74,12 @@ type Conf struct {
 	} `yml:"mode"`
 	Cache struct {
 		Enabled bool   `yml:"enabled"`
+		Type    string `yml:"type"`
 		Dir     string `yml:"dir"`
 	} `yml:"cache"`
 	AdminRouter  string            `yml:"adminrouter"`
 	ConfigValues map[string]string `yml:"configvalues"`
-	Language     struct {
+	Language struct {
 		Allowed []string `yml:"allowed"`
 	} `yml:"language"`
 	Ug UserGroups `yml:"ug"`

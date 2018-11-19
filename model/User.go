@@ -67,7 +67,7 @@ func (u User) GetUser(email string, password string) (User, error) {
 	return User, err
 }
 
-func NewUser(Id int64, Email string, Password string, StatusId int64, SuperAdmin bool, Token string, TokenExpireAt int64, CreatedAt time.Time, UpdatedAt time.Time) User {
+func NewUser(Id int64, Email string, Password string, StatusId int64, SuperAdmin bool, Token string, TokenExpireAt int64, CreatedAt time.Time, UpdatedAt time.Time, UserGroup string) User {
 	return User{
 		Id,
 		Email,
@@ -78,13 +78,13 @@ func NewUser(Id int64, Email string, Password string, StatusId int64, SuperAdmin
 		TokenExpireAt,
 		CreatedAt,
 		UpdatedAt,
-		"",
+		UserGroup,
 		"",
 	}
 }
 
 func NewEmptyUser() User {
-	return NewUser(0, "", "", 0, false, "", 0, time.Time{}, time.Time{})
+	return NewUser(0, "", "", 0, false, "", 0, time.Time{}, time.Time{},"")
 }
 
 func (_ User) Get(id int64) (User, error) {
@@ -205,7 +205,7 @@ func (u User) BuildStructure(dbmap *gorp.DbMap) {
 		dbmap.CreateIndex()
 		h.PrintlnIf(fmt.Sprintf("Addig chiefAdmin user to database"), Conf.Mode.Debug)
 		for _, ca := range Conf.ChiefAdmin {
-			chiefAdmin := NewUser(0, ca.Email, ca.Password, STATUS_CONFIRMED_AND_ACTIVE, ca.SuperAdmin, "", 0, time.Time{}, time.Time{})
+			chiefAdmin := NewUser(0, ca.Email, ca.Password, STATUS_CONFIRMED_AND_ACTIVE, ca.SuperAdmin, "", 0, time.Time{}, time.Time{},"admin")
 			dbmap.Insert(&chiefAdmin)
 
 			var rolesSave []string
@@ -310,7 +310,7 @@ func GetUserForm(data map[string]interface{}, action string) Form {
 
 func GetUserFormValidator(ctx *fasthttp.RequestCtx, User User) Validator {
 	var Validator Validator
-	Validator = Validator.New(ctx)
+	Validator.Init(ctx)
 	Validator.AddField("id", map[string]interface{}{
 		"roles": map[string]interface{}{
 			"required": false,

@@ -13,6 +13,8 @@ import (
 	"log"
 	"os"
 	"time"
+	"math/rand"
+	"strconv"
 )
 
 type PageController struct {
@@ -39,10 +41,10 @@ func (p *PageController) IndexAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 
 	var template string = "page/index.html"
 	var cacheKeys []string = []string{"page", "index", session.GetActiveLang()}
-	hasContent, content := h.CacheStorage.GetString(template, cacheKeys)
+	hasContent,content := h.CacheStorage.GetString(template, cacheKeys)
 	if !hasContent {
-		content = h.GetScopeTemplateString(template, struct{ Project string }{h.GetConfig().Og.Title}, "frontend")
-		h.CacheStorage.Set(template, cacheKeys, time.Hour*12, content)
+		content = h.GetScopeTemplateString(template, "data "+strconv.Itoa(rand.Intn(15)), "frontend")
+		h.CacheStorage.Set(template, cacheKeys, time.Second*10, content)
 	}
 	pageInstance.AddContent(content, "", nil, false, 0)
 }

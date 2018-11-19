@@ -96,7 +96,8 @@ func NewEmptyBlock() Block {
 
 func GetBlockFormValidator(ctx *fasthttp.RequestCtx, Block Block) Validator {
 	var Validator Validator
-	Validator = Validator.New(ctx)
+	Validator.Init(ctx)
+
 	Validator.AddField("id", map[string]interface{}{
 		"roles": map[string]interface{}{
 			"required": false,

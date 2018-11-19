@@ -87,7 +87,7 @@ func (u *UserController) LoginpostAction(ctx *fasthttp.RequestCtx, session *h.Se
 		}
 
 		h.PrintlnIf("Logging in", h.GetConfig().Mode.Debug)
-		session.Login(user.Id, user.SuperAdmin, user.GetRoles())
+		session.Login(user.Id, user.SuperAdmin, user.UserGroup == "admin",user.GetRoles(),false)
 		Redirect(ctx, "user/welcome", fasthttp.StatusOK, true, pageInstance)
 		return
 	} else {

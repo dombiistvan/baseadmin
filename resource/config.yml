@@ -30,8 +30,9 @@ mode:
   rebuild_structure: false
   rebuild_data: false
 cache:
-  enabled: false
-  dir: view/cache
+  enabled: true
+  type: "file"
+  dir: "cache"
 adminrouter: admin
 og:
   url: "OG Url"

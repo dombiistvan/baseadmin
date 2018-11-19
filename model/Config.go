@@ -88,7 +88,7 @@ func NewEmptyConfig() Config {
 
 func GetConfigFormValidator(ctx *fasthttp.RequestCtx, Config Config) Validator {
 	var Validator Validator
-	Validator = Validator.New(ctx)
+	Validator.Init(ctx)
 	Validator.AddField("id", map[string]interface{}{
 		"roles": map[string]interface{}{
 			"required": false,

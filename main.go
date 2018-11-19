@@ -23,6 +23,7 @@ func main() {
 
 	h.SecureCookieSet()
 	c.InitControllers()
+	h.InitCache();
 
 	defer func() {
 		srv := &fasthttp.Server{

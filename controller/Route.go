@@ -80,7 +80,7 @@ func Route(ctx *fasthttp.RequestCtx) {
 							h.PrintlnIf(fmt.Sprintf("No render %v -> redirect", string(ctx.Path())), h.GetConfig().Mode.Debug)
 							page.Redirected = false
 						}
-						session.Send(&ctx.Response.Header, h.Duration)
+						session.Send(&ctx.Response.Header, h.SessionShortDuration)
 					}
 				}
 				if hadMach {

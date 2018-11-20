@@ -32,7 +32,7 @@ var CacheStorage *Cache;
 
 var cacheMutex *sync.Mutex = &sync.Mutex{}
 
-func InitCache() {
+func init() {
 	CacheStorage = &Cache{};
 	CacheStorage.Processing = map[string]bool{};
 	switch(GetConfig().Cache.Type) {

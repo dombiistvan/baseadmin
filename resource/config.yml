@@ -27,12 +27,12 @@ server:
 mode:
   live: false
   debug: true
-  rebuild_structure: true
+  rebuild_structure: false
   rebuild_data: false
 cache:
   enabled: true
   type: "file"
-  dir: "cache"
+  dir: "view/cache"
 adminrouter: admin
 og:
   url: "OG Url"

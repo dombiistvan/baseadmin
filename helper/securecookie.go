@@ -32,7 +32,7 @@ var (
 	SessionLongDuration   time.Duration = time.Hour * 24 * 7 * 4
 )
 
-func SecureCookieSet() {
+func init() {
 	cookieHandler = securecookie.New([]byte(Salt), nil)
 }
 

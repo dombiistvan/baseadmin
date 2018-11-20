@@ -23,6 +23,17 @@ var Upgrader model.Upgrade
 
 var Ah h.AuthHelper
 
+func init() {
+	UserC.Init()
+	AccessC.Init()
+	LayoutC.Init()
+	PageC.Init()
+	BlockC.Init()
+	ConfigC.Init()
+
+	dispatchRoutes()
+}
+
 func Redirect(ctx *fasthttp.RequestCtx, route string, status int, includeScope bool, page *view.Page) {
 	page.Redirected = true
 	var url string
@@ -146,15 +157,4 @@ func AddRoute(path string, toCall func(ctx *fasthttp.RequestCtx, session *h.Sess
 	Routes = append(Routes, map[string]map[string]interface{}{
 		path: RouteOptions,
 	})
-}
-
-func InitControllers() {
-	UserC.Init()
-	AccessC.Init()
-	LayoutC.Init()
-	PageC.Init()
-	BlockC.Init()
-	ConfigC.Init()
-
-	dispatchRoutes()
 }

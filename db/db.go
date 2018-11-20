@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-gorp/gorp"
 	"os"
 	"time"
@@ -12,7 +13,7 @@ import (
 
 var DbMap *gorp.DbMap
 
-func InitDb() {
+func init() {
 	var Conf h.Conf = h.GetConfig()
 	h.PrintlnIf("Ininialize connection", Conf.Mode.Debug)
 	environment, ok := Conf.Db.Environment[Conf.Environment]

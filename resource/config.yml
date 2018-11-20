@@ -9,10 +9,10 @@ environment: local
 db:
   environment:
     local:
-      host: "databasehost"
-      name: "dadabasename"
-      username: "databaseuser"
-      password: "databasepassword"
+      host: "localhost"
+      name: "base"
+      username: "root"
+      password: ""
   maxidleconns: 20
   maxopenconns: 20
   maxconnlifetimeminutes: 60
@@ -27,7 +27,7 @@ server:
 mode:
   live: false
   debug: true
-  rebuild_structure: false
+  rebuild_structure: true
   rebuild_data: false
 cache:
   enabled: true

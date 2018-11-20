@@ -132,7 +132,6 @@ func adminDispatch() {
 }
 
 func frontendDispatch() {
-	AddRoute("GET|^/image$", PageC.ImageAction, map[string]interface{}{})
 	//utolsó, ennek kell alul lennie, minden ide fut
 	AddRoute("GET|^/?", PageC.IndexAction, map[string]interface{}{})
 }

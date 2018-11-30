@@ -1,5 +1,6 @@
 system/*
 vendor/*
 .idea/*
-base
+resource/config.yml
+baseadmin
 main

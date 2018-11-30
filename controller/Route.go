@@ -1,9 +1,9 @@
 package controller
 
 import (
-	h "base/helper"
-	"base/model"
-	"base/model/view"
+	h "baseadmin/helper"
+	"baseadmin/model"
+	"baseadmin/model/view"
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"regexp"

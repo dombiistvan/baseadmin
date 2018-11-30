@@ -1,8 +1,8 @@
 package model
 
 import (
-	"base/db"
-	h "base/helper"
+	"baseadmin/db"
+	h "baseadmin/helper"
 	"fmt"
 	"github.com/go-gorp/gorp"
 	"reflect"

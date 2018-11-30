@@ -1,7 +1,7 @@
 package model
 
 import (
-	"base/helper"
+	"baseadmin/helper"
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"math"

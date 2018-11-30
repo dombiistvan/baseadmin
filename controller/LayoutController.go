@@ -1,9 +1,9 @@
 package controller
 
 import (
-	h "base/helper"
-	"base/model/view"
-	adminview "base/model/view/admin"
+	h "baseadmin/helper"
+	"baseadmin/model/view"
+	adminview "baseadmin/model/view/admin"
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"strings"

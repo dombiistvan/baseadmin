@@ -1,12 +1,12 @@
 package controller
 
 import (
-	"base/db"
-	h "base/helper"
-	m "base/model"
-	"base/model/list"
-	"base/model/view"
-	"base/model/view/admin"
+	"baseadmin/db"
+	h "baseadmin/helper"
+	m "baseadmin/model"
+	"baseadmin/model/list"
+	"baseadmin/model/view"
+	"baseadmin/model/view/admin"
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"html/template"

@@ -1,9 +1,9 @@
 package model
 
 import (
-	dbHelper "base/db"
-	h "base/helper"
-	"base/model/FElement"
+	dbHelper "baseadmin/db"
+	h "baseadmin/helper"
+	"baseadmin/model/FElement"
 	"crypto/sha256"
 	"errors"
 	"fmt"
@@ -84,7 +84,7 @@ func NewUser(Id int64, Email string, Password string, StatusId int64, SuperAdmin
 }
 
 func NewEmptyUser() User {
-	return NewUser(0, "", "", 0, false, "", 0, time.Time{}, time.Time{},"")
+	return NewUser(0, "", "", 0, false, "", 0, time.Time{}, time.Time{}, "")
 }
 
 func (_ User) Get(id int64) (User, error) {
@@ -205,7 +205,7 @@ func (u User) BuildStructure(dbmap *gorp.DbMap) {
 		dbmap.CreateIndex()
 		h.PrintlnIf(fmt.Sprintf("Addig chiefAdmin user to database"), Conf.Mode.Debug)
 		for _, ca := range Conf.ChiefAdmin {
-			chiefAdmin := NewUser(0, ca.Email, ca.Password, STATUS_CONFIRMED_AND_ACTIVE, ca.SuperAdmin, "", 0, time.Time{}, time.Time{},"admin")
+			chiefAdmin := NewUser(0, ca.Email, ca.Password, STATUS_CONFIRMED_AND_ACTIVE, ca.SuperAdmin, "", 0, time.Time{}, time.Time{}, "admin")
 			dbmap.Insert(&chiefAdmin)
 
 			var rolesSave []string

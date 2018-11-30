@@ -1,10 +1,10 @@
 package view
 
 import (
-	"base/model"
-	h"base/helper"
-	"github.com/valyala/fasthttp"
+	h "baseadmin/helper"
+	"baseadmin/model"
 	"fmt"
+	"github.com/valyala/fasthttp"
 	"time"
 )
 
@@ -14,7 +14,7 @@ type ExampleView struct {
 }
 
 func (e ExampleView) Load(session *h.Session, ctx *fasthttp.RequestCtx) interface{} {
-	e.Welcome = fmt.Sprintf("Welcome! Seconds when cacheing is %v",time.Now().Second());
+	e.Welcome = fmt.Sprintf("Welcome! Seconds when cacheing is %v", time.Now().Second())
 
-	return e;
+	return e
 }

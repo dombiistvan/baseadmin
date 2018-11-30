@@ -1,8 +1,8 @@
 package controller
 
 import (
-	h "base/helper"
-	"base/model/view"
+	h "baseadmin/helper"
+	"baseadmin/model/view"
 	"github.com/valyala/fasthttp"
 	"time"
 )
@@ -31,7 +31,7 @@ func (p *PageController) IndexAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 
 	var exampleView view.ExampleView
 
-	exampleView.Init("page/index.html",[]string{"page", "index", session.GetActiveLang()},time.Minute)
-	content := exampleView.GetContent(exampleView,pageInstance.Scope,session,ctx)
+	exampleView.Init("page/index.html", []string{"page", "index", session.GetActiveLang()}, time.Minute)
+	content := exampleView.GetContent(exampleView, pageInstance.Scope, session, ctx)
 	pageInstance.AddContent(content, "", nil, false, 0)
 }

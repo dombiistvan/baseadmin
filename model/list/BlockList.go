@@ -1,9 +1,9 @@
 package list
 
 import (
-	"base/db"
-	h "base/helper"
-	m "base/model"
+	"baseadmin/db"
+	h "baseadmin/helper"
+	m "baseadmin/model"
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"strconv"

@@ -1,7 +1,7 @@
 package model
 
 import (
-	"base/db"
+	"baseadmin/db"
 	"fmt"
 	"strings"
 )

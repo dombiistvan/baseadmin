@@ -1,13 +1,13 @@
 package model
 
 import (
+	"baseadmin/db"
+	h "baseadmin/helper"
 	"errors"
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"net/url"
 	"regexp"
-	"scl/db"
-	h "scl/helper"
 	"strings"
 )
 

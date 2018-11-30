@@ -1,10 +1,10 @@
 package main
 
 import (
-	c "base/controller"
-	dbhelper "base/db"
-	h "base/helper"
-	m "base/model"
+	c "baseadmin/controller"
+	dbhelper "baseadmin/db"
+	h "baseadmin/helper"
+	m "baseadmin/model"
 
 	"fmt"
 	"github.com/go-gorp/gorp"

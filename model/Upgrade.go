@@ -1,8 +1,8 @@
 package model
 
 import (
-	dbhelper "base/db"
-	h "base/helper"
+	dbhelper "baseadmin/db"
+	h "baseadmin/helper"
 	"database/sql"
 	"fmt"
 	"github.com/go-gorp/gorp"

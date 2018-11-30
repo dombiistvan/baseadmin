@@ -1,9 +1,9 @@
 package model
 
 import (
-	"base/db"
-	h "base/helper"
-	"base/model/FElement"
+	"baseadmin/db"
+	h "baseadmin/helper"
+	"baseadmin/model/FElement"
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"net/url"

@@ -4,7 +4,7 @@ This "application" is for making the administration and the entire website manag
 
 There is one config, one menu, and one roles yml which are containing the settings and related informations and that is not neccesary to place in database.
 
-### Example of config parts
+### Example of config parts ```config.yml```
 ```
 listenport: 8080
 ```

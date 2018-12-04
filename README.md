@@ -111,7 +111,7 @@ language:
 ```
 the under language, ```allowed``` key contains the allowed language codes (not iso, just as you see). This is not enough to set language, I will write more about it later.
 
-### Example of roles ```roles.yml```
+### Explanation and example of roles ```roles.yml```
 
 ```
 roles:

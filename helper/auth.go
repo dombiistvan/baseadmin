@@ -66,6 +66,10 @@ func parseRolesConfig() (bool, error) {
 
 func CanAccess(role string, session *Session) bool {
 	switch role {
+	case "-":
+		PrintlnIf("Noone is allowed", GetConfig().Mode.Debug)
+		return false //noone
+		break
 	case "*":
 		PrintlnIf("Anyone is allowed", GetConfig().Mode.Debug)
 		return true //anyone
@@ -79,12 +83,6 @@ func CanAccess(role string, session *Session) bool {
 	case "@":
 		PrintlnIf("Loggedin user is allowed", GetConfig().Mode.Debug)
 		if session.IsLoggedIn() {
-			return true
-		}
-		break
-	case "!@a":
-		PrintlnIf("Logged out user allowed", GetConfig().Mode.Debug)
-		if session.IsAdmin() == false {
 			return true
 		}
 		break

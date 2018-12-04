@@ -156,7 +156,7 @@ roles:
         value: "config/index"
 ```
 
-roles.yml contains every role, it has to be update, because if you want to add a new user, you can chose from the role only are in this file.
+roles.yml contains every role, it has to be update, because if you want to add a new user, you can chose from the role only are in this file. The roles structure is a ```map[string]...``` so ever group must be unique.
 
 under the ```roles``` key, you can see the role groups, fe.: ```user```, ```block```, ```config```
 under the groups, there are 3 keys: ```title```, ```value``` and ```children```
@@ -168,3 +168,51 @@ the ```children``` key is the container of all group related subrole. For exampl
 
 now, the role is available, and the admin can be set to allow/deny to edit users' images, "later" I will show you how, this is only for explaining how to add a new role to the existing ones.
 
+### Explanation and example of menu tree ```menu.yml```
+
+```
+menu:
+  - label: "User"
+    group: "user"
+    url: "user/index"
+    icon: "fa fa-user"
+    visibility: "*"
+    children:
+      0:
+        label: "Log In"
+        url: "user/login"
+        visibility: "!@"
+        icon: "fa fa-user"
+      1:
+        label: "List"
+        url: "user/index"
+        visibility: "user/list"
+        icon: "fa fa-list"
+      2:
+        label: "Add New"
+        url: "user/new"
+        visibility: "user/new"
+        icon: "fa fa-plus"
+    ...
+```
+As you see the ```menu.yml``` is an array of ```map[string]...```.
+Every menu group item, has ```label```,```group```,```url```,```icon```, ```visibility``` and ```children``` keys.
+
+```label``` is obvious, it is readable in the menu tree 
+```group``` is for the role group. The purpose of it is when you dont have any of the group's subrole, we can hide it at all
+```url``` is for the route, it will refer to
+```visibility``` is the role we define the user has to have to see this menupoint
+```icon``` is just a display bootstrap icon in the menu tree
+
+This ```yml``` still not authenticate, just hide/show urls and menupoints. Without specify the accessibility in the controllers (soon) the user can reach the action from url.
+
+There are static roles also you can define in menu, and also to the actions later.
+The roles are the following:
+```*```: anyone
+```!@```: not logged in user (can be admin or simple user also)
+```@```: logged in user (can be admin or simple user also)
+```@a```: logged in admin
+```@sa```: logged in superadmin
+```-```: none
+
+Easy to add more, and plan to do in the future :) 

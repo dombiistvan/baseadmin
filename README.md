@@ -110,3 +110,61 @@ language:
     - en
 ```
 the under language, ```allowed``` key contains the allowed language codes (not iso, just as you see). This is not enough to set language, I will write more about it later.
+
+### Example of roles ```roles.yml```
+
+```
+roles:
+  user:
+    title: "<strong>All User Role</strong>"
+    value: "user/*"
+    children:
+      list:
+        title: "List/Search Users"
+        value: "user/list"
+      new:
+        title: "Add User"
+        value: "user/new"
+      edit:
+        title: "Edit User"
+        value: "user/edit"
+      delete:
+        title: "Delete User"
+        value: "user/delete"
+  block:
+    title: "<strong>All Block Roles</strong>"
+    value: "block/*"
+    children:
+      list:
+        title: "List/Search Blocks"
+        value: "block/list"
+      new:
+        title: "Add Block"
+        value: "block/new"
+      edit:
+        title: "Edit Block"
+        value: "block/edit"
+      delete:
+        title: "Delete Block"
+        value: "block/delete"
+  config:
+    title: "<strong>Config</strong>"
+    value: "config/*"
+    children:
+      index:
+        title: "Edit config"
+        value: "config/index"
+```
+
+roles.yml contains every role, it has to be update, because if you want to add a new user, you can chose from the role only are in this file.
+
+under the ```roles``` key, you can see the role groups, fe.: ```user```, ```block```, ```config```
+under the groups, there are 3 keys: ```title```, ```value``` and ```children```
+
+the ```title```'s content will be visible on the admin panel when editing user and/or their roles.
+the ```value``` contains the group's value, for example user group's value is ```"user/*"``` which means every role are granted to the user who has this role. Does not need to give them children roles under that one by one.
+
+the ```children``` key is the container of all group related subrole. For example, you can make here a new role for allow or deny users to upload image to users, so you make a new role with ```image``` key under the ```user```/```children``` with fe.: ```title: "Add/Edit profile image"``` and ```value: "user/image"```
+
+now, the role is available, and the admin can be set to allow/deny to edit users' images, "later" I will show you how, this is only for explaining how to add a new role to the existing ones.
+

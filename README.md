@@ -2,6 +2,14 @@
 
 This "application" is for making the administration and the entire website management more clear and easy with go.
 
+First thing you need is to clone the app into the project directory. 
+
+As long as the repo is not works as a callable outer package, you have to work with, and extend the cloned codebase.
+
+One way is enter to projects root directory (go source directoy ```go/src``` directory) from terminal, and type ```git clone https://github.com/dombiistvan28/baseadmin.git mynewdirectory```. This will clone the project into your new ```mynewdirectory``` directory. You can clone only into an empty directory. Now you still have to replace all "baseadmin" string to "mynewdirectory" because the package and directory name must be the same, or the GO will not recognize it.
+
+Other way is to download archive, and extract into your project's directory.
+
 There is one config, one menu, and one roles yml which are containing the settings and related informations and that is not neccesary to place in database.
 
 ### Example of config parts ```config.yml```
@@ -24,6 +32,7 @@ chiefadmin:
     superdmin: true 
 ```
 chiefadmin is an array of admins will be made by the application if the ```rebuild_structure``` flag is true
+
 ```
 db:
   environment:
@@ -33,17 +42,20 @@ db:
       username: "database_user"
       password: "database_password"
 ```
-db is a string map with the ooportunity of setting up multiple environment without removing and modifying the previous one, we will use the key under the ```environment``` to idenfity which environment we want to use
+db is a string map with the oportunity of setting up multiple environment without removing and modifying the previous one. we will use later the key under the ```environment``` to idenfity which environment we want to use
+
 ```
   maxidleconns: 20
   maxopenconns: 20
   maxconnlifetimeminutes: 60
 ```
-still inside ```db``` config we have these three option to handle a bit more the mysql pool, ```maxidleconns```, ```maxopenconns```, and ```maxlifetimeminutes```. These are existing options you can research for to understand its working. 
+still inside ```db``` config we have these three option to configure mysql pool, ```maxidleconns```, ```maxopenconns```, and ```maxlifetimeminutes```. These are existing configurations, you can search for to understand how it is working.
+
 ```
 environment: local
 ```
 and this is the part we choose our current environment the app should use
+
 ```
 server:
   readtimeoutseconds: 20
@@ -54,10 +66,11 @@ server:
   sessionkey: "baseadmin"
   name: "Base Admin Server"
 ```
-the next parameter is the apps server config, read and write timeout in seconds(```maxrps```), max request per seconds (this is because of defending against hackers, don't know if currently is working or not because was there a proxy problem which occured with this some error, will check about it soon) - it has a related ```banminutes```, obviusly meaning, and a ```banactive``` key which is for activate and deactivate this entire feature.
+the next parameter is the app's server config, read (```readtimeoutseconds```) and write (```writetimeoutseconds```) timeout in seconds, max request per seconds (```maxrps```: this is because of defending against hackers, don't know if currently is working or not because there was a proxy problem which occured with this some error, will check about it soon) - it has a related ```banminutes``` (obviusly meaning), and a ```banactive``` key which is for activate and deactivate this entire feature.
 
 Also there are ```sessionkey``` which is a string what will be used to encode/decode session content.
 The last key here is the ```name``` which is only an informative key what is reachable from response headers if I remember good :D.
+
 ```
 mode:
   live: false
@@ -65,7 +78,11 @@ mode:
   rebuild_structure: false
   rebuild_data: false
 ```
-Well, under ```mode``` there are ```live``` which is not sure is used right now, ```debug``` which is for debugging, if you set it true, you will get much more log, ```rebuild_structure``` which is the database rebuild flag. If this is true, the process will remove its tables if these were configured good, and remake them. ```rebuild_data``` is a related process, not for structure but the data.
+Well, under ```mode``` there are 
+```live``` which is not sure is used right now
+```debug``` which is for debugging, if you set it true, you will get much more log
+```rebuild_structure``` which is the database rebuild flag: If this is true, the process will remove its tables if these were configured good, and remake them
+```rebuild_data``` is similar to rebuild_strucure process, not for structure but the data
 
 ```
 cache:
@@ -74,10 +91,12 @@ cache:
   dir: "view/cache"
 ```
 cache has two types now, ```"file"``` and ```"memory"```. File cache can not store models and values, so if you change from one type to other, maybe it can occur some fail because of this. If you use file cache, there is the ```dir``` option to set the file cache directory. As you see in this example, this is the cache directory under view.
+
 ```
 adminrouter: admin
 ```
 this is the administration panel access url under our site url. You can find the login to administrative portal on this path. In this example, this is admin, so on localhost it should be accessible via http://localhost:8080/admin url.
+
 ```
 og:
   url: "OG Url"
@@ -87,6 +106,7 @@ og:
   image: "/opengraph/default/image.png"
 ```
 these are default opengraph works, can can overwrite from controller, will see soon.
+
 ```
 ug:
   - value: "usergroup1"
@@ -102,14 +122,18 @@ ug:
     description: "Admin"
     default: false
 ```
-these are the user groups, ```value```, ```label```, ```description``` and ```default``` option, description not used yet.
+```value``` is the saved value
+```label``` is the select option string
+```description``` is not used at the moment
+```default``` is for spefify the default to save to the new users
+
 ```
 language:
   allowed:
     - hu
     - en
 ```
-the under language, ```allowed``` key contains the allowed language codes (not iso, just as you see). This is not enough to set language, I will write more about it later.
+under language, ```allowed``` key contains the allowed language codes (notISO, just as you see). This is not enough to set language, I will write more about it later.
 
 ### Explanation and example of roles ```roles.yml```
 

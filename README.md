@@ -1,7 +1,9 @@
-# baseadmin
+# Introduction Baseadmin
 
 This "application" is for making the administration and the entire website management more clear and easy with go.
 This works with mysql database and driver (https://github.com/go-sql-driver/mysql), gorp (https://github.com/go-gorp/gorp) package, and fasthttp (https://github.com/valyala/fasthttp) routing.
+
+## Getting started
 
 First thing you need is to clone the app into the project directory. 
 

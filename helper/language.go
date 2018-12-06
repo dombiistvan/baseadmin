@@ -15,7 +15,7 @@ var DefLang string = "hu"
 
 var LangQueryKey string = "lang"
 
-func init() {
+func InitLanguages() {
 	PrintlnIf("Initializing translator", GetConfig().Mode.Debug)
 	Lang = &Language{}
 	Lang.Init()

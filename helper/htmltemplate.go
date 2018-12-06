@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"html/template"
 	"path"
+	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -22,6 +24,15 @@ func GetScopeTemplateString(filePath string, data interface{}, scope string) str
 			return val + 1
 		},
 	}).ParseFiles("./" + fileFullPath)
+	if err != nil {
+		_, file, _, _ := runtime.Caller(0)
+		fileFullPath = fmt.Sprintf("%s/%s/%s", filepath.Dir(file), "..", fileFullPath)
+		t, err = template.New(parseName).Funcs(template.FuncMap{
+			"addOne": func(val int) int {
+				return val + 1
+			},
+		}).ParseFiles(fileFullPath)
+	}
 	Error(err, "", ERROR_LVL_ERROR)
 	err = t.ExecuteTemplate(&tplBuffer, path.Base("./"+fileFullPath), data)
 	Error(err, "", ERROR_LVL_ERROR)

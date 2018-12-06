@@ -20,11 +20,10 @@ func (p PageController) New() PageController {
 func (p *PageController) Init() {
 	p.AuthAction = make(map[string][]string)
 	p.AuthAction["index"] = []string{"*"}
-	p.AuthAction["image"] = []string{"*"}
 }
 
 func (p *PageController) IndexAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if !Ah.HasRights(p.AuthAction["index"], session) {
+	if !AuthHelper.HasRights(p.AuthAction["index"], session) {
 		Redirect(ctx, "user/login", fasthttp.StatusForbidden, false, pageInstance)
 		return
 	}

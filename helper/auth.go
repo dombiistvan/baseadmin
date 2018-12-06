@@ -23,8 +23,6 @@ type RolesStruct struct {
 
 var Roles RolesStruct
 
-var RolesConfigPath string = "./resource/roles.yml"
-
 func (a *AuthHelper) HasRights(requiredRoles []string, session *Session) bool {
 	for _, role := range requiredRoles {
 		if CanAccess(role, session) {
@@ -49,7 +47,7 @@ func GetRoles() RolesStruct {
 }
 
 func parseRolesConfig() (bool, error) {
-	dat, err := ioutil.ReadFile(RolesConfigPath)
+	dat, err := ioutil.ReadFile(resourceCfg.GetRoleFilePath())
 	Error(err, "", ERROR_LVL_ERROR)
 	if err != nil {
 		return false, err

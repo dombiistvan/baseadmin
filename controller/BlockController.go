@@ -33,7 +33,7 @@ func (b *BlockController) Init() {
 }
 
 func (b *BlockController) ListAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if !Ah.HasRights(b.AuthAction["list"], session) {
+	if !AuthHelper.HasRights(b.AuthAction["list"], session) {
 		Redirect(ctx, "user/welcome", fasthttp.StatusForbidden, true, pageInstance)
 		return
 	}
@@ -51,7 +51,7 @@ func (b *BlockController) ListAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 }
 
 func (b *BlockController) EditAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if !Ah.HasRights(b.AuthAction["edit"], session) {
+	if !AuthHelper.HasRights(b.AuthAction["edit"], session) {
 		Redirect(ctx, "block/index", fasthttp.StatusForbidden, true, pageInstance)
 		return
 	}
@@ -105,7 +105,7 @@ func (b *BlockController) EditAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 }
 
 func (b *BlockController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if !Ah.HasRights(b.AuthAction["new"], session) {
+	if !AuthHelper.HasRights(b.AuthAction["new"], session) {
 		Redirect(ctx, "block/index", fasthttp.StatusForbidden, true, pageInstance)
 		return
 	}
@@ -142,7 +142,7 @@ func (b *BlockController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session
 }
 
 func (b *BlockController) saveBlock(ctx *fasthttp.RequestCtx, session *h.Session, Block m.Block) (bool, map[string]error) {
-	if ctx.IsPost() && ((Ah.HasRights(b.AuthAction["edit"], session) && Block.Id != 0) || (Ah.HasRights(b.AuthAction["new"], session) && Block.Id == 0)) {
+	if ctx.IsPost() && ((AuthHelper.HasRights(b.AuthAction["edit"], session) && Block.Id != 0) || (AuthHelper.HasRights(b.AuthAction["new"], session) && Block.Id == 0)) {
 		var err error
 		var succ bool
 		var Validator = m.GetBlockFormValidator(ctx, Block)
@@ -170,7 +170,7 @@ func (b *BlockController) saveBlock(ctx *fasthttp.RequestCtx, session *h.Session
 }
 
 func (b *BlockController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if !Ah.HasRights(b.AuthAction["delete"], session) {
+	if !AuthHelper.HasRights(b.AuthAction["delete"], session) {
 		Redirect(ctx, "block/index", fasthttp.StatusForbidden, true, pageInstance)
 		return
 	}

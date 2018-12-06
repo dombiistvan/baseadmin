@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 )
 
-var MenuFilePath string = "./resource/menu.yml"
-
 type MenuGroup struct {
 	Label      string           `yml:"label"`
 	Group      string           `yml:"group"`
@@ -112,7 +110,7 @@ func GetMenu(session *Session) Menu {
 }
 
 func parseMenu(menu *Menu) (bool, error) {
-	dat, err := ioutil.ReadFile(MenuFilePath)
+	dat, err := ioutil.ReadFile(resourceCfg.GetMenuFilePath())
 	Error(err, "Menu file reading error", ERROR_LVL_ERROR)
 	if err != nil {
 		return false, err

@@ -29,7 +29,7 @@ func (c *ConfigController) Init() {
 }
 
 func (c *ConfigController) IndexAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if Ah.HasRights(c.AuthAction["index"], session) {
+	if AuthHelper.HasRights(c.AuthAction["index"], session) {
 		pageInstance.Title = "Config"
 
 		AdminContent := admin.Content{}

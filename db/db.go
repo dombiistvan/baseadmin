@@ -13,7 +13,7 @@ import (
 
 var DbMap *gorp.DbMap
 
-func init() {
+func InitDb() {
 	var Conf h.Conf = h.GetConfig()
 	h.PrintlnIf("Ininialize connection", Conf.Mode.Debug)
 	environment, ok := Conf.Db.Environment[Conf.Environment]

@@ -38,7 +38,7 @@ func (u *UserController) Init() {
 }
 
 func (u *UserController) LoginAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if Ah.HasRights(u.AuthAction["login"], session) {
+	if AuthHelper.HasRights(u.AuthAction["login"], session) {
 		pageInstance.Title = "User - Log in"
 
 		AdminContent := adminview.Content{}
@@ -58,7 +58,7 @@ func (u *UserController) LoginAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 }
 
 func (u *UserController) SwitchLanguageAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if Ah.HasRights(u.AuthAction["switchlanguage"], session) {
+	if AuthHelper.HasRights(u.AuthAction["switchlanguage"], session) {
 		var lc string = h.GetParamFromCtxPath(ctx, 3, h.DefLang)
 		if session.GetActiveLang() != lc && h.Lang.IsAvailable(lc) {
 			session.SetActiveLang(lc)
@@ -74,7 +74,7 @@ func (u *UserController) SwitchLanguageAction(ctx *fasthttp.RequestCtx, session 
 }
 
 func (u *UserController) LoginpostAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if Ah.HasRights(u.AuthAction["loginpost"], session) {
+	if AuthHelper.HasRights(u.AuthAction["loginpost"], session) {
 		var email = h.FormValue(ctx, "email")
 		var password = h.FormValue(ctx, "password")
 		var user m.User
@@ -97,7 +97,7 @@ func (u *UserController) LoginpostAction(ctx *fasthttp.RequestCtx, session *h.Se
 }
 
 func (u *UserController) LogoutAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if Ah.HasRights(u.AuthAction["logout"], session) {
+	if AuthHelper.HasRights(u.AuthAction["logout"], session) {
 		h.PrintlnIf("Logged in -> logout", h.GetConfig().Mode.Debug && session.Value(h.USER_SESSION_LOGGEDIN_KEY).(bool))
 		h.PrintlnIf("Not logged in -> access denied", h.GetConfig().Mode.Debug && !session.Value(h.USER_SESSION_LOGGEDIN_KEY).(bool))
 		session.Logout()
@@ -110,7 +110,7 @@ func (u *UserController) LogoutAction(ctx *fasthttp.RequestCtx, session *h.Sessi
 }
 
 func (u *UserController) ListAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if Ah.HasRights(u.AuthAction["list"], session) {
+	if AuthHelper.HasRights(u.AuthAction["list"], session) {
 		var ul list.UserList
 		ul.Init(ctx, session.GetActiveLang())
 
@@ -129,7 +129,7 @@ func (u *UserController) ListAction(ctx *fasthttp.RequestCtx, session *h.Session
 }
 
 func (u *UserController) WelcomeAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if Ah.HasRights(u.AuthAction["welcome"], session) {
+	if AuthHelper.HasRights(u.AuthAction["welcome"], session) {
 		pageInstance.Title = "User - Welcome"
 
 		AdminContent := adminview.Content{}
@@ -144,7 +144,7 @@ func (u *UserController) WelcomeAction(ctx *fasthttp.RequestCtx, session *h.Sess
 }
 
 func (u *UserController) EditAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if Ah.HasRights(u.AuthAction["edit"], session) {
+	if AuthHelper.HasRights(u.AuthAction["edit"], session) {
 		//azért nem kell vizsgálni az errort, mert a request reguláris kifejezése csak akkor hozza ide, ha a végén \d van :)
 		var id, _ = strconv.Atoi(h.GetParamFromCtxPath(ctx, 3, ""))
 		var userId = int64(id)
@@ -218,7 +218,7 @@ func (u *UserController) EditAction(ctx *fasthttp.RequestCtx, session *h.Session
 }
 
 func (u *UserController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if Ah.HasRights(u.AuthAction["delete"], session) {
+	if AuthHelper.HasRights(u.AuthAction["delete"], session) {
 		//azért nem kell vizsgálni az errort, mert a request reguláris kifejezése csak akkor hozza ide, ha a végén \d van :)
 		var id, _ = strconv.Atoi(h.GetParamFromCtxPath(ctx, 3, ""))
 		var userId = int64(id)
@@ -262,7 +262,7 @@ func (u *UserController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Sessi
 }
 
 func (u *UserController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
-	if Ah.HasRights(u.AuthAction["new"], session) {
+	if AuthHelper.HasRights(u.AuthAction["new"], session) {
 		var User = m.NewEmptyUser()
 		var data map[string]interface{}
 		if !ctx.IsPost() {
@@ -310,7 +310,7 @@ func (u *UserController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session,
 }
 
 func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, User m.User) (bool, map[string]error) {
-	if ctx.IsPost() && ((Ah.HasRights(u.AuthAction["edit"], session) && User.Id != 0) || (Ah.HasRights(u.AuthAction["new"], session) && User.Id == 0)) {
+	if ctx.IsPost() && ((AuthHelper.HasRights(u.AuthAction["edit"], session) && User.Id != 0) || (AuthHelper.HasRights(u.AuthAction["new"], session) && User.Id == 0)) {
 		var err error
 		var succ bool
 		var Validator = m.GetUserFormValidator(ctx, User)

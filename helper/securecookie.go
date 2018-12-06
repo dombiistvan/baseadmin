@@ -24,23 +24,24 @@ const USER_SESSION_ROLE_KEY = "role"
 const USER_SESSION_KEEP_LOGGED_IN = "kli"
 
 var (
-	SessionName           string = GetConfig().Server.SessionKey
-	Salt                  string = "SB8xKSUVqPseynSh"
+	sessionName           string
 	cookieHandler         *securecookie.SecureCookie
+	Salt                  string        = "SB8xKSUVqPseynSh"
 	predefinedSessionKeys []string      = []string{"error", "success"}
 	SessionShortDuration  time.Duration = time.Hour * 2
 	SessionLongDuration   time.Duration = time.Hour * 24 * 7 * 4
 )
 
-func init() {
+func InitSession() {
 	cookieHandler = securecookie.New([]byte(Salt), nil)
+	sessionName = GetConfig().Server.SessionKey
 }
 
 func SessionGet(h *fasthttp.RequestHeader) *Session {
 	s := &Session{}
 	s.val = make(map[string]interface{})
-	cookie := h.Cookie(SessionName)
-	cookieHandler.Decode(SessionName, string(cookie), &s.val)
+	cookie := h.Cookie(sessionName)
+	cookieHandler.Decode(sessionName, string(cookie), &s.val)
 	return s
 }
 
@@ -183,16 +184,16 @@ func (s *Session) GetDuration() time.Duration {
 
 // expire nil value indicates that the cookie doesn't expire.
 func (s *Session) Send(h *fasthttp.ResponseHeader, expire time.Duration) {
-	if encoded, err := cookieHandler.Encode(SessionName, s.val); err == nil {
+	if encoded, err := cookieHandler.Encode(sessionName, s.val); err == nil {
 		c := &fasthttp.Cookie{}
-		c.SetKey(SessionName)
+		c.SetKey(sessionName)
 		c.SetValue(encoded)
 		c.SetExpire(time.Now().Add(expire))
 		// c.SetSecure(true)
 		c.SetPath("/")
 		h.SetCookie(c)
 	} else {
-		h.DelCookie(SessionName)
+		h.DelCookie(sessionName)
 	}
 }
 
@@ -205,5 +206,5 @@ func (s *Session) TitleTranslate(str string) string {
 }
 
 func SessionClear(h *fasthttp.ResponseHeader) {
-	h.DelCookie(SessionName)
+	h.DelCookie(sessionName)
 }

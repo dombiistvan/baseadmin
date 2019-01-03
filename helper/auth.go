@@ -78,6 +78,12 @@ func CanAccess(role string, session *Session) bool {
 			return true
 		}
 		break
+	case "!@a":
+		PrintlnIf("Anyone except logged in admin", GetConfig().Mode.Debug)
+		if session.IsAdmin() == false {
+			return true
+		}
+		break
 	case "@":
 		PrintlnIf("Loggedin user is allowed", GetConfig().Mode.Debug)
 		if session.IsLoggedIn() {

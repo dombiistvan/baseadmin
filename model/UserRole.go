@@ -8,21 +8,9 @@ import (
 )
 
 type UserRole struct {
-	Id     int64  `db:"id, primarykey, autoincrement"`
-	UserId int64  `db:"user_id"`
-	Role   string `db:"role, size:100"`
-}
-
-func NewUserRole(Id int64, UserId int64, Role string) UserRole {
-	return UserRole{
-		Id:     Id,
-		UserId: UserId,
-		Role:   Role,
-	}
-}
-
-func NewEmptyUserRole() UserRole {
-	return NewUserRole(0, 0, "")
+	Id          int64  `db:"id, primarykey, autoincrement"`
+	UserGroupId int64  `db:"user_group_id"`
+	Role        string `db:"role, size:100"`
 }
 
 func (ur UserRole) BuildStructure(dbmap *gorp.DbMap) {
@@ -32,9 +20,9 @@ func (ur UserRole) BuildStructure(dbmap *gorp.DbMap) {
 
 	indexes = map[int]map[string]interface{}{
 		0: {
-			"name":   "IDX_USER_ROLE_USER_ID_USER_ID",
+			"name":   "IDX_USER_ROLE_USER_GROUP_ID_USER_GROUP_ID",
 			"type":   "hash",
-			"field":  []string{"user_id"},
+			"field":  []string{"user_group_id"},
 			"unique": false,
 		}, 1: {
 			"name":   "IDX_USER_ROLE_ROLE",
@@ -42,9 +30,9 @@ func (ur UserRole) BuildStructure(dbmap *gorp.DbMap) {
 			"field":  []string{"role"},
 			"unique": false,
 		}, 2: {
-			"name":   "UIDX_USER_ROLE_USER_ID_ROLE",
+			"name":   "UIDX_USER_ROLE_USER_GROUP_ID_ROLE",
 			"type":   "hash",
-			"field":  []string{"user_id", "role"},
+			"field":  []string{"user_group_id", "role"},
 			"unique": true,
 		},
 	}

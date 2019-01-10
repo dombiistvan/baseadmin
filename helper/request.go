@@ -54,7 +54,7 @@ func GetFormData(ctx *fasthttp.RequestCtx, field string, multi bool) interface{}
 	if !multi {
 		return string(ctx.FormValue(field))
 	} else {
-		retVal := []string{}
+		var retVal []string
 		for _, val := range ctx.PostArgs().PeekMulti(field) {
 			retVal = append(retVal, string(val))
 		}

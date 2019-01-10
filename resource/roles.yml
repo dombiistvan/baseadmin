@@ -15,6 +15,22 @@ roles:
       delete:
         title: "Delete User"
         value: "user/delete"
+  usergroup:
+    title: "<strong>All UserGroup Role</strong>"
+    value: "usergroup/*"
+    children:
+      list:
+        title: "List/Search UserGroups"
+        value: "usergroup/list"
+      new:
+        title: "Add UserGroup"
+        value: "usergroup/new"
+      edit:
+        title: "Edit UserGroup"
+        value: "usergroup/edit"
+      delete:
+        title: "Delete UserGroup"
+        value: "usergroup/delete"
   block:
     title: "<strong>All Block Roles</strong>"
     value: "block/*"

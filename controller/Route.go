@@ -15,6 +15,7 @@ var Routes []map[string]map[string]interface{}
 
 var AccessC AccessController
 var UserC UserController
+var UserGroupC UserGroupController
 var PageC PageController
 var ConfigC ConfigController
 var BlockC BlockController
@@ -25,6 +26,7 @@ var Ah h.AuthHelper
 
 func init() {
 	UserC.Init()
+	UserGroupC.Init()
 	AccessC.Init()
 	LayoutC.Init()
 	PageC.Init()
@@ -131,6 +133,12 @@ func adminDispatch() {
 	AddRoute(fmt.Sprintf("GET|^/%v/user/delete/(\\d)+$", h.GetConfig().AdminRouter), UserC.DeleteAction, emptyMap)
 	AddRoute(fmt.Sprintf("GET,POST|^/%v/user/new$", h.GetConfig().AdminRouter), UserC.NewAction, emptyMap)
 	AddRoute(fmt.Sprintf("GET|^/%v/user/switchlanguage/([a-z])+$", h.GetConfig().AdminRouter), UserC.SwitchLanguageAction, emptyMap)
+
+	//user usergroupaction
+	AddRoute(fmt.Sprintf("GET|^/%v/usergroup/?(index)?$", h.GetConfig().AdminRouter), UserGroupC.ListAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%v/usergroup/edit/(\\d)+$", h.GetConfig().AdminRouter), UserGroupC.EditAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%v/usergroup/delete/(\\d)+$", h.GetConfig().AdminRouter), UserGroupC.DeleteAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%v/usergroup/new$", h.GetConfig().AdminRouter), UserGroupC.NewAction, emptyMap)
 
 	//block useraction
 	AddRoute(fmt.Sprintf("GET|^/%v/block/?(index)?$", h.GetConfig().AdminRouter), BlockC.ListAction, emptyMap)

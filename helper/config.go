@@ -5,31 +5,6 @@ import (
 	"io/ioutil"
 )
 
-type UserGroups []UserGroup
-
-func (ug UserGroups) GetOptions(defOption map[string]string) []map[string]string {
-	var options []map[string]string
-
-	if defOption != nil {
-		options = append(options, defOption)
-	}
-
-	for _, g := range ug {
-		options = append(options, map[string]string{
-			"value": g.Value,
-			"label": g.Label,
-		})
-	}
-
-	return options
-}
-
-type UserGroup struct {
-	Label       string `yml:"label"`
-	Value       string `yml:"value"`
-	Description string `yml:"description"`
-}
-
 type Conf struct {
 	ViewDir    string `yml:"viewdir"`
 	ListenPort string `yml:"listenport"`
@@ -47,7 +22,7 @@ type Conf struct {
 		Image       string `yml:"image"`
 	} `yml:"og"`
 	Environment string `yml:"environment"`
-	Db struct {
+	Db          struct {
 		Environment map[string]struct {
 			Host     string `yml:"host"`
 			Username string `yml:"username"`
@@ -79,10 +54,9 @@ type Conf struct {
 	} `yml:"cache"`
 	AdminRouter  string            `yml:"adminrouter"`
 	ConfigValues map[string]string `yml:"configvalues"`
-	Language struct {
+	Language     struct {
 		Allowed []string `yml:"allowed"`
 	} `yml:"language"`
-	Ug UserGroups `yml:"ug"`
 }
 
 var ConfigFilePath string = "./resource/config.yml"

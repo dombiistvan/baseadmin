@@ -20,6 +20,22 @@ menu:
         url: "user/new"
         visibility: "user/new"
         icon: "fa fa-plus"
+  - label: "UserGroup"
+    group: "usergroup"
+    url: "usergroup/index"
+    icon: "fa fa-user"
+    visibility: "*"
+    children:
+      0:
+        label: "List"
+        url: "usergroup/index"
+        visibility: "usergroup/list"
+        icon: "fa fa-list"
+      1:
+        label: "Add New"
+        url: "usergroup/new"
+        visibility: "usergroup/new"
+        icon: "fa fa-plus"
   - label: "Block"
     group: "block"
     url: "block/index"

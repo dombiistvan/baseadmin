@@ -40,19 +40,6 @@ og:
   title: "Site Default Name"
   description: "Site Default Description"
   image: "/opengraph/default/image.png"
-ug:
-  - value: "usergroup1"
-    label: "User Group 1"
-    description: "User Group 1 Description"
-    default: true
-  - value: "usergroup2"
-    label: "User Group 2"
-    description: "User Group 2 Description"
-    default: false
-  - value: "admin"
-    label: "Admin"
-    description: "Admin"
-    default: false
 language:
   allowed:
     - hu

@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"github.com/go-gorp/gorp"
 	"github.com/valyala/fasthttp"
-	"log"
 	"reflect"
 	"strings"
 	"time"
@@ -34,8 +33,17 @@ type User struct {
 	TokenExpireAt int64     `db:"token_expire_at"`
 	CreatedAt     time.Time `db:"created_at"`
 	UpdatedAt     time.Time `db:"updated_at"`
-	UserGroup     string    `db:"user_group, size:100"`
+	UserGroupId   int64     `db:"user_group_id"`
 	Salt          string    `db:"salt, size:32"`
+}
+
+func (u User) IsAdmin() bool {
+	var adminGroup UserGroup
+
+	adminGroup, err := adminGroup.GetByIdentifier("admin")
+	h.Error(err, "", h.ERROR_LVL_NOTICE)
+
+	return u.UserGroupId == adminGroup.Id
 }
 
 func (u User) GetUser(email string, password string) (User, error) {
@@ -65,26 +73,6 @@ func (u User) GetUser(email string, password string) (User, error) {
 	}
 
 	return User, err
-}
-
-func NewUser(Id int64, Email string, Password string, StatusId int64, SuperAdmin bool, Token string, TokenExpireAt int64, CreatedAt time.Time, UpdatedAt time.Time, UserGroup string) User {
-	return User{
-		Id,
-		Email,
-		Password,
-		StatusId,
-		SuperAdmin,
-		Token,
-		TokenExpireAt,
-		CreatedAt,
-		UpdatedAt,
-		UserGroup,
-		"",
-	}
-}
-
-func NewEmptyUser() User {
-	return NewUser(0, "", "", 0, false, "", 0, time.Time{}, time.Time{}, "")
 }
 
 func (_ User) Get(id int64) (User, error) {
@@ -139,39 +127,6 @@ func (u *User) GetSalt() string {
 	return u.Salt
 }
 
-func (u *User) ModifyRoles(roles []string) {
-	var ur UserRole
-	log.Println(roles)
-	h.PrintlnIf(fmt.Sprintf("Modify user roles %v", u.Id), h.GetConfig().Mode.Debug)
-	if u.Id > 0 {
-		_, err := dbHelper.DbMap.Exec(fmt.Sprintf("DELETE FROM %v WHERE user_id = ?", ur.GetTable()), u.Id)
-		if err != nil {
-			h.Error(err, "", h.ERROR_LVL_ERROR)
-			return
-		}
-	}
-
-	var SkipSubRoles = make(map[string]bool)
-
-	for _, role := range roles {
-		roleExp := strings.Split(role, "/")
-		//if SkipSubRoles[user] exists, skip all user subrole from insert
-		_, ok := SkipSubRoles[roleExp[0]]
-		if ok {
-			continue
-		}
-		if roleExp[1] == "*" {
-			//if user/* is the role, add user to skipsubrole, to skip inserting subroles
-			SkipSubRoles[roleExp[0]] = true
-		}
-		role := NewUserRole(0, u.Id, role)
-		err := dbHelper.DbMap.Insert(&role)
-		if err != nil {
-			h.Error(err, "", h.ERROR_LVL_ERROR)
-		}
-	}
-}
-
 func (u User) BuildStructure(dbmap *gorp.DbMap) {
 	Conf := h.GetConfig()
 
@@ -205,14 +160,29 @@ func (u User) BuildStructure(dbmap *gorp.DbMap) {
 		dbmap.CreateIndex()
 		h.PrintlnIf(fmt.Sprintf("Addig chiefAdmin user to database"), Conf.Mode.Debug)
 		for _, ca := range Conf.ChiefAdmin {
-			chiefAdmin := NewUser(0, ca.Email, ca.Password, STATUS_CONFIRMED_AND_ACTIVE, ca.SuperAdmin, "", 0, time.Time{}, time.Time{}, "admin")
+			var chiefAdmin User
+			var adminGroup UserGroup
+
+			adminGroup, err = adminGroup.GetByIdentifier("admin")
+			h.Error(err, "", h.ERROR_LVL_ERROR)
+
+			chiefAdmin = User{
+				Email:         ca.Email,
+				Password:      ca.Password,
+				StatusId:      STATUS_CONFIRMED_AND_ACTIVE,
+				SuperAdmin:    ca.SuperAdmin,
+				Token:         "",
+				TokenExpireAt: 0,
+				CreatedAt:     time.Time{},
+				UpdatedAt:     time.Time{},
+				UserGroupId:   adminGroup.Id,
+			}
 			dbmap.Insert(&chiefAdmin)
 
 			var rolesSave []string
 			for _, RoleStruct := range h.GetRoles().Roles {
 				rolesSave = append(rolesSave, RoleStruct.Value)
 			}
-			chiefAdmin.ModifyRoles(rolesSave)
 		}
 	}
 }
@@ -220,7 +190,7 @@ func (u User) BuildStructure(dbmap *gorp.DbMap) {
 func (u *User) GetRoles() []string {
 	var UserRoles []UserRole
 	var ReturnRoles []string
-	_, err := dbHelper.DbMap.Select(&UserRoles, "select * from user_role WHERE user_id = ?", u.Id)
+	_, err := dbHelper.DbMap.Select(&UserRoles, "select * from user_role WHERE user_group_id = ?", u.UserGroupId)
 	h.Error(err, "", h.ERROR_LVL_ERROR)
 	for _, role := range UserRoles {
 		ReturnRoles = append(ReturnRoles, role.Role)
@@ -231,40 +201,6 @@ func (u *User) GetRoles() []string {
 func GetUserForm(data map[string]interface{}, action string) Form {
 	var ElementsLeft []FormElement
 	var ElementsRight []FormElement
-	var Checkboxes []FElement.InputCheckbox
-
-	for roleGroup, properties := range h.GetRoles().Roles {
-		checkbox := FElement.InputCheckbox{
-			properties.Title,
-			"role", //fmt.Sprintf("role_%v_all",roleGroup),
-			fmt.Sprintf("role_%v_all", roleGroup),
-			"roles_group",
-			false,
-			false,
-			properties.Value,
-			data["role"].([]string),
-			false,
-		}
-		Checkboxes = append(Checkboxes, checkbox)
-		for sub, role := range properties.Children {
-			checkbox = FElement.InputCheckbox{
-				"&nbsp;&nbsp;&nbsp;&nbsp;" + role.Title,
-				"role", //fmt.Sprintf("role_%v_%v",roleGroup,sub),
-				fmt.Sprintf("role_%v_%v", roleGroup, sub),
-				"roles_entry",
-				false,
-				false,
-				role.Value,
-				data["role"].([]string),
-				false,
-			}
-			Checkboxes = append(Checkboxes, checkbox)
-		}
-	}
-
-	RoleGroup := FElement.CheckboxGroup{"Roles", Checkboxes, FElement.Static{}}
-
-	ElementsRight = append(ElementsRight, RoleGroup)
 
 	var id = FElement.InputHidden{"id", "id", "", false, true, data["id"].(string)}
 	ElementsLeft = append(ElementsLeft, id)
@@ -281,11 +217,12 @@ func GetUserForm(data map[string]interface{}, action string) Form {
 	var options = status.GetOptions(nil)
 
 	var statusInp = FElement.InputSelect{"Status", "status_id", "status_id", "", false, false, data["status_id"].([]string), false, options, ""}
-	ElementsLeft = append(ElementsLeft, statusInp)
+	ElementsRight = append(ElementsRight, statusInp)
 
-	var groups = h.GetConfig().Ug.GetOptions(map[string]string{"label": "Not Set", "value": ""})
-	var groupInp = FElement.InputSelect{"Group", "user_group", "user_group", "", false, false, data["user_group"].([]string), false, groups, ""}
-	ElementsLeft = append(ElementsLeft, groupInp)
+	var ug UserGroup
+	var groups = ug.GetOptions(nil)
+	var groupInp = FElement.InputSelect{"Group", "user_group_id", "user_group", "", false, false, data["user_group_id"].([]string), false, groups, ""}
+	ElementsRight = append(ElementsRight, groupInp)
 
 	var colMap map[string]string = map[string]string{
 		"lg": "6",
@@ -308,7 +245,7 @@ func GetUserForm(data map[string]interface{}, action string) Form {
 	return form
 }
 
-func GetUserFormValidator(ctx *fasthttp.RequestCtx, User User) Validator {
+func GetUserFormValidator(ctx *fasthttp.RequestCtx, User *User) Validator {
 	var Validator Validator
 	Validator.Init(ctx)
 	Validator.AddField("id", map[string]interface{}{
@@ -342,8 +279,7 @@ func GetUserFormValidator(ctx *fasthttp.RequestCtx, User User) Validator {
 			"required": true,
 		},
 	})
-	Validator.AddField("role", map[string]interface{}{
-		"multi": true,
+	Validator.AddField("user_group_id", map[string]interface{}{
 		"roles": map[string]interface{}{
 			"required": true,
 		},

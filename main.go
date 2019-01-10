@@ -17,7 +17,7 @@ func init() {
 	var Conf h.Conf = h.GetConfig()
 	h.PrintlnIf(fmt.Sprintf("Config values are the following: %+v", Conf), Conf.Mode.Debug)
 
-	var tableModels []m.DbInterface = []m.DbInterface{m.Status{}, m.Config{}, m.UserRole{}, m.User{}, m.Ban{}, m.Block{}, m.Request{}, m.Upgrade{}}
+	var tableModels []m.DbInterface = []m.DbInterface{m.Status{}, m.Config{}, m.UserRole{}, m.UserGroup{}, m.User{}, m.Ban{}, m.Block{}, m.Request{}, m.Upgrade{}}
 
 	dbhelper.DbMap.Exec("SET GLOBAL FOREIGN_KEY_CHECKS=0;")
 

@@ -101,7 +101,7 @@ func CanAccess(role string, session *Session) bool {
 	default:
 		roleGroup := strings.Split(role, "/")[0] //for example in case of user/exmample, it is user
 		for _, uRole := range session.GetRoles() {
-			if uRole == role || uRole == fmt.Sprintf("%v/*", roleGroup) {
+			if uRole == role || uRole == fmt.Sprintf("%v/*", roleGroup) || uRole == "*" {
 				PrintlnIf(fmt.Sprintf("Required role: %v, rolegroup: %v, user role: %v", role, roleGroup, uRole), GetConfig().Mode.Debug)
 				return true
 			}

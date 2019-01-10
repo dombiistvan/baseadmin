@@ -87,7 +87,7 @@ func (u *UserController) LoginpostAction(ctx *fasthttp.RequestCtx, session *h.Se
 		}
 
 		h.PrintlnIf("Logging in", h.GetConfig().Mode.Debug)
-		session.Login(user.Id, user.SuperAdmin, user.UserGroup == "admin", user.GetRoles(), false)
+		session.Login(user.Id, user.SuperAdmin, user.IsAdmin(), user.GetRoles(), false)
 		Redirect(ctx, "user/welcome", fasthttp.StatusOK, true, pageInstance)
 		return
 	} else {
@@ -177,8 +177,7 @@ func (u *UserController) EditAction(ctx *fasthttp.RequestCtx, session *h.Session
 				"password":        "",
 				"password_verify": "",
 				"status_id":       []string{strconv.Itoa(int(User.StatusId))},
-				"role":            User.GetRoles(),
-				"user_group":      []string{User.UserGroup},
+				"user_group_id":   []string{strconv.Itoa(int(User.UserGroupId))},
 			}
 		} else {
 			data = map[string]interface{}{
@@ -187,14 +186,13 @@ func (u *UserController) EditAction(ctx *fasthttp.RequestCtx, session *h.Session
 				"password":        h.GetFormData(ctx, "password", false).(string),
 				"password_verify": h.GetFormData(ctx, "password_verify", false).(string),
 				"status_id":       h.GetFormData(ctx, "status_id", true).([]string),
-				"role":            h.GetFormData(ctx, "role", true).([]string),
-				"user_group":      h.GetFormData(ctx, "user_group", true).([]string),
+				"user_group_id":   h.GetFormData(ctx, "user_group_id", true).([]string),
 			}
 		}
 
 		var form = m.GetUserForm(data, fmt.Sprintf("user/edit/%v", data["id"].(string)))
 		if ctx.IsPost() {
-			succ, formErrors := u.saveUser(ctx, session, User)
+			succ, formErrors := u.saveUser(ctx, session, &User)
 			form.SetErrors(formErrors)
 			if succ {
 				session.AddSuccess("User save was successful.")
@@ -263,7 +261,7 @@ func (u *UserController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Sessi
 
 func (u *UserController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
 	if Ah.HasRights(u.AuthAction["new"], session) {
-		var User = m.NewEmptyUser()
+		var User m.User
 		var data map[string]interface{}
 		if !ctx.IsPost() {
 			data = map[string]interface{}{
@@ -272,7 +270,7 @@ func (u *UserController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session,
 				"password":        "",
 				"password_verify": "",
 				"status_id":       []string{string(m.STATUS_DEFAULT_VALUE)},
-				"role":            []string{},
+				"user_group_id":   []string{""},
 			}
 		} else {
 			data = map[string]interface{}{
@@ -281,13 +279,13 @@ func (u *UserController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session,
 				"password":        h.GetFormData(ctx, "password", false).(string),
 				"password_verify": h.GetFormData(ctx, "password_verify", false).(string),
 				"status_id":       h.GetFormData(ctx, "status_id", true).([]string),
-				"role":            h.GetFormData(ctx, "role", true).([]string),
+				"user_group_id":   h.GetFormData(ctx, "user_group_id", true).([]string),
 			}
 		}
 
 		var form = m.GetUserForm(data, "user/new")
 		if ctx.IsPost() {
-			succ, formErrors := u.saveUser(ctx, session, User)
+			succ, formErrors := u.saveUser(ctx, session, &User)
 			form.SetErrors(formErrors)
 			if succ {
 				session.AddSuccess("User save was successful.")
@@ -309,7 +307,7 @@ func (u *UserController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session,
 	}
 }
 
-func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, User m.User) (bool, map[string]error) {
+func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, User *m.User) (bool, map[string]error) {
 	if ctx.IsPost() && ((Ah.HasRights(u.AuthAction["edit"], session) && User.Id != 0) || (Ah.HasRights(u.AuthAction["new"], session) && User.Id == 0)) {
 		var err error
 		var succ bool
@@ -320,7 +318,11 @@ func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, 
 		}
 
 		User.Email = h.GetFormData(ctx, "email", false).(string)
-		User.UserGroup = h.GetFormData(ctx, "user_group", false).(string)
+
+		userGroupId, err := strconv.Atoi(h.GetFormData(ctx, "user_group_id", false).(string))
+		h.Error(err, "", h.ERROR_LVL_WARNING)
+		User.UserGroupId = int64(userGroupId)
+
 		statusId, err := strconv.Atoi(h.GetFormData(ctx, "status_id", false).(string))
 		h.Error(err, "", h.ERROR_LVL_WARNING)
 		User.StatusId = int64(statusId)
@@ -329,9 +331,9 @@ func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, 
 		}
 
 		if User.Id > 0 {
-			_, err = db.DbMap.Update(&User)
+			_, err = db.DbMap.Update(User)
 		} else {
-			err = db.DbMap.Insert(&User)
+			err = db.DbMap.Insert(User)
 		}
 
 		succ = err == nil
@@ -340,7 +342,6 @@ func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, 
 		h.PrintlnIf("Save successful", h.GetConfig().Mode.Debug && succ)
 		h.PrintlnIf("Unsuccessful save", h.GetConfig().Mode.Debug && !succ)
 
-		User.ModifyRoles(h.GetFormData(ctx, "role", true).([]string))
 		return succ, nil
 	} else {
 		return false, nil

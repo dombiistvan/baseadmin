@@ -12,7 +12,7 @@ db:
       host: "localhost"
       name: "baseadmin"
       username: "root"
-      password: "NootNoot"
+      password: ""
   maxidleconns: 20
   maxopenconns: 20
   maxconnlifetimeminutes: 60

@@ -11,13 +11,8 @@ import (
 )
 
 type AccessController struct {
+	Type       string
 	AuthAction map[string][]string
-}
-
-func (a AccessController) New() AccessController {
-	var AccessC AccessController = AccessController{}
-	AccessC.Init()
-	return AccessC
 }
 
 func (a *AccessController) Init() {

@@ -9,10 +9,10 @@ environment: local
 db:
   environment:
     local:
-      host: "dbhost"
-      name: "dbname"
-      username: "dbuser"
-      password: "dbpass"
+      host: "localhost"
+      name: "baseadmin"
+      username: "root"
+      password: "NootNoot"
   maxidleconns: 20
   maxopenconns: 20
   maxconnlifetimeminutes: 60

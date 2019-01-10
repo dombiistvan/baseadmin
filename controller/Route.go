@@ -25,13 +25,13 @@ var Upgrader model.Upgrade
 var Ah h.AuthHelper
 
 func init() {
-	UserC.Init()
-	UserGroupC.Init()
 	AccessC.Init()
 	LayoutC.Init()
+	ConfigC.Init()
+	UserC.Init()
+	UserGroupC.Init()
 	PageC.Init()
 	BlockC.Init()
-	ConfigC.Init()
 
 	dispatchRoutes()
 }

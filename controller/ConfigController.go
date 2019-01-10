@@ -14,18 +14,14 @@ import (
 )
 
 type ConfigController struct {
+	Type       string
 	AuthAction map[string][]string
-}
-
-func (c ConfigController) New() ConfigController {
-	var ConfigC ConfigController = ConfigController{}
-	ConfigC.Init()
-	return ConfigC
 }
 
 func (c *ConfigController) Init() {
 	c.AuthAction = make(map[string][]string)
 	c.AuthAction["index"] = []string{"config/index"}
+	c.Type = "Config"
 }
 
 func (c *ConfigController) IndexAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {

@@ -12,12 +12,7 @@ import (
 type LayoutController struct {
 	AuthAction map[string][]string
 	Layout     string
-}
-
-func (l LayoutController) New() LayoutController {
-	var LayoutC LayoutController = LayoutController{}
-	LayoutC.Init()
-	return LayoutC
+	Type       string
 }
 
 func (l *LayoutController) Init() {

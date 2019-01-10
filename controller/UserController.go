@@ -14,16 +14,12 @@ import (
 )
 
 type UserController struct {
+	Type       string
 	AuthAction map[string][]string
 }
 
-func (u UserController) New() UserController {
-	var UserC UserController = UserController{}
-	UserC.Init()
-	return UserC
-}
-
 func (u *UserController) Init() {
+	u.Type = "User"
 	u.AuthAction = make(map[string][]string)
 	u.AuthAction["login"] = []string{"!@"}
 	u.AuthAction["loginpost"] = []string{"!@"}
@@ -39,11 +35,11 @@ func (u *UserController) Init() {
 
 func (u *UserController) LoginAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
 	if Ah.HasRights(u.AuthAction["login"], session) {
-		pageInstance.Title = "User - Log in"
+		pageInstance.Title = fmt.Sprintf("%s - Log in", u.Type)
 
 		AdminContent := adminview.Content{}
 
-		AdminContent.Title = "User"
+		AdminContent.Title = u.Type
 		AdminContent.SubTitle = "Log in"
 		AdminContent.Content = template.HTML(h.GetScopeTemplateString("user/login.html", adminview.LoginForm{
 			"POST",
@@ -114,11 +110,11 @@ func (u *UserController) ListAction(ctx *fasthttp.RequestCtx, session *h.Session
 		var ul list.UserList
 		ul.Init(ctx, session.GetActiveLang())
 
-		pageInstance.Title = "List Users"
+		pageInstance.Title = fmt.Sprintf("List %ss", u.Type)
 
 		AdminContent := adminview.Content{}
-		AdminContent.Title = "Users"
-		AdminContent.SubTitle = "List Users"
+		AdminContent.Title = u.Type
+		AdminContent.SubTitle = "List"
 		AdminContent.Content = template.HTML(ul.Render(ul.GetToPage()))
 
 		pageInstance.AddContent(h.GetScopeTemplateString("layout/content.html", AdminContent, pageInstance.Scope), "", nil, false, 0)
@@ -130,10 +126,10 @@ func (u *UserController) ListAction(ctx *fasthttp.RequestCtx, session *h.Session
 
 func (u *UserController) WelcomeAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
 	if Ah.HasRights(u.AuthAction["welcome"], session) {
-		pageInstance.Title = "User - Welcome"
+		pageInstance.Title = fmt.Sprintf("%s - Welcome", u.Type)
 
 		AdminContent := adminview.Content{}
-		AdminContent.Title = "User"
+		AdminContent.Title = u.Type
 		AdminContent.SubTitle = "Welcome"
 		AdminContent.Content = template.HTML(h.GetScopeTemplateString("user/welcome.html", nil, pageInstance.Scope))
 		pageInstance.AddContent(h.GetScopeTemplateString("layout/content.html", AdminContent, pageInstance.Scope), "", nil, false, 0)
@@ -201,11 +197,11 @@ func (u *UserController) EditAction(ctx *fasthttp.RequestCtx, session *h.Session
 			}
 		}
 
-		pageInstance.Title = "User - Edit"
+		pageInstance.Title = fmt.Sprintf("%s - Edit", u.Type)
 
 		AdminContent := adminview.Content{}
-		AdminContent.Title = "User"
-		AdminContent.SubTitle = fmt.Sprintf("Edit user %v", User.Email)
+		AdminContent.Title = u.Type
+		AdminContent.SubTitle = "Edit"
 		AdminContent.Content = template.HTML(form.Render())
 
 		pageInstance.AddContent(h.GetScopeTemplateString("layout/content.html", AdminContent, pageInstance.Scope), "", nil, false, 0)
@@ -294,10 +290,10 @@ func (u *UserController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session,
 			}
 		}
 
-		pageInstance.Title = "User - New"
+		pageInstance.Title = fmt.Sprintf("%s - New", u.Type)
 
 		AdminContent := adminview.Content{}
-		AdminContent.Title = "User"
+		AdminContent.Title = u.Type
 		AdminContent.SubTitle = "New"
 		AdminContent.Content = template.HTML(form.Render())
 		pageInstance.AddContent(h.GetScopeTemplateString("layout/content.html", AdminContent, pageInstance.Scope), "", nil, false, 0)

@@ -37,7 +37,7 @@ func (p *Page) AddScript(path string, container string, ifhtml string) {
 	}
 
 	if container != "header" && container != "footer" {
-		helper.Error(errors.New("Script container is not eligible, will not display in pageload"), "", helper.ERROR_LVL_ERROR)
+		helper.Error(errors.New("Script container is not eligible, will not display in pageload"), "", helper.ErrorLvlError)
 	}
 
 	_, ok := p.Scripts[container]

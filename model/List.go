@@ -19,6 +19,7 @@ const DISPLAY_MESSAGE_NO_RESULT = "Unfortunately there are no matching results."
 
 type List struct {
 	Table         string
+	Columns       map[string]string
 	JoinTable     []map[string]string
 	PrimaryKey    []string
 	LanguageModel bool
@@ -44,6 +45,34 @@ func (l *List) Init(ctx *fasthttp.RequestCtx, dbInterface DbInterface, lang stri
 	l.PrimaryKey = dbInterface.GetPrimaryKey()
 	l.LanguageModel = dbInterface.IsLanguageModel()
 	l.Language = lang
+	l.Columns = make(map[string]string)
+	l.AddColumn("m.*", "")
+}
+
+func (l *List) SetColumns(columns map[string]string) {
+	l.Columns = columns
+}
+
+func (l *List) AddColumn(field string, alias string) {
+	l.Columns[field] = alias
+}
+
+func (l List) getColumns() []string {
+	var columns []string
+
+	for f, a := range l.Columns {
+		if a != "" && a != f {
+			columns = append(columns, fmt.Sprintf("%s as %s", f, a))
+		} else {
+			columns = append(columns, f)
+		}
+	}
+
+	return columns
+}
+
+func (l List) GetColumnsSql(escapeFields bool) string {
+	return strings.Join(l.getColumns(), ", ")
 }
 
 func (l *List) SetLimitParam(limitParam string) {
@@ -103,7 +132,7 @@ func (l *List) GetCount() int64 {
 	query := fmt.Sprintf("SELECT COUNT(m.id) FROM %v%v", l.GetTablesSql(), where)
 	h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 	count, err := db.DbMap.SelectInt(query)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return count
 }
 
@@ -119,7 +148,7 @@ func (l *List) AddJoin(joinType string, table string, alias string, on string) {
 }
 
 func (l *List) GetTablesSql() string {
-	var tableSql string = fmt.Sprintf("%v as m", l.Table)
+	var tableSql string = fmt.Sprintf("%s as m", l.Table)
 	for _, tableRow := range l.JoinTable {
 		alias := tableRow["alias"]
 		if alias == tableRow["table"] {

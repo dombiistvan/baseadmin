@@ -48,7 +48,7 @@ func (r Request) BuildStructure(dbmap *gorp.DbMap) {
 		},
 	}
 	tablemap, err := dbmap.TableFor(reflect.TypeOf(Request{}), false)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	for _, index := range indexes {
 		h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
 		tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))

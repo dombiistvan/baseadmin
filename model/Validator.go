@@ -78,7 +78,7 @@ func (v *Validator) Validate() (bool, map[string]error) {
 func (v *Validator) iterateRegexp(postKey []byte, postValue []byte) {
 	var key = string(postKey)
 	matched, err := regexp.MatchString(strings.Replace(v.cKey, "%", ".*", -1), key)
-	h.Error(err, "", h.ERROR_LVL_NOTICE)
+	h.Error(err, "", h.ErrorLvlNotice)
 	if matched {
 		succ, err := v.ValidateField(key, v.Fields[v.cKey])
 		if !succ {
@@ -192,10 +192,11 @@ func (v *Validator) validateUnique(key string, option interface{}, required bool
 	field := uniqOpt["field"].(string)
 	current := uniqOpt["current"].(string) //before save
 
+	//@TODO temporary unique to any entity not only per entity type
 	var strCount = fmt.Sprintf(`SELECT COUNT(id) FROM %v WHERE %v = "%v"`, table, field, postVal)
 	h.PrintlnIf(strCount, h.GetConfig().Mode.Debug)
 	count, err := db.DbMap.SelectInt(strCount)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	var countMax int64 = 0
 	if postVal != "" && current == postVal {
 		countMax = 1
@@ -212,7 +213,7 @@ func (v *Validator) ValidateExtension(key string, option interface{}, required b
 	h.PrintlnIf(fmt.Sprintf("Validating extensions"), h.GetConfig().Mode.Debug)
 
 	file, err := v.ctx.FormFile(key)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	postVal := file.Filename
 	if !required {
 		for _, ev := range v.getEmptyValues() {
@@ -230,7 +231,7 @@ func (v *Validator) ValidateExtension(key string, option interface{}, required b
 		}
 	}
 
-	return false, v.GetErrorToType(key, "unique", fmt.Sprintf(VALIDATION_ERROR_EXTENSION, strings.Join(allowedExts, ",")))
+	return false, v.GetErrorToType(key, "extension", fmt.Sprintf(VALIDATION_ERROR_EXTENSION, strings.Join(allowedExts, ",")))
 }
 
 func (v *Validator) ValidateRequiredMulti(key string, option interface{}) (bool, error) {
@@ -391,7 +392,7 @@ func (v *Validator) getValue(key string, multi bool) interface{} {
 	var postVal string
 	if v.Fields[key]["type"] == "file" {
 		file, err := v.ctx.FormFile(key)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 		postVal = file.Filename
 	} else {
 		postVal = string(v.ctx.FormValue(key))

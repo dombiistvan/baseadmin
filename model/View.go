@@ -67,5 +67,5 @@ func (v View) cache(data ViewInterface, scope string, session *h.Session, ctx *f
 	data = data.Load(session, ctx).(ViewInterface)
 	newContent := h.GetScopeTemplateString(v.template, data, scope)
 	_, err := h.CacheStorage.Set(v.template, v.cacheKeys, v.shelfLife, newContent)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 }

@@ -17,15 +17,31 @@ func init() {
 	var Conf h.Conf = h.GetConfig()
 	h.PrintlnIf(fmt.Sprintf("Config values are the following: %+v", Conf), Conf.Mode.Debug)
 
-	var tableModels []m.DbInterface = []m.DbInterface{m.Status{}, m.Config{}, m.UserRole{}, m.UserGroup{}, m.User{}, m.Ban{}, m.Block{}, m.Request{}, m.Upgrade{}}
+	var tableModels = []m.DbInterface{
+		m.Status{},
+		m.Config{},
+		m.UserRole{},
+		m.UserGroup{},
+		m.User{},
+		m.Ban{},
+		m.Block{},
+		m.Request{},
+		m.Upgrade{},
+		m.EntityType{},
+		m.Entity{},
+		m.Attribute{},
+		m.AttributeOption{},
+		m.EntityAttributeValue{},
+	}
 
-	dbhelper.DbMap.Exec("SET GLOBAL FOREIGN_KEY_CHECKS=0;")
+	_, err := dbhelper.DbMap.Exec("SET GLOBAL FOREIGN_KEY_CHECKS=0;")
+	h.Error(err, "", h.ErrorLvlError)
 
+	h.PrintlnIf("Rebuild table structure because config rebuild flag is true", h.GetConfig().Mode.Rebuild_structure)
 	var tablemap *gorp.TableMap
 	for _, cm := range tableModels {
 		tablemap = dbhelper.DbMap.AddTableWithName(cm, cm.GetTable())
 		tablemap.SetKeys(cm.IsAutoIncrement(), cm.GetPrimaryKey()...)
-		h.PrintlnIf("Rebuild table structure because config rebuild flag is true", h.GetConfig().Mode.Rebuild_structure)
 		if h.GetConfig().Mode.Rebuild_structure {
 			cm.BuildStructure(dbhelper.DbMap)
 		}
@@ -48,7 +64,7 @@ func main() {
 		}
 
 		err := srv.ListenAndServe(fmt.Sprintf(":%s", h.GetConfig().ListenPort))
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 		h.PrintlnIf("The server is listening...", h.GetConfig().Mode.Debug)
 	}()
 }

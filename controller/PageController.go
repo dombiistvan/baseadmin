@@ -11,16 +11,9 @@ type PageController struct {
 	AuthAction map[string][]string
 }
 
-func (p PageController) New() PageController {
-	var PageC PageController = PageController{}
-	PageC.Init()
-	return PageC
-}
-
 func (p *PageController) Init() {
 	p.AuthAction = make(map[string][]string)
 	p.AuthAction["index"] = []string{"*"}
-	p.AuthAction["image"] = []string{"*"}
 }
 
 func (p *PageController) IndexAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {

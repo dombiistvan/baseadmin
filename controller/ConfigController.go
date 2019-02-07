@@ -37,7 +37,7 @@ func (c *ConfigController) IndexAction(ctx *fasthttp.RequestCtx, session *h.Sess
 
 		if ctx.IsPost() {
 			trans, err := db.DbMap.Begin()
-			h.Error(err, "", h.ERROR_LVL_ERROR)
+			h.Error(err, "", h.ErrorLvlError)
 			paths := ctx.PostArgs().PeekMulti("path")
 			values := ctx.PostArgs().PeekMulti("value")
 			for i, v := range paths {
@@ -49,14 +49,14 @@ func (c *ConfigController) IndexAction(ctx *fasthttp.RequestCtx, session *h.Sess
 				)
 				h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 				res, err := trans.Exec(query)
-				h.Error(err, "", h.ERROR_LVL_ERROR)
+				h.Error(err, "", h.ErrorLvlError)
 				ra, err := res.RowsAffected()
 				if ra > 0 {
 					changes++
 				}
 			}
 			err = trans.Commit()
-			h.Error(err, "", h.ERROR_LVL_ERROR)
+			h.Error(err, "", h.ErrorLvlError)
 			session.AddSuccess(fmt.Sprintf("%d changes has been saved.", changes))
 			Redirect(ctx, "config/index", fasthttp.StatusOK, true, pageInstance)
 			return
@@ -66,7 +66,7 @@ func (c *ConfigController) IndexAction(ctx *fasthttp.RequestCtx, session *h.Sess
 		sql := fmt.Sprintf("SELECT * FROM %v ORDER BY `path` ASC", conf.GetTable())
 		h.PrintlnIf(sql, h.GetConfig().Mode.Debug)
 		_, err := db.DbMap.Select(&results, sql)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 		form := model.NewForm("POST", h.GetUrl("config/index", nil, true, "admin"), false, false)
 
 		colmap := map[string]string{"lg": "6", "md": "6", "sm": "12", "xs": "12"}

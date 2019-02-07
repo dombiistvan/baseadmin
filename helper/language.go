@@ -27,6 +27,32 @@ type Language struct {
 	available []string
 }
 
+func (l Language) GetLanguageMenuGroup(session *Session) MenuGroup {
+	langGroup := MenuGroup{
+		"Active Store",
+		"language",
+		"",
+		nil,
+		"fa fa-link",
+		"@a",
+		session.IsLoggedIn() && session.IsAdmin(),
+	}
+
+	langGroup.Children = map[int]MenuItem{}
+	for _, lc := range Lang.GetAvailableLanguageCodes() {
+		langGroup.Children[len(langGroup.Children)] = MenuItem{
+			lc,
+			GetUrl("user/switchlanguage", []string{lc}, false, "admin"),
+			"",
+			"@a",
+			"fa fa-flag",
+			session.IsLoggedIn() && session.IsAdmin(),
+		}
+	}
+
+	return langGroup
+}
+
 func (l *Language) GetStorage() map[string]map[string]string {
 	return l.storage
 }
@@ -39,9 +65,9 @@ func (l *Language) Init() {
 	l.storage = make(map[string]map[string]string)
 	var path string = "./resource/language"
 	dir, err := os.Open(path)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 	files, err := dir.Readdir(0)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 
 	for _, f := range files {
 		if !f.IsDir() {
@@ -52,14 +78,14 @@ func (l *Language) Init() {
 					PrintlnIf(fmt.Sprintf("Parsing language file %s", f.Name()), GetConfig().Mode.Debug)
 
 					data, err := ioutil.ReadFile(path + "/" + f.Name())
-					Error(err, "", ERROR_LVL_ERROR)
+					Error(err, "", ErrorLvlError)
 					if err != nil {
 						continue
 					}
 					var toData map[string]string
 					err = json.Unmarshal(data, &toData)
 					l.storage[mapKey] = toData
-					Error(err, "", ERROR_LVL_ERROR)
+					Error(err, "", ErrorLvlError)
 				}
 			}
 		}

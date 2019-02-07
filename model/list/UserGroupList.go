@@ -80,7 +80,7 @@ func (ugl *UserGroupList) GetAll() []m.UserGroup {
 	sql := fmt.Sprintf("SELECT * FROM %s%s ORDER BY %s %s", ugl.List.Table, where, ugl.List.GetOrder(), ugl.List.GetOrderDir())
 	h.PrintlnIf(sql, h.GetConfig().Mode.Debug)
 	_, err := db.DbMap.Select(&results, sql)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return results
 }
 
@@ -93,6 +93,6 @@ func (ugl *UserGroupList) GetToPage() []m.UserGroup {
 	sql := fmt.Sprintf("SELECT * FROM %s%s ORDER BY %s %s LIMIT %s", ugl.List.Table, where, ugl.List.GetOrder(), ugl.List.GetOrderDir(), ugl.List.GetLimitString())
 	h.PrintlnIf(sql, h.GetConfig().Mode.Debug)
 	_, err := db.DbMap.Select(&results, sql)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return results
 }

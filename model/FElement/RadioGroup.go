@@ -22,10 +22,12 @@ func (rg RadioGroup) Render(errs map[string]error) string {
 
 	replaces["%inputs%"] = ""
 	var inpErrors []error
+	var inputName string
 	for _, v := range rg.Radio {
 		inpError, contains := errs[v.Name]
-		if contains {
+		if contains && inputName != v.Name {
 			inpErrors = append(inpErrors, inpError)
+			inputName = v.Name
 		}
 		replaces["%inputs%"] += "\n" + v.Render(nil)
 	}

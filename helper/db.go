@@ -26,6 +26,6 @@ func AddIndexes(dbmap *gorp.DbMap, table string, indexes map[int]map[string]inte
 		)
 		PrintlnIf(queryString, GetConfig().Mode.Debug)
 		_, err := dbmap.Query(queryString)
-		Error(err, "", ERROR_LVL_ERROR)
+		Error(err, "", ErrorLvlError)
 	}
 }

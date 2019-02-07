@@ -19,14 +19,14 @@ type UserGroup struct {
 	Identifier string `db:"identifier, size:254"`
 }
 
-func (_ UserGroup) Get(id int64) (UserGroup, error) {
+/*func (_ UserGroup) Get(id int64) (UserGroup, error) {
 	var usergroup UserGroup
 	if id == 0 {
 		return usergroup, errors.New(fmt.Sprintf("Could not retrieve usergroup to ID %v", id))
 	}
 
 	err := dbHelper.DbMap.SelectOne(&usergroup, fmt.Sprintf("SELECT * FROM %v WHERE %v = ?", usergroup.GetTable(), usergroup.GetPrimaryKey()[0]), id)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	if err != nil {
 		return usergroup, err
 	}
@@ -36,6 +36,20 @@ func (_ UserGroup) Get(id int64) (UserGroup, error) {
 	}
 
 	return usergroup, nil
+}*/
+
+func (ug *UserGroup) Load(id interface{}) error {
+	err := dbHelper.DbMap.SelectOne(
+		ug,
+		fmt.Sprintf(
+			"SELECT * FROM %s WHERE %s = %v",
+			ug.GetTable(),
+			ug.GetPrimaryKey()[0],
+			id,
+		),
+	)
+
+	return err
 }
 
 func (_ UserGroup) GetByIdentifier(identifier string) (UserGroup, error) {
@@ -45,7 +59,7 @@ func (_ UserGroup) GetByIdentifier(identifier string) (UserGroup, error) {
 	}
 
 	err := dbHelper.DbMap.SelectOne(&usergroup, fmt.Sprintf("SELECT * FROM %v WHERE %s = ?", usergroup.GetTable(), "identifier"), identifier)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	if err != nil {
 		return usergroup, err
 	}
@@ -66,7 +80,7 @@ func (ug *UserGroup) PreUpdate(s gorp.SqlExecutor) error {
 	return nil
 }
 
-func (ug UserGroup) GetOptions(defOption map[string]string) []map[string]string {
+func (ug UserGroup) ToOptions(defOption map[string]string) []map[string]string {
 	var groups = ug.GetAll()
 	var options []map[string]string
 	if defOption != nil {
@@ -87,18 +101,17 @@ func (ug UserGroup) GetAll() []UserGroup {
 	query := fmt.Sprintf("SELECT * FROM %v ORDER BY %v", ug.GetTable(), "name")
 	h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 	_, err := dbHelper.DbMap.Select(&groups, query)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return groups
 }
 
 func (ug *UserGroup) ModifyRoles(roles []string) {
 	var ur UserRole
-	fmt.Println(roles)
 	h.PrintlnIf(fmt.Sprintf("Modify usergroup roles %v", ug.Id), h.GetConfig().Mode.Debug)
 	if ug.Id > 0 {
 		_, err := dbHelper.DbMap.Exec(fmt.Sprintf("DELETE FROM %v WHERE user_group_id = ?", ur.GetTable()), ug.Id)
 		if err != nil {
-			h.Error(err, "", h.ERROR_LVL_ERROR)
+			h.Error(err, "", h.ErrorLvlError)
 			return
 		}
 	}
@@ -111,7 +124,7 @@ func (ug *UserGroup) ModifyRoles(roles []string) {
 			role = UserRole{UserGroupId: ug.Id, Role: strRole}
 			err := dbHelper.DbMap.Insert(&role)
 			if err != nil {
-				h.Error(err, "", h.ERROR_LVL_ERROR)
+				h.Error(err, "", h.ErrorLvlError)
 			}
 			return
 		}
@@ -131,7 +144,7 @@ func (ug *UserGroup) ModifyRoles(roles []string) {
 
 		err := dbHelper.DbMap.Insert(&role)
 		if err != nil {
-			h.Error(err, "", h.ERROR_LVL_ERROR)
+			h.Error(err, "", h.ErrorLvlError)
 		}
 	}
 }
@@ -148,7 +161,7 @@ func (ug UserGroup) BuildStructure(dbmap *gorp.DbMap) {
 		h.PrintlnIf(fmt.Sprintf("Create %v table", ug.GetTable()), Conf.Mode.Rebuild_structure)
 		dbmap.CreateTablesIfNotExists()
 		tablemap, err := dbmap.TableFor(reflect.TypeOf(UserGroup{}), false)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 		for _, index := range indexes {
 			h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
 			tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))
@@ -163,7 +176,7 @@ func (ug UserGroup) BuildStructure(dbmap *gorp.DbMap) {
 		adminGroup.Identifier = "admin"
 
 		err = dbmap.Insert(&adminGroup)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 
 		if err == nil {
 			adminGroup.ModifyRoles([]string{"*"})
@@ -175,7 +188,7 @@ func (ug *UserGroup) GetRoles() []string {
 	var UserRoles []UserRole
 	var ReturnRoles []string
 	_, err := dbHelper.DbMap.Select(&UserRoles, "select * from user_role WHERE user_group_id = ?", ug.Id)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	for _, role := range UserRoles {
 		ReturnRoles = append(ReturnRoles, role.Role)
 	}

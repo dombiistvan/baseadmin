@@ -80,7 +80,7 @@ func (bl *BlockList) GetAll() []m.Block {
 	sql := fmt.Sprintf("SELECT * FROM %v%v ORDER BY %v %v", bl.List.Table, where, bl.List.GetOrder(), bl.List.GetOrderDir())
 	h.PrintlnIf(sql, h.GetConfig().Mode.Debug)
 	_, err := db.DbMap.Select(&results, sql)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return results
 }
 
@@ -93,6 +93,6 @@ func (bl *BlockList) GetToPage() []m.Block {
 	sql := fmt.Sprintf("SELECT * FROM %v%v ORDER BY %v %v LIMIT %v", bl.List.Table, where, bl.List.GetOrder(), bl.List.GetOrderDir(), bl.List.GetLimitString())
 	h.PrintlnIf(sql, h.GetConfig().Mode.Debug)
 	_, err := db.DbMap.Select(&results, sql)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return results
 }

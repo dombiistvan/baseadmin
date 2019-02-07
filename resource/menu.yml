@@ -24,7 +24,7 @@ menu:
     group: "usergroup"
     url: "usergroup/index"
     icon: "fa fa-user"
-    visibility: "*"
+    visibility: "@a"
     children:
       0:
         label: "List"
@@ -34,7 +34,55 @@ menu:
       1:
         label: "Add New"
         url: "usergroup/new"
-        visibility: "usergroup/new"
+        visibility: "usergroup/edit"
+        icon: "fa fa-plus"
+  - label: "Entity Type"
+    group: "entity_type"
+    url: "entity_type/index"
+    icon: "fa fa-user"
+    visibility: "@a"
+    children:
+      0:
+        label: "List"
+        url: "entity_type/index"
+        visibility: "entity_type/list"
+        icon: "fa fa-list"
+      1:
+        label: "Add New"
+        url: "entity_type/new"
+        visibility: "entity_type/edit"
+        icon: "fa fa-plus"
+  - label: "Attribute"
+    group: "attribute"
+    url: "attribute/index"
+    icon: "fa fa-wrench"
+    visibility: "@a"
+    children:
+      0:
+        label: "List"
+        url: "attribute/index"
+        visibility: "attribute/list"
+        icon: "fa fa-list"
+      1:
+        label: "Add New"
+        url: "attribute/new"
+        visibility: "attribute/edit"
+        icon: "fa fa-plus"
+  - label: "Attribute Options"
+    group: "attribute_options"
+    url: "attribute_option/index"
+    icon: "fa fa-wrench"
+    visibility: "@a"
+    children:
+      0:
+        label: "List"
+        url: "attribute_option/index"
+        visibility: "attribute/list"
+        icon: "fa fa-list"
+      1:
+        label: "Add New"
+        url: "attribute_option/new"
+        visibility: "attribute/edit"
         icon: "fa fa-plus"
   - label: "Block"
     group: "block"
@@ -50,7 +98,7 @@ menu:
       1:
         label: "Add New"
         url: "block/new"
-        visibility: "block/new"
+        visibility: "block/edit"
         icon: "fa fa-plus"
   - label: "Config"
     group: "config"

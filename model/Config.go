@@ -5,7 +5,6 @@ import (
 	h "baseadmin/helper"
 	"baseadmin/model/FElement"
 	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/go-gorp/gorp"
 	"github.com/valyala/fasthttp"
@@ -21,18 +20,32 @@ type Config struct {
 func (c Config) GetAll() []Config {
 	var Configs []Config
 	_, err := db.DbMap.Select(&Configs, fmt.Sprintf("select * from %v order by %v", c.GetTable(), c.GetPrimaryKey()[0]))
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return Configs
 }
 
-func (_ Config) Get(ConfigId int64) (Config, error) {
+func (c *Config) Load(id interface{}) error {
+	err := db.DbMap.SelectOne(
+		c,
+		fmt.Sprintf(
+			"SELECT * FROM %s WHERE %s = %v",
+			c.GetTable(),
+			c.GetPrimaryKey()[0],
+			id,
+		),
+	)
+
+	return err
+}
+
+/*func (_ Config) Get(ConfigId int64) (Config, error) {
 	var Config Config
 	if ConfigId == 0 {
 		return Config, errors.New(fmt.Sprintf("Could not retrieve Config to ID %v", ConfigId))
 	}
 
 	err := db.DbMap.SelectOne(&Config, fmt.Sprintf("SELECT * FROM %v WHERE %v = ?", Config.GetTable(), Config.GetPrimaryKey()[0]), ConfigId)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	if err != nil {
 		return Config, err
 	}
@@ -42,7 +55,7 @@ func (_ Config) Get(ConfigId int64) (Config, error) {
 	}
 
 	return Config, nil
-}
+}*/
 
 func (_ Config) IsLanguageModel() bool {
 	return false
@@ -127,7 +140,7 @@ func (c Config) GetValueByPath(path string) string {
 	var query string = fmt.Sprintf("SELECT `value` FROM %v WHERE %v = ?", c.GetTable(), "path")
 	h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 	value, err := db.DbMap.SelectStr(query, path)
-	h.Error(err, "", h.ERROR_LVL_WARNING)
+	h.Error(err, "", h.ErrorLvlWarning)
 
 	return value
 }
@@ -152,7 +165,7 @@ func (c Config) BuildStructure(dbmap *gorp.DbMap) {
 		},
 	}
 	tablemap, err := dbmap.TableFor(reflect.TypeOf(Config{}), false)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	for _, index := range indexes {
 		h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
 		tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))
@@ -163,7 +176,7 @@ func (c Config) BuildStructure(dbmap *gorp.DbMap) {
 		conf.Path = path
 		conf.Value = val
 		err = db.DbMap.Insert(&conf)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 	}
 
 	dbmap.CreateIndex()

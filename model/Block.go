@@ -5,7 +5,6 @@ import (
 	h "baseadmin/helper"
 	"baseadmin/model/FElement"
 	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/go-gorp/gorp"
 	"github.com/valyala/fasthttp"
@@ -22,18 +21,32 @@ type Block struct {
 func (b Block) GetAll() []Block {
 	var blocks []Block
 	_, err := db.DbMap.Select(&blocks, fmt.Sprintf("select * from %v order by %v", b.GetTable(), b.GetPrimaryKey()[0]))
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return blocks
 }
 
-func (_ Block) Get(blockId int64) (Block, error) {
+func (b *Block) Load(id interface{}) error {
+	err := db.DbMap.SelectOne(
+		b,
+		fmt.Sprintf(
+			"SELECT * FROM %s WHERE %s = %v",
+			b.GetTable(),
+			b.GetPrimaryKey()[0],
+			id,
+		),
+	)
+
+	return err
+}
+
+/*func (_ Block) Get(blockId int64) (Block, error) {
 	var block Block
 	if blockId == 0 {
 		return block, errors.New(fmt.Sprintf("Could not retrieve block to ID %v", blockId))
 	}
 
 	err := db.DbMap.SelectOne(&block, fmt.Sprintf("SELECT * FROM %v WHERE %v = ?", block.GetTable(), block.GetPrimaryKey()[0]), blockId)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	if err != nil {
 		return block, err
 	}
@@ -43,7 +56,7 @@ func (_ Block) Get(blockId int64) (Block, error) {
 	}
 
 	return block, nil
-}
+}*/
 
 func (_ Block) IsLanguageModel() bool {
 	return true
@@ -94,7 +107,7 @@ func NewEmptyBlock() Block {
 	return NewBlock(0, "", "", h.DefLang)
 }
 
-func GetBlockFormValidator(ctx *fasthttp.RequestCtx, Block Block) Validator {
+func GetBlockFormValidator(ctx *fasthttp.RequestCtx, Block *Block) Validator {
 	var Validator Validator
 	Validator.Init(ctx)
 
@@ -107,8 +120,8 @@ func GetBlockFormValidator(ctx *fasthttp.RequestCtx, Block Block) Validator {
 		"roles": map[string]interface{}{
 			"required": true,
 			"format": map[string]interface{}{
-				"type":          "regexp",
-				"patternregexp": "^([a-zA-Z0-9\\-\\_]*)+$",
+				"type":    ValidationFormatRegexp,
+				"pattern": "^([a-zA-Z0-9\\-\\_]*)+$",
 			},
 		},
 	})
@@ -152,7 +165,7 @@ func (b Block) BuildStructure(dbmap *gorp.DbMap) {
 		},
 	}
 	tablemap, err := dbmap.TableFor(reflect.TypeOf(Block{}), false)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	for _, index := range indexes {
 		h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
 		tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))
@@ -169,13 +182,13 @@ func (b Block) BuildStructure(dbmap *gorp.DbMap) {
 	for k, lMap := range blockCont {
 		for lk, c := range lMap {
 			block, err := b.GetByIdentifier(k, lk)
-			h.Error(err, "", h.ERROR_LVL_ERROR)
+			h.Error(err, "", h.ErrorLvlError)
 			if block.Id == 0 {
 				block.Identifier = k
 				block.Lc = lk
 				block.Content = c
 				err := dbmap.Insert(&block)
-				h.Error(err, "", h.ERROR_LVL_ERROR)
+				h.Error(err, "", h.ErrorLvlError)
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package controller
 
 import (
 	h "baseadmin/helper"
+	"baseadmin/model"
 	"baseadmin/model/view"
 	adminview "baseadmin/model/view/admin"
 	"fmt"
@@ -12,7 +13,6 @@ import (
 type LayoutController struct {
 	AuthAction map[string][]string
 	Layout     string
-	Type       string
 }
 
 func (l *LayoutController) Init() {
@@ -51,7 +51,16 @@ func (l *LayoutController) prepareAdminView(ctx *fasthttp.RequestCtx, session *h
 		pageInstance.AddAdminScripts()
 		pageInstance.AddAdminStylesheets()
 		pageInstance.AddDefaultMetaData()
-		pageInstance.AddContent(h.GetScopeTemplateString("layout/menu.html", h.GetMenu(session), pageInstance.Scope), "div", map[string]string{"id": "wrapper"}, false, 0)
+
+		menu := h.GetMenu(session)
+
+		for _, emg := range model.GetEntityMenuGroups(session) {
+			menu.AddMenuGroup(emg)
+		}
+
+		menu.AddMenuGroup(h.Lang.GetLanguageMenuGroup(session))
+
+		pageInstance.AddContent(h.GetScopeTemplateString("layout/menu.html", menu, pageInstance.Scope), "div", map[string]string{"id": "wrapper"}, false, 0)
 		pageInstance.AddContent(h.GetScopeTemplateString("layout/messages.html", adminview.Messages{session.GetErrors(), session.GetSuccesses()}, pageInstance.Scope), "div", map[string]string{"id": "page-wrapper"}, false, 0)
 	}
 }
@@ -86,7 +95,7 @@ func (l *LayoutController) RenderAction(ctx *fasthttp.RequestCtx, session *h.Ses
 	independent, ok := routeMap["independent"]
 	if !ok || !independent.(bool) {
 		_, err := ctx.WriteString(h.GetScopeTemplateString(fmt.Sprintf("layout/%v", pageInstance.Layout), pageInstance, pageInstance.Scope))
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 	}
 	return
 }

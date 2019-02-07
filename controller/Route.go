@@ -20,6 +20,10 @@ var PageC PageController
 var ConfigC ConfigController
 var BlockC BlockController
 var LayoutC LayoutController
+var EntityTypeC EntityTypeController
+var AttributeC AttributeController
+var AttributeOptionC AttributeOptionController
+
 var Upgrader model.Upgrade
 
 var Ah h.AuthHelper
@@ -32,6 +36,9 @@ func init() {
 	UserGroupC.Init()
 	PageC.Init()
 	BlockC.Init()
+	EntityTypeC.Init()
+	AttributeC.Init()
+	AttributeOptionC.Init()
 
 	dispatchRoutes()
 }
@@ -122,32 +129,76 @@ func dispatchRoutes() {
 func adminDispatch() {
 	emptyMap := map[string]interface{}{}
 	//user login, logout, loginpost
-	AddRoute(fmt.Sprintf("GET|^/%v/user/login$", h.GetConfig().AdminRouter), UserC.LoginAction, emptyMap)
-	AddRoute(fmt.Sprintf("POST|^/%v/user/loginpost$", h.GetConfig().AdminRouter), UserC.LoginpostAction, emptyMap)
-	AddRoute(fmt.Sprintf("GET|^/%v/user/welcome$", h.GetConfig().AdminRouter), UserC.WelcomeAction, emptyMap)
-	AddRoute(fmt.Sprintf("POST|^/%v/user/logout$", h.GetConfig().AdminRouter), UserC.LogoutAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/user/login/?$", h.GetConfig().AdminRouter), UserC.LoginAction, emptyMap)
+	AddRoute(fmt.Sprintf("POST|^/%s/user/loginpost/?$", h.GetConfig().AdminRouter), UserC.LoginpostAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/user/welcome/?$", h.GetConfig().AdminRouter), UserC.WelcomeAction, emptyMap)
+	AddRoute(fmt.Sprintf("POST|^/%s/user/logout/?$", h.GetConfig().AdminRouter), UserC.LogoutAction, emptyMap)
 
 	//user useraction
-	AddRoute(fmt.Sprintf("GET|^/%v/user/?(index)?$", h.GetConfig().AdminRouter), UserC.ListAction, emptyMap)
-	AddRoute(fmt.Sprintf("GET,POST|^/%v/user/edit/(\\d)+$", h.GetConfig().AdminRouter), UserC.EditAction, emptyMap)
-	AddRoute(fmt.Sprintf("GET|^/%v/user/delete/(\\d)+$", h.GetConfig().AdminRouter), UserC.DeleteAction, emptyMap)
-	AddRoute(fmt.Sprintf("GET,POST|^/%v/user/new$", h.GetConfig().AdminRouter), UserC.NewAction, emptyMap)
-	AddRoute(fmt.Sprintf("GET|^/%v/user/switchlanguage/([a-z])+$", h.GetConfig().AdminRouter), UserC.SwitchLanguageAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/user(/index)?/?$", h.GetConfig().AdminRouter), UserC.ListAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/user/edit/(\\d)+$", h.GetConfig().AdminRouter), UserC.EditAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/user/delete/(\\d)+$", h.GetConfig().AdminRouter), UserC.DeleteAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/user/new$", h.GetConfig().AdminRouter), UserC.NewAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/user/switchlanguage/([a-z])+$", h.GetConfig().AdminRouter), UserC.SwitchLanguageAction, emptyMap)
 
 	//user usergroupaction
-	AddRoute(fmt.Sprintf("GET|^/%v/usergroup/?(index)?$", h.GetConfig().AdminRouter), UserGroupC.ListAction, emptyMap)
-	AddRoute(fmt.Sprintf("GET,POST|^/%v/usergroup/edit/(\\d)+$", h.GetConfig().AdminRouter), UserGroupC.EditAction, emptyMap)
-	AddRoute(fmt.Sprintf("GET|^/%v/usergroup/delete/(\\d)+$", h.GetConfig().AdminRouter), UserGroupC.DeleteAction, emptyMap)
-	AddRoute(fmt.Sprintf("GET,POST|^/%v/usergroup/new$", h.GetConfig().AdminRouter), UserGroupC.NewAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/usergroup(/index)?/?$", h.GetConfig().AdminRouter), UserGroupC.ListAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/usergroup/edit/(\\d)+$", h.GetConfig().AdminRouter), UserGroupC.EditAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/usergroup/delete/(\\d)+$", h.GetConfig().AdminRouter), UserGroupC.DeleteAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/usergroup/new$", h.GetConfig().AdminRouter), UserGroupC.NewAction, emptyMap)
 
 	//block useraction
-	AddRoute(fmt.Sprintf("GET|^/%v/block/?(index)?$", h.GetConfig().AdminRouter), BlockC.ListAction, emptyMap)
-	AddRoute(fmt.Sprintf("GET,POST|^/%v/block/edit/(\\d)+$", h.GetConfig().AdminRouter), BlockC.EditAction, emptyMap)
-	AddRoute(fmt.Sprintf("GET|^/%v/block/delete/(\\d)+$", h.GetConfig().AdminRouter), BlockC.DeleteAction, emptyMap)
-	AddRoute(fmt.Sprintf("GET,POST|^/%v/block/new$", h.GetConfig().AdminRouter), BlockC.NewAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/block(/index)?/?$", h.GetConfig().AdminRouter), BlockC.ListAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/block/edit/(\\d)+$", h.GetConfig().AdminRouter), BlockC.EditAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/block/delete/(\\d)+$", h.GetConfig().AdminRouter), BlockC.DeleteAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/block/new$", h.GetConfig().AdminRouter), BlockC.NewAction, emptyMap)
+
+	//entity type
+	AddRoute(fmt.Sprintf("GET|^/%s/entity_type(/index)?/?$", h.GetConfig().AdminRouter), EntityTypeC.ListAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/entity_type/edit/(\\d)+$", h.GetConfig().AdminRouter), EntityTypeC.EditAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/entity_type/delete/(\\d)+$", h.GetConfig().AdminRouter), EntityTypeC.DeleteAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/entity_type/new$", h.GetConfig().AdminRouter), EntityTypeC.NewAction, emptyMap)
+
+	//attribute
+	AddRoute(fmt.Sprintf("GET|^/%s/attribute(/index)?/?$", h.GetConfig().AdminRouter), AttributeC.ListAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/attribute/edit/(\\d)+$", h.GetConfig().AdminRouter), AttributeC.EditAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/attribute/delete/(\\d)+$", h.GetConfig().AdminRouter), AttributeC.DeleteAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/attribute/new$", h.GetConfig().AdminRouter), AttributeC.NewAction, emptyMap)
+
+	//attribute option
+	AddRoute(fmt.Sprintf("GET|^/%s/attribute_option(/index)?/?$", h.GetConfig().AdminRouter), AttributeOptionC.ListAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/attribute_option/edit/(\\d)+/?$", h.GetConfig().AdminRouter), AttributeOptionC.EditAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/attribute_option/delete/(\\d)+/?$", h.GetConfig().AdminRouter), AttributeOptionC.DeleteAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/attribute_option/new/?$", h.GetConfig().AdminRouter), AttributeOptionC.NewAction, emptyMap)
 
 	//config useraction
-	AddRoute(fmt.Sprintf("GET,POST|^/%v/config/?(index)?$", h.GetConfig().AdminRouter), ConfigC.IndexAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/config(/index)?/?$", h.GetConfig().AdminRouter), ConfigC.IndexAction, emptyMap)
+
+	//specific entity types
+	AddRoute(fmt.Sprintf("GET|^/%s/entity/([^/]+)*(/index)?/?$", h.GetConfig().AdminRouter), EntityTypeC.EntityListAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/entity/([^/]+)*/edit/(\\d)+/?$", h.GetConfig().AdminRouter), EntityTypeC.EntityEditAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET,POST|^/%s/entity/([^/]+)*/new/?$", h.GetConfig().AdminRouter), EntityTypeC.EntityNewAction, emptyMap)
+	AddRoute(fmt.Sprintf("GET|^/%s/entity/([^/]+)*/delete/(\\d)+/?$", h.GetConfig().AdminRouter), EntityTypeC.EntityDeleteAction, emptyMap)
+}
+
+func GetReservedKeys() []string {
+	var keys []string = []string{
+		"block",
+		"user",
+		"usergroup",
+		"entity_type",
+		"attribute",
+		"attribute_option",
+		"config",
+	}
+
+	var et model.EntityType
+
+	for _, v := range et.GetAll() {
+		keys = append(keys, v.Code)
+	}
+
+	return keys
 }
 
 func frontendDispatch() {

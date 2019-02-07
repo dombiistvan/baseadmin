@@ -19,6 +19,9 @@ type Static struct {
 }
 
 func (s Static) Render(errs map[string]error) string {
+	if s.Name == "" && s.Label == "" && s.Id == "" && s.Value == "" && s.Value == "" {
+		return ""
+	}
 	h.PrintlnIf("Rendering input", h.GetConfig().Mode.Debug)
 	var replaces map[string]string = make(map[string]string)
 	output := STATIC_TEMPLATE

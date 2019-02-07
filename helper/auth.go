@@ -37,26 +37,28 @@ func (a *AuthHelper) HasRights(requiredRoles []string, session *Session) bool {
 		return true
 	}
 
+	session.AddError("You dont have access to the requested URL.")
+
 	return false
 }
 
 func GetRoles() RolesStruct {
 	succ, err := parseRolesConfig()
 	if nil != err || !succ {
-		Error(err, "Could not retrieve roles config", ERROR_LVL_ERROR)
+		Error(err, "Could not retrieve roles config", ErrorLvlError)
 	}
 	return Roles
 }
 
 func parseRolesConfig() (bool, error) {
 	dat, err := ioutil.ReadFile(RolesConfigPath)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 	if err != nil {
 		return false, err
 	}
 
 	err = yaml.Unmarshal(dat, &Roles)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 	if err != nil {
 		return false, err
 	}
@@ -87,8 +89,14 @@ func CanAccess(role string, session *Session) bool {
 		}
 		break
 	case "@a":
-		PrintlnIf("Loggedin user is allowed", GetConfig().Mode.Debug)
+		PrintlnIf("Logged in admin user is allowed", GetConfig().Mode.Debug)
 		if session.IsAdmin() {
+			return true
+		}
+		break
+	case "!@a":
+		PrintlnIf("Not logged in admin user is allowed", GetConfig().Mode.Debug)
+		if !session.IsAdmin() {
 			return true
 		}
 		break

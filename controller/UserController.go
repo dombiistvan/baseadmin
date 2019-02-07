@@ -19,18 +19,21 @@ type UserController struct {
 }
 
 func (u *UserController) Init() {
-	u.Type = "User"
 	u.AuthAction = make(map[string][]string)
-	u.AuthAction["login"] = []string{"!@"}
-	u.AuthAction["loginpost"] = []string{"!@"}
-	u.AuthAction["logout"] = []string{"@"}
+
+	u.AuthAction["login"] = []string{"!@a"}
+	u.AuthAction["loginpost"] = []string{"!@a"}
+	u.AuthAction["logout"] = []string{"@a"}
+	u.AuthAction["welcome"] = []string{"@a"}
+
 	u.AuthAction["edit"] = []string{"user/edit"}
+	u.AuthAction["new"] = []string{"user/edit"}
+	u.AuthAction["save"] = []string{"user/edit"}
+
 	u.AuthAction["delete"] = []string{"user/delete"}
-	u.AuthAction["save"] = []string{"user/edit", "user/new"}
-	u.AuthAction["new"] = []string{"user/new"}
 	u.AuthAction["list"] = []string{"user/list"}
-	u.AuthAction["welcome"] = []string{"@"}
-	u.AuthAction["switchlanguage"] = []string{"@"}
+
+	u.Type = "User"
 }
 
 func (u *UserController) LoginAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
@@ -151,15 +154,18 @@ func (u *UserController) EditAction(ctx *fasthttp.RequestCtx, session *h.Session
 		}
 
 		var user m.User
-		User, err := user.Get(userId)
+		var err error
+
+		err = user.Load(id)
+
 		if err != nil {
 			session.AddError(err.Error())
-			h.Error(err, "", h.ERROR_LVL_WARNING)
+			h.Error(err, "", h.ErrorLvlWarning)
 			Redirect(ctx, "user/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
 
-		if User.SuperAdmin && !session.IsSuperAdmin() {
+		if user.SuperAdmin && !session.IsSuperAdmin() {
 			session.AddError("Nice Try, but you are not a superadmin, to edit another. :)")
 			Redirect(ctx, "user/index", fasthttp.StatusForbidden, true, pageInstance)
 			return
@@ -168,12 +174,12 @@ func (u *UserController) EditAction(ctx *fasthttp.RequestCtx, session *h.Session
 		var data map[string]interface{}
 		if !ctx.IsPost() {
 			data = map[string]interface{}{
-				"id":              strconv.Itoa(int(User.Id)),
-				"email":           User.Email,
+				"id":              strconv.Itoa(int(user.Id)),
+				"email":           user.Email,
 				"password":        "",
 				"password_verify": "",
-				"status_id":       []string{strconv.Itoa(int(User.StatusId))},
-				"user_group_id":   []string{strconv.Itoa(int(User.UserGroupId))},
+				"status_id":       []string{strconv.Itoa(int(user.StatusId))},
+				"user_group_id":   []string{strconv.Itoa(int(user.UserGroupId))},
 			}
 		} else {
 			data = map[string]interface{}{
@@ -181,14 +187,14 @@ func (u *UserController) EditAction(ctx *fasthttp.RequestCtx, session *h.Session
 				"email":           h.GetFormData(ctx, "email", false).(string),
 				"password":        h.GetFormData(ctx, "password", false).(string),
 				"password_verify": h.GetFormData(ctx, "password_verify", false).(string),
-				"status_id":       h.GetFormData(ctx, "status_id", true).([]string),
-				"user_group_id":   h.GetFormData(ctx, "user_group_id", true).([]string),
+				"status_id":       h.GetFormData(ctx, "status_id", false).(string),
+				"user_group_id":   h.GetFormData(ctx, "user_group_id", false).(string),
 			}
 		}
 
 		var form = m.GetUserForm(data, fmt.Sprintf("user/edit/%v", data["id"].(string)))
 		if ctx.IsPost() {
-			succ, formErrors := u.saveUser(ctx, session, &User)
+			succ, formErrors := u.saveUser(ctx, session, &user)
 			form.SetErrors(formErrors)
 			if succ {
 				session.AddSuccess("User save was successful.")
@@ -223,23 +229,26 @@ func (u *UserController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Sessi
 		}
 
 		var user m.User
-		User, err := user.Get(userId)
+		var err error
+
+		err = user.Load(userId)
+
 		if err != nil {
 			session.AddError(err.Error())
-			h.Error(err, "", h.ERROR_LVL_WARNING)
+			h.Error(err, "", h.ErrorLvlWarning)
 			Redirect(ctx, "user/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
 
-		if User.SuperAdmin && !session.IsSuperAdmin() {
+		if user.SuperAdmin && !session.IsSuperAdmin() {
 			session.AddError("Nice Try, but you are not a superadmin, to delete another. :)")
 			Redirect(ctx, "user/index", fasthttp.StatusForbidden, true, pageInstance)
 			return
 		}
 
-		emailAddress := User.Email
-		count, err := db.DbMap.Delete(&User)
-		h.Error(err, "", h.ERROR_LVL_WARNING)
+		emailAddress := user.Email
+		count, err := db.DbMap.Delete(&user)
+		h.Error(err, "", h.ErrorLvlWarning)
 		if err != nil {
 			session.AddError("Could not delete user.")
 			Redirect(ctx, "user/index", fasthttp.StatusBadRequest, true, pageInstance)
@@ -265,8 +274,8 @@ func (u *UserController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session,
 				"email":           "",
 				"password":        "",
 				"password_verify": "",
-				"status_id":       []string{string(m.STATUS_DEFAULT_VALUE)},
-				"user_group_id":   []string{""},
+				"status_id":       string(m.STATUS_DEFAULT_VALUE),
+				"user_group_id":   "",
 			}
 		} else {
 			data = map[string]interface{}{
@@ -274,8 +283,8 @@ func (u *UserController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session,
 				"email":           h.GetFormData(ctx, "email", false).(string),
 				"password":        h.GetFormData(ctx, "password", false).(string),
 				"password_verify": h.GetFormData(ctx, "password_verify", false).(string),
-				"status_id":       h.GetFormData(ctx, "status_id", true).([]string),
-				"user_group_id":   h.GetFormData(ctx, "user_group_id", true).([]string),
+				"status_id":       h.GetFormData(ctx, "status_id", false).(string),
+				"user_group_id":   h.GetFormData(ctx, "user_group_id", false).(string),
 			}
 		}
 
@@ -304,7 +313,7 @@ func (u *UserController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session,
 }
 
 func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, User *m.User) (bool, map[string]error) {
-	if ctx.IsPost() && ((Ah.HasRights(u.AuthAction["edit"], session) && User.Id != 0) || (Ah.HasRights(u.AuthAction["new"], session) && User.Id == 0)) {
+	if ctx.IsPost() && Ah.HasRights(u.AuthAction["save"], session) {
 		var err error
 		var succ bool
 		var Validator = m.GetUserFormValidator(ctx, User)
@@ -316,11 +325,11 @@ func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, 
 		User.Email = h.GetFormData(ctx, "email", false).(string)
 
 		userGroupId, err := strconv.Atoi(h.GetFormData(ctx, "user_group_id", false).(string))
-		h.Error(err, "", h.ERROR_LVL_WARNING)
+		h.Error(err, "", h.ErrorLvlWarning)
 		User.UserGroupId = int64(userGroupId)
 
 		statusId, err := strconv.Atoi(h.GetFormData(ctx, "status_id", false).(string))
-		h.Error(err, "", h.ERROR_LVL_WARNING)
+		h.Error(err, "", h.ErrorLvlWarning)
 		User.StatusId = int64(statusId)
 		if h.GetFormData(ctx, "password", false).(string) != "" {
 			User.Password = h.GetFormData(ctx, "password", false).(string)
@@ -333,7 +342,7 @@ func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, 
 		}
 
 		succ = err == nil
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 
 		h.PrintlnIf("Save successful", h.GetConfig().Mode.Debug && succ)
 		h.PrintlnIf("Unsuccessful save", h.GetConfig().Mode.Debug && !succ)

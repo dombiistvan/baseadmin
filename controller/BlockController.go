@@ -15,21 +15,19 @@ import (
 
 type BlockController struct {
 	AuthAction map[string][]string
-}
-
-func (b BlockController) New() BlockController {
-	var BlockC BlockController = BlockController{}
-	BlockC.Init()
-	return BlockC
+	Type       string
 }
 
 func (b *BlockController) Init() {
 	b.AuthAction = make(map[string][]string)
 	b.AuthAction["edit"] = []string{"block/edit"}
+	b.AuthAction["new"] = []string{"block/edit"}
+	b.AuthAction["save"] = []string{"block/edit"}
+
 	b.AuthAction["delete"] = []string{"block/delete"}
-	b.AuthAction["save"] = []string{"block/edit", "block/new"}
-	b.AuthAction["new"] = []string{"block/new"}
 	b.AuthAction["list"] = []string{"block/list"}
+
+	b.Type = "Block"
 }
 
 func (b *BlockController) ListAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
@@ -39,11 +37,11 @@ func (b *BlockController) ListAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 	}
 	var bl list.BlockList
 	bl.Init(ctx, session.GetActiveLang())
-	pageInstance.Title = "List Blocks"
+	pageInstance.Title = fmt.Sprintf("List %s", b.Type)
 
 	AdminContent := admin.Content{}
-	AdminContent.Title = "Blocks"
-	AdminContent.SubTitle = "List Blocks"
+	AdminContent.Title = b.Type
+	AdminContent.SubTitle = "List"
 
 	AdminContent.Content = template.HTML(bl.Render(bl.GetToPage()))
 	pageInstance.AddContent(h.GetScopeTemplateString("layout/content.html", AdminContent, pageInstance.Scope), "", nil, false, 0)
@@ -57,12 +55,11 @@ func (b *BlockController) EditAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 	}
 	//azért nem kell vizsgálni az errort, mert a request reguláris kifejezése csak akkor hozza ide, ha a végén \d van :)
 	var id, _ = strconv.Atoi(h.GetParamFromCtxPath(ctx, 3, ""))
-	var blockId = int64(id)
-	var ModelBlock m.Block
-	Block, err := ModelBlock.Get(blockId)
+	var block m.Block
+	err := block.Load(id)
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ERROR_LVL_WARNING)
+		h.Error(err, "", h.ErrorLvlWarning)
 		Redirect(ctx, "block/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
@@ -70,10 +67,10 @@ func (b *BlockController) EditAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 	var data map[string]interface{}
 	if !ctx.IsPost() {
 		data = map[string]interface{}{
-			"id":         strconv.Itoa(int(Block.Id)),
-			"identifier": Block.Identifier,
-			"content":    Block.Content,
-			"lc":         Block.Lc,
+			"id":         block.Id,
+			"identifier": block.Identifier,
+			"content":    block.Content,
+			"lc":         block.Lc,
 		}
 	} else {
 		data = map[string]interface{}{
@@ -86,7 +83,7 @@ func (b *BlockController) EditAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 
 	var form = m.GetBlockForm(data, fmt.Sprintf("block/edit/%v", data["id"].(string)))
 	if ctx.IsPost() {
-		succ, formErrors := b.saveBlock(ctx, session, Block)
+		succ, formErrors := b.saveBlock(ctx, session, &block)
 		form.SetErrors(formErrors)
 		if succ {
 			session.AddSuccess("Block save was successful.")
@@ -95,11 +92,11 @@ func (b *BlockController) EditAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 		}
 	}
 
-	pageInstance.Title = "Block - Edit"
+	pageInstance.Title = fmt.Sprintf("%s - Edit", b.Type)
 
 	AdminContent := admin.Content{}
-	AdminContent.Title = "Block"
-	AdminContent.SubTitle = fmt.Sprintf("Edit block %v", Block.Identifier)
+	AdminContent.Title = b.Type
+	AdminContent.SubTitle = fmt.Sprintf("Edit %s %v", block.Identifier, b.Type)
 	AdminContent.Content = template.HTML(form.Render())
 	pageInstance.AddContent(h.GetScopeTemplateString("layout/content.html", AdminContent, pageInstance.Scope), "", nil, false, 0)
 }
@@ -122,7 +119,7 @@ func (b *BlockController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session
 	data["lc"] = session.GetActiveLang()
 	var form = m.GetBlockForm(data, "block/new")
 	if ctx.IsPost() {
-		succ, formErrors := b.saveBlock(ctx, session, Block)
+		succ, formErrors := b.saveBlock(ctx, session, &Block)
 		form.SetErrors(formErrors)
 		if succ {
 			session.AddSuccess("Block save was successful.")
@@ -141,28 +138,26 @@ func (b *BlockController) NewAction(ctx *fasthttp.RequestCtx, session *h.Session
 
 }
 
-func (b *BlockController) saveBlock(ctx *fasthttp.RequestCtx, session *h.Session, Block m.Block) (bool, map[string]error) {
-	if ctx.IsPost() && ((Ah.HasRights(b.AuthAction["edit"], session) && Block.Id != 0) || (Ah.HasRights(b.AuthAction["new"], session) && Block.Id == 0)) {
+func (b *BlockController) saveBlock(ctx *fasthttp.RequestCtx, session *h.Session, block *m.Block) (bool, map[string]error) {
+	if ctx.IsPost() && Ah.HasRights(b.AuthAction["save"], session) {
 		var err error
 		var succ bool
-		var Validator = m.GetBlockFormValidator(ctx, Block)
+		var Validator = m.GetBlockFormValidator(ctx, block)
 		succ, errors := Validator.Validate()
 		if !succ {
 			return false, errors
 		}
 
-		Block.Identifier = h.GetFormData(ctx, "identifier", false).(string)
-		Block.Content = h.GetFormData(ctx, "content", false).(string)
-		Block.Lc = h.GetFormData(ctx, "lc", false).(string)
-		if Block.Id > 0 {
-			_, err = db.DbMap.Update(&Block)
+		block.Identifier = h.GetFormData(ctx, "identifier", false).(string)
+		block.Content = h.GetFormData(ctx, "content", false).(string)
+		block.Lc = h.GetFormData(ctx, "lc", false).(string)
+		if block.Id > 0 {
+			_, err = db.DbMap.Update(&block)
 		} else {
-			err = db.DbMap.Insert(&Block)
+			err = db.DbMap.Insert(&block)
 		}
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 		succ = err == nil
-		h.PrintlnIf("Sikeres mentés", h.GetConfig().Mode.Debug && succ)
-		h.PrintlnIf("Sikertelen mentés", h.GetConfig().Mode.Debug && !succ)
 		return succ, nil
 	} else {
 		return false, nil
@@ -176,20 +171,22 @@ func (b *BlockController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Sess
 	}
 	var status int = fasthttp.StatusOK
 	//azért nem kell vizsgálni az errort, mert a request reguláris kifejezése csak akkor hozza ide, ha a végén \d van :)
-	var id, _ = strconv.Atoi(h.GetParamFromCtxPath(ctx, 3, ""))
-	var blockId = int64(id)
-	var ModelBlock m.Block
-	Block, err := ModelBlock.Get(blockId)
+	var id = h.GetParamFromCtxPath(ctx, 3, "")
+	var block m.Block
+	var err error
+
+	err = block.Load(id)
+
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ERROR_LVL_WARNING)
+		h.Error(err, "", h.ErrorLvlWarning)
 		Redirect(ctx, "block/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
 
-	blockIdentifier := Block.Identifier
-	count, err := db.DbMap.Delete(&Block)
-	h.Error(err, "", h.ERROR_LVL_WARNING)
+	blockIdentifier := block.Identifier
+	count, err := db.DbMap.Delete(&block)
+	h.Error(err, "", h.ErrorLvlWarning)
 	if err != nil || count == 0 {
 		session.AddError("An error occurred, could not delete the block.")
 		status = fasthttp.StatusBadRequest

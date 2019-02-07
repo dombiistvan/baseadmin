@@ -47,7 +47,7 @@ func (b Ban) BuildStructure(dbmap *gorp.DbMap) {
 		},
 	}
 	tablemap, err := dbmap.TableFor(reflect.TypeOf(Ban{}), false)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	for _, index := range indexes {
 		h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
 		tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))
@@ -59,7 +59,7 @@ func (b Ban) IsBanned(RemoteAddress string) bool {
 	var ban Ban
 	var query string = fmt.Sprintf("SELECT * FROM %v WHERE `remote_address` = '%s' AND `until` >= '%s' ORDER BY `until` DESC LIMIT 1", b.GetTable(), RemoteAddress, h.GetTimeNow().Round(time.Second).Format(MYSQL_TIME_FORMAT))
 	var err error = db.DbMap.SelectOne(&ban, query)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 
 	return ban.Id != 0

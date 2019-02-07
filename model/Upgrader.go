@@ -79,8 +79,10 @@ func addUserGroupIdColumn() error {
 		return err
 	}
 
-	_, err = trx.Exec(fmt.Sprintf("ALTER TABLE `%s` ADD `%s` IF NOT EXISTS %s;", u.GetTable(), field, definition))
+	query := fmt.Sprintf("ALTER TABLE `%s` ADD COLUMN IF NOT EXISTS %s %s;", u.GetTable(), field, definition)
+	_, err = trx.Exec(query)
 	if err != nil {
+		panic(err)
 		_ = trx.Rollback()
 		return err
 	}

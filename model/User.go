@@ -41,7 +41,7 @@ func (u User) IsAdmin() bool {
 	var adminGroup UserGroup
 
 	adminGroup, err := adminGroup.GetByIdentifier("admin")
-	h.Error(err, "", h.ERROR_LVL_NOTICE)
+	h.Error(err, "", h.ErrorLvlNotice)
 
 	return u.UserGroupId == adminGroup.Id
 }
@@ -75,14 +75,28 @@ func (u User) GetUser(email string, password string) (User, error) {
 	return User, err
 }
 
-func (_ User) Get(id int64) (User, error) {
+func (u *User) Load(id interface{}) error {
+	err := dbHelper.DbMap.SelectOne(
+		u,
+		fmt.Sprintf(
+			"SELECT * FROM %s WHERE %s = %v",
+			u.GetTable(),
+			u.GetPrimaryKey()[0],
+			id,
+		),
+	)
+
+	return err
+}
+
+/*func (_ User) Get(id int64) (User, error) {
 	var user User
 	if id == 0 {
 		return user, errors.New(fmt.Sprintf("Could not retrieve user to ID %v", id))
 	}
 
 	err := dbHelper.DbMap.SelectOne(&user, fmt.Sprintf("SELECT * FROM %v WHERE %v = ?", user.GetTable(), user.GetPrimaryKey()[0]), id)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	if err != nil {
 		return user, err
 	}
@@ -92,7 +106,7 @@ func (_ User) Get(id int64) (User, error) {
 	}
 
 	return user, nil
-}
+}*/
 
 // implement the PreInsert and PreUpdate hooks
 func (u *User) PreInsert(s gorp.SqlExecutor) error {
@@ -152,7 +166,7 @@ func (u User) BuildStructure(dbmap *gorp.DbMap) {
 		h.PrintlnIf(fmt.Sprintf("Create %v table", u.GetTable()), Conf.Mode.Rebuild_structure)
 		dbmap.CreateTablesIfNotExists()
 		tablemap, err := dbmap.TableFor(reflect.TypeOf(User{}), false)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 		for _, index := range indexes {
 			h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
 			tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))
@@ -164,7 +178,7 @@ func (u User) BuildStructure(dbmap *gorp.DbMap) {
 			var adminGroup UserGroup
 
 			adminGroup, err = adminGroup.GetByIdentifier("admin")
-			h.Error(err, "", h.ERROR_LVL_ERROR)
+			h.Error(err, "", h.ErrorLvlError)
 
 			chiefAdmin = User{
 				Email:         ca.Email,
@@ -191,7 +205,7 @@ func (u *User) GetRoles() []string {
 	var UserRoles []UserRole
 	var ReturnRoles []string
 	_, err := dbHelper.DbMap.Select(&UserRoles, "select * from user_role WHERE user_group_id = ?", u.UserGroupId)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	for _, role := range UserRoles {
 		ReturnRoles = append(ReturnRoles, role.Role)
 	}
@@ -214,14 +228,14 @@ func GetUserForm(data map[string]interface{}, action string) Form {
 	ElementsLeft = append(ElementsLeft, passwordV)
 
 	var status Status = NewEmptyStatus()
-	var options = status.GetOptions(nil)
+	var options = status.ToOptions(nil)
 
-	var statusInp = FElement.InputSelect{"Status", "status_id", "status_id", "", false, false, data["status_id"].([]string), false, options, ""}
+	var statusInp = FElement.InputSelect{"Status", "status_id", "status_id", "", false, false, []string{data["status_id"].(string)}, false, options, ""}
 	ElementsRight = append(ElementsRight, statusInp)
 
 	var ug UserGroup
-	var groups = ug.GetOptions(nil)
-	var groupInp = FElement.InputSelect{"Group", "user_group_id", "user_group", "", false, false, data["user_group_id"].([]string), false, groups, ""}
+	var groups = ug.ToOptions(nil)
+	var groupInp = FElement.InputSelect{"Group", "user_group_id", "user_group", "", false, false, []string{data["user_group_id"].(string)}, false, groups, ""}
 	ElementsRight = append(ElementsRight, groupInp)
 
 	var colMap map[string]string = map[string]string{

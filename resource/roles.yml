@@ -6,11 +6,8 @@ roles:
       list:
         title: "List/Search Users"
         value: "user/list"
-      new:
-        title: "Add User"
-        value: "user/new"
       edit:
-        title: "Edit User"
+        title: "Add/Edit User"
         value: "user/edit"
       delete:
         title: "Delete User"
@@ -22,11 +19,8 @@ roles:
       list:
         title: "List/Search UserGroups"
         value: "usergroup/list"
-      new:
-        title: "Add UserGroup"
-        value: "usergroup/new"
       edit:
-        title: "Edit UserGroup"
+        title: "Add/Edit UserGroup"
         value: "usergroup/edit"
       delete:
         title: "Delete UserGroup"
@@ -38,15 +32,38 @@ roles:
       list:
         title: "List/Search Blocks"
         value: "block/list"
-      new:
-        title: "Add Block"
-        value: "block/new"
       edit:
-        title: "Edit Block"
+        title: "Add/Edit Block"
         value: "block/edit"
       delete:
         title: "Delete Block"
         value: "block/delete"
+  entity_type:
+    title: "All Entity Type Roles"
+    value: "entitytype/*"
+    children:
+      list:
+        title: "List/Search Entity Types"
+        value: "entitytype/list"
+      edit:
+        title: "Add/Edit Entity Types"
+        value: "entitytype/edit"
+      delete:
+        title: "Delete Entity Types"
+        value: "entitytype/delete"
+  attribute:
+    title: "All Attribute Roles"
+    value: "attribute/*"
+    children:
+      list:
+        title: "List/Search Attribute"
+        value: "attribute/list"
+      edit:
+        title: "Add/Edit Attribute"
+        value: "attribute/edit"
+      delete:
+        title: "Delete Attribute"
+        value: "attribute/delete"
   config:
     title: "<strong>Config</strong>"
     value: "config/*"

@@ -22,9 +22,9 @@ func GetScopeTemplateString(filePath string, data interface{}, scope string) str
 			return val + 1
 		},
 	}).ParseFiles("./" + fileFullPath)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 	err = t.ExecuteTemplate(&tplBuffer, path.Base("./"+fileFullPath), data)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 
 	return tplBuffer.String()
 }
@@ -35,9 +35,9 @@ func GetTemplateString(templateString string, data interface{}) string {
 
 	tplTempName = fmt.Sprintf("%v", strconv.Itoa(int(time.Now().Unix())), "tpl_tmp_")
 	tmpl, err := template.New(tplTempName).Parse(templateString)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 	err = tmpl.Execute(&tplBuffer, data)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 
 	return tplBuffer.String()
 }

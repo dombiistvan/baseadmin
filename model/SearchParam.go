@@ -6,8 +6,17 @@ import (
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"html"
+	"strconv"
 	"strings"
 )
+
+const SearchParamTypeNumber = "number"
+const SearchParamTypeNumberRange = "number_range"
+const SearchParamTypeText = "text"
+const SearchParamTypeSelect = "select"
+const SearchParamTypeRadio = "radio"
+const SearchParamTypeCheckbox = "checkbox"
+const SearchParamTypeBool = "bool"
 
 type SearchParam struct {
 	Label   string
@@ -19,19 +28,24 @@ type SearchParam struct {
 
 func (sp SearchParam) GetInputsByType(ctx *fasthttp.RequestCtx) []FormElement {
 	switch sp.Type {
-	case "number":
+	case SearchParamTypeNumber:
 		return sp.GetNumberInputs(ctx)
 		break
-	case "number_range":
+	case SearchParamTypeNumberRange:
 		return sp.GetNumberRangeInputs(ctx)
 		break
-	case "text":
+	case SearchParamTypeText:
 		return sp.GetTextInput(ctx)
 		break
-	case "select":
+	case SearchParamTypeCheckbox:
+	case SearchParamTypeRadio:
+	case SearchParamTypeSelect:
+	case "radiobtn":
+	case "radiobutton":
 		return sp.GetSelectInput(ctx)
 		break
-	case "bool":
+	case SearchParamTypeBool:
+	case "boolean":
 		tempSp := sp.getBoolTempSp(ctx)
 		return tempSp.GetInputsByType(ctx)
 		break
@@ -218,10 +232,16 @@ func (sp SearchParam) GetSqlPart(ctx *fasthttp.RequestCtx) string {
 			valueT := string(ctx.QueryArgs().PeekMulti(sp.Name)[1])
 			var wheres []string
 			if valueF != "" {
-				wheres = append(wheres, fmt.Sprintf(`%v >= %v`, sp.DbField, html.EscapeString(valueF)))
+				intVal, err := strconv.Atoi(valueF)
+				if err == nil {
+					wheres = append(wheres, fmt.Sprintf(`%v >= %v`, sp.DbField, intVal))
+				}
 			}
 			if valueT != "" {
-				wheres = append(wheres, fmt.Sprintf(`%v <= %v`, sp.DbField, html.EscapeString(valueT)))
+				intVal, err := strconv.Atoi(valueT)
+				if err == nil {
+					wheres = append(wheres, fmt.Sprintf(`%v <= %v`, sp.DbField, intVal))
+				}
 			}
 			return strings.Join(wheres, " AND ")
 		}
@@ -229,7 +249,10 @@ func (sp SearchParam) GetSqlPart(ctx *fasthttp.RequestCtx) string {
 	case "number":
 		if len(ctx.QueryArgs().Peek(sp.Name)) > 0 {
 			value := string(ctx.QueryArgs().Peek(sp.Name))
-			return fmt.Sprintf(`%v = %v`, sp.DbField, html.EscapeString(value))
+			intVal, err := strconv.Atoi(value)
+			if err == nil {
+				return fmt.Sprintf(`%v = %v`, sp.DbField, intVal)
+			}
 		}
 		break
 	case "text":

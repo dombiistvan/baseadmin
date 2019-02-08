@@ -454,12 +454,12 @@ func (et *EntityTypeController) EntityDeleteAction(ctx *fasthttp.RequestCtx, ses
 
 	err = entityType.LoadByCode(entitycode)
 	if err != nil {
-		Redirect(ctx, "entity_type/index", fasthttp.StatusForbidden, true, pageInstance)
+		Redirect(ctx, fmt.Sprintf("entity/%s", entityType.Code), fasthttp.StatusBadRequest, true, pageInstance)
 		return
 	}
 
 	if !Ah.HasRights([]string{fmt.Sprintf("%s/delete", entitycode)}, session) {
-		Redirect(ctx, "entity_type/index", fasthttp.StatusForbidden, true, pageInstance)
+		Redirect(ctx, fmt.Sprintf("entity/%s", entityType.Code), fasthttp.StatusForbidden, true, pageInstance)
 		return
 	}
 
@@ -470,7 +470,7 @@ func (et *EntityTypeController) EntityDeleteAction(ctx *fasthttp.RequestCtx, ses
 	if err != nil {
 		session.AddError(err.Error())
 		h.Error(err, "", h.ErrorLvlWarning)
-		Redirect(ctx, "entity_type/index", fasthttp.StatusOK, true, pageInstance)
+		Redirect(ctx, fmt.Sprintf("entity/%s", entityType.Code), fasthttp.StatusBadRequest, true, pageInstance)
 		return
 	}
 
@@ -481,7 +481,9 @@ func (et *EntityTypeController) EntityDeleteAction(ctx *fasthttp.RequestCtx, ses
 		session.AddError("An error occurred, could not delete the entity type.")
 		status = fasthttp.StatusBadRequest
 	} else {
-		session.AddSuccess("Entity type has been deleted")
+		session.AddSuccess("Entity has been deleted")
+		status = fasthttp.StatusOK
 	}
-	Redirect(ctx, "entity_type/index", status, true, pageInstance)
+
+	Redirect(ctx, fmt.Sprintf("entity/%s", entityType.Code), status, true, pageInstance)
 }

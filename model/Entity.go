@@ -339,10 +339,6 @@ func (e *Entity) Delete() error {
 		attrIds = append(attrIds, strconv.Itoa(int(tempa.Id)))
 	}
 
-	if len(attrIds) == 0 {
-		return nil
-	}
-
 	_, err := db.DbMap.Select(&eavs, fmt.Sprintf("SELECT * FROM %s WHERE %s = ? AND %s IN (?)", eav.GetTable(), "entity_id", "attribute_id"), e.Id, strings.Join(attrIds, ","))
 
 	if err != nil {

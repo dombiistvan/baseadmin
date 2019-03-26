@@ -220,6 +220,9 @@ func (ug *UserGroupController) saveUserGroup(ctx *fasthttp.RequestCtx, session *
 		succ = err == nil
 		h.Error(err, "", h.ErrorLvlError)
 
+		h.PrintlnIf("Save successful", h.GetConfig().Mode.Debug && succ)
+		h.PrintlnIf("Unsuccessful save", h.GetConfig().Mode.Debug && !succ)
+
 		UserGroup.ModifyRoles(h.GetFormData(ctx, "role", true).([]string))
 		return succ, nil
 	} else {

@@ -370,7 +370,7 @@ func (v *Validator) ValidateExtension(key string, option interface{}, required b
 		}
 	}
 
-	return false, v.GetErrorToType(key, "extension", fmt.Sprintf(VALIDATION_ERROR_EXTENSION, strings.Join(allowedExts, ",")))
+	return false, v.GetErrorToType(key, "extension", fmt.Sprintf(ValidationErrorExtension, strings.Join(allowedExts, ",")))
 }
 
 func (v *Validator) ValidateRequiredMulti(key string, option interface{}) (bool, error) {

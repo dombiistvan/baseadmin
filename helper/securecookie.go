@@ -47,7 +47,7 @@ func SessionGet(h *fasthttp.RequestHeader) *Session {
 func (s *Session) Set(name string, value interface{}) {
 	for _, key := range predefinedSessionKeys {
 		if key == name {
-			Error(errors.New(fmt.Sprintf("The key \"%v\" is predefined to inner usage.\nProbably you can use by calling other method(s).", name)), "", ERROR_LVL_WARNING)
+			Error(errors.New(fmt.Sprintf("The key \"%v\" is predefined to inner usage.\nProbably you can use by calling other method(s).", name)), "", ErrorLvlWarning)
 			return
 		}
 	}

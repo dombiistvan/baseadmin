@@ -154,7 +154,7 @@ func (u *UserController) EditAction(ctx *fasthttp.RequestCtx, session *h.Session
 		User, err := user.Get(userId)
 		if err != nil {
 			session.AddError(err.Error())
-			h.Error(err, "", h.ERROR_LVL_WARNING)
+			h.Error(err, "", h.ErrorLvlWarning)
 			Redirect(ctx, "user/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
@@ -226,7 +226,7 @@ func (u *UserController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Sessi
 		User, err := user.Get(userId)
 		if err != nil {
 			session.AddError(err.Error())
-			h.Error(err, "", h.ERROR_LVL_WARNING)
+			h.Error(err, "", h.ErrorLvlWarning)
 			Redirect(ctx, "user/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
@@ -239,7 +239,7 @@ func (u *UserController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Sessi
 
 		emailAddress := User.Email
 		count, err := db.DbMap.Delete(&User)
-		h.Error(err, "", h.ERROR_LVL_WARNING)
+		h.Error(err, "", h.ErrorLvlWarning)
 		if err != nil {
 			session.AddError("Could not delete user.")
 			Redirect(ctx, "user/index", fasthttp.StatusBadRequest, true, pageInstance)
@@ -316,11 +316,11 @@ func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, 
 		User.Email = h.GetFormData(ctx, "email", false).(string)
 
 		userGroupId, err := strconv.Atoi(h.GetFormData(ctx, "user_group_id", false).(string))
-		h.Error(err, "", h.ERROR_LVL_WARNING)
+		h.Error(err, "", h.ErrorLvlWarning)
 		User.UserGroupId = int64(userGroupId)
 
 		statusId, err := strconv.Atoi(h.GetFormData(ctx, "status_id", false).(string))
-		h.Error(err, "", h.ERROR_LVL_WARNING)
+		h.Error(err, "", h.ErrorLvlWarning)
 		User.StatusId = int64(statusId)
 		if h.GetFormData(ctx, "password", false).(string) != "" {
 			User.Password = h.GetFormData(ctx, "password", false).(string)
@@ -333,7 +333,7 @@ func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, 
 		}
 
 		succ = err == nil
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 
 		h.PrintlnIf("Save successful", h.GetConfig().Mode.Debug && succ)
 		h.PrintlnIf("Unsuccessful save", h.GetConfig().Mode.Debug && !succ)

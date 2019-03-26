@@ -61,14 +61,14 @@ func (ug *UserGroupController) EditAction(ctx *fasthttp.RequestCtx, session *h.S
 		userGroup, err := userGroup.Get(userGroupId)
 		if err != nil {
 			session.AddError(err.Error())
-			h.Error(err, "", h.ERROR_LVL_WARNING)
+			h.Error(err, "", h.ErrorLvlWarning)
 			Redirect(ctx, "usergroup/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
 
 		if userGroup.Identifier == "admin" {
 			session.AddError("the admin usergroup can not be edited")
-			h.Error(err, "", h.ERROR_LVL_WARNING)
+			h.Error(err, "", h.ErrorLvlWarning)
 			Redirect(ctx, "usergroup/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
@@ -124,7 +124,7 @@ func (ug *UserGroupController) DeleteAction(ctx *fasthttp.RequestCtx, session *h
 		userGroup, err := userGroup.Get(userGroupId)
 		if err != nil {
 			session.AddError(err.Error())
-			h.Error(err, "", h.ERROR_LVL_WARNING)
+			h.Error(err, "", h.ErrorLvlWarning)
 			Redirect(ctx, "usergroup/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
@@ -137,7 +137,7 @@ func (ug *UserGroupController) DeleteAction(ctx *fasthttp.RequestCtx, session *h
 
 		name := userGroup.Name
 		count, err := db.DbMap.Delete(&userGroup)
-		h.Error(err, "", h.ERROR_LVL_WARNING)
+		h.Error(err, "", h.ErrorLvlWarning)
 		if err != nil {
 			session.AddError("Could not delete usergroup.")
 			Redirect(ctx, "usergroup/index", fasthttp.StatusBadRequest, true, pageInstance)
@@ -217,7 +217,7 @@ func (ug *UserGroupController) saveUserGroup(ctx *fasthttp.RequestCtx, session *
 		}
 
 		succ = err == nil
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 
 		h.PrintlnIf("Save successful", h.GetConfig().Mode.Debug && succ)
 		h.PrintlnIf("Unsuccessful save", h.GetConfig().Mode.Debug && !succ)

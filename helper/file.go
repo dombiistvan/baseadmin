@@ -26,19 +26,19 @@ func RemoveFile(filePath string) {
 	_, err := os.Stat(filePath)
 
 	if err != nil {
-		Error(err, "", ERROR_LVL_NOTICE)
+		Error(err, "", ErrorLvlNotice)
 		return
 	}
 
 	err = os.Remove(filePath)
-	Error(err, "", ERROR_LVL_WARNING)
+	Error(err, "", ErrorLvlWarning)
 }
 
 func UploadFile(ctx *fasthttp.RequestCtx, inputName string, destinationPath string, destFileNameWithoutExt string) (string, error) {
 	PrintlnIf(fmt.Sprintf("Try to upload file from input: %v destination: %v, filename without extension: %v", inputName, destinationPath, destFileNameWithoutExt), GetConfig().Mode.Debug)
 	fileHeader, err := ctx.FormFile(inputName)
 	if err != nil {
-		Error(err, "", ERROR_LVL_WARNING)
+		Error(err, "", ErrorLvlWarning)
 		return "", err
 	}
 
@@ -48,7 +48,7 @@ func UploadFile(ctx *fasthttp.RequestCtx, inputName string, destinationPath stri
 
 	file, err := fileHeader.Open()
 	if err != nil {
-		Error(err, "", ERROR_LVL_WARNING)
+		Error(err, "", ErrorLvlWarning)
 		return "", err
 	}
 
@@ -71,8 +71,8 @@ func UploadFile(ctx *fasthttp.RequestCtx, inputName string, destinationPath stri
 	}
 
 	f, err := os.Create(filePath)
-	Error(err, "", ERROR_LVL_WARNING)
+	Error(err, "", ErrorLvlWarning)
 	_, err = io.Copy(f, file)
-	Error(err, "", ERROR_LVL_WARNING)
+	Error(err, "", ErrorLvlWarning)
 	return fmt.Sprintf("%v.%v", destFileNameWithoutExt, ext), nil
 }

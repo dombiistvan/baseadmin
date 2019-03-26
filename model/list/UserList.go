@@ -47,7 +47,7 @@ func (ul *UserList) Render(elements []m.User) string {
 
 	for _, u := range elements {
 		status, err := db.DbMap.Get(m.Status{}, u.StatusId)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 
 		var actions []string
 		actions = append(actions, h.Replace(
@@ -88,7 +88,7 @@ func (ul *UserList) GetAll() []m.User {
 	sql := fmt.Sprintf("SELECT * FROM %v%v ORDER BY %v %v", ul.List.Table, where, ul.List.GetOrder(), ul.List.GetOrderDir())
 	h.PrintlnIf(sql, h.GetConfig().Mode.Debug)
 	_, err := db.DbMap.Select(&results, sql)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return results
 }
 
@@ -101,6 +101,6 @@ func (ul *UserList) GetToPage() []m.User {
 	sql := fmt.Sprintf("SELECT * FROM %v%v ORDER BY %v %v LIMIT %v", ul.List.Table, where, ul.List.GetOrder(), ul.List.GetOrderDir(), ul.List.GetLimitString())
 	h.PrintlnIf(sql, h.GetConfig().Mode.Debug)
 	_, err := db.DbMap.Select(&results, sql)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return results
 }

@@ -94,7 +94,7 @@ func GetMenu(session *Session) Menu {
 	var menu Menu
 	succ, err := parseMenu(&menu)
 	if nil != err || !succ {
-		Error(err, "", ERROR_LVL_ERROR)
+		Error(err, "", ErrorLvlError)
 	}
 
 	if succ {
@@ -113,13 +113,13 @@ func GetMenu(session *Session) Menu {
 
 func parseMenu(menu *Menu) (bool, error) {
 	dat, err := ioutil.ReadFile(MenuFilePath)
-	Error(err, "Menu file reading error", ERROR_LVL_ERROR)
+	Error(err, "Menu file reading error", ErrorLvlError)
 	if err != nil {
 		return false, err
 	}
 
 	err = yaml.Unmarshal(dat, menu)
-	Error(err, "Yaml reading error", ERROR_LVL_ERROR)
+	Error(err, "Yaml reading error", ErrorLvlError)
 	if err != nil {
 		return false, err
 	}

@@ -103,7 +103,7 @@ func (l *List) GetCount() int64 {
 	query := fmt.Sprintf("SELECT COUNT(m.id) FROM %v%v", l.GetTablesSql(), where)
 	h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 	count, err := db.DbMap.SelectInt(query)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return count
 }
 

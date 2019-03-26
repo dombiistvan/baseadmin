@@ -12,20 +12,21 @@ import (
 )
 
 const (
-	VALIDATION_ERROR_REQUIRED  = "Required field has empty value."
-	VALIDATION_ERROR_EMAIL     = "Wrong email format."
-	VALIDATION_ERROR_LINK      = "Wrong link format."
-	VALIDATION_ERROR_PASSWORD  = "Wrong password format: The password must contains at least one lowercase, one uppercase letter, and one number."
-	VALIDATION_ERROR_SAMEAS    = "The fields do not match."
-	VALIDATION_ERROR_REGEXP    = "Wrong input format."
-	VALIDATION_ERROR_LENGTH    = "The length of the fields value is eighter not enough or too much."
-	VALIDATION_ERROR_EXTENSION = "The file extension is not allowed. Allowed extensions are: %s"
-	VALIDATION_ERROR_UNIQUE    = "The database already contains an entry with the same value."
+	ValidationErrorRequired  = "Required field has empty value."
+	ValidationErrorEmail     = "Wrong email format."
+	ValidationErrorLink      = "Wrong link format."
+	ValidationErrorPassword  = "Wrong password format: The password must contains at least one lowercase, one uppercase letter, and one number."
+	ValidationErrorSameAs    = "The fields do not match."
+	ValidationErrorRegexp    = "Wrong input format."
+	ValidationErrorLength    = "The length of the fields value is eighter not enough or too much."
+	ValidationErrorCount     = "The amount of values of field is eighter not enough or too much."
+	ValidationErrorExtension = "The file extension is not allowed. Allowed extensions are: %s"
+	ValidationErrorUnique    = "The database already contains an entry with the same value."
 
-	VALIDATION_FORMAT_EMAIL          = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
-	VALIDATION_FORMAT_PASSWORD_LOWER = "[a-z]"
-	VALIDATION_FORMAT_PASSWORD_UPPER = "[A-Z]"
-	VALIDATION_FORMAT_PASSWORD_DIGIT = "[0-9]"
+	ValidationFormatEmail         = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+	ValidationFormatpasswordLower = "[a-z]"
+	ValidationFormatpasswordUpper = "[A-Z]"
+	ValidationFormatpasswordDigit = "[0-9]"
 )
 
 type Validator struct {
@@ -47,10 +48,131 @@ func (v *Validator) SetFields(fields map[string]map[string]interface{}) {
 	v.Fields = fields
 }
 
+func (v *Validator) initField(formKey string) {
+	_, ok := v.Fields[formKey]
+	if !ok {
+		v.Fields[formKey] = map[string]interface{}{}
+	}
+	_, ok = v.Fields[formKey]["roles"]
+	if !ok {
+		v.Fields[formKey]["roles"] = map[string]interface{}{}
+	}
+	_, ok = v.Fields[formKey]["error"]
+	if !ok {
+		v.Fields[formKey]["error"] = map[string]string{}
+	}
+}
+
+func (v *Validator) addCustomError(formKey string, errType string, err string) {
+	v.Fields[formKey]["error"].(map[string]string)[errType] = err
+}
+
+func (v *Validator) AddEmailValidator(formKey string, customError string) {
+	v.initField(formKey)
+	v.Fields[formKey]["roles"].(map[string]interface{})["format"] = map[string]interface{}{"type": "email"}
+	if customError != "" {
+		v.addCustomError(formKey, "format", customError)
+	}
+}
+
+func (v *Validator) AddUrlValidator(formKey string, multi bool, customError string) {
+	v.initField(formKey)
+	v.Fields[formKey]["roles"].(map[string]interface{})["format"] = map[string]interface{}{"type": "url"}
+	if multi {
+		v.Fields[formKey]["multi"] = true
+	}
+	if customError != "" {
+		v.addCustomError(formKey, "format", customError)
+	}
+}
+
+func (v *Validator) AddRegexpValidator(formKey string, pattern string, customError string) {
+	v.initField(formKey)
+	v.Fields[formKey]["roles"].(map[string]interface{})["format"] = map[string]interface{}{"type": "regexp", "pattern": pattern}
+	if customError != "" {
+		v.addCustomError(formKey, "format", customError)
+	}
+}
+
+func (v *Validator) AddPasswordValidator(formKey string, customError string) {
+	v.initField(formKey)
+	v.Fields[formKey]["roles"].(map[string]interface{})["format"] = map[string]interface{}{"type": "password"}
+	if customError != "" {
+		v.addCustomError(formKey, "format", customError)
+	}
+}
+
+func (v *Validator) AddSameasValidator(formKey string, sameFormKey string, customError string) {
+	v.initField(formKey)
+	v.Fields[formKey]["roles"].(map[string]interface{})["sameas"] = sameFormKey
+	if customError != "" {
+		v.addCustomError(formKey, "sameas", customError)
+	}
+}
+
+func (v *Validator) AddRequiredValidator(formKey string, customError string, multi bool) {
+	v.initField(formKey)
+	v.Fields[formKey]["roles"].(map[string]interface{})["required"] = true
+	v.Fields[formKey]["multi"] = multi
+	if customError != "" {
+		v.addCustomError(formKey, "required", customError)
+	}
+}
+
+func (v *Validator) AddLengthValidator(formKey string, minLength int, maxLength int, customError string) {
+	v.initField(formKey)
+	v.Fields[formKey]["roles"].(map[string]interface{})["length"] = map[string]interface{}{}
+	if minLength != 0 {
+		v.Fields[formKey]["roles"].(map[string]interface{})["length"].(map[string]interface{})["min"] = minLength
+	}
+	if maxLength != 0 {
+		v.Fields[formKey]["roles"].(map[string]interface{})["length"].(map[string]interface{})["max"] = maxLength
+	}
+	if customError != "" {
+		v.addCustomError(formKey, "length", customError)
+	}
+}
+
+func (v *Validator) AddCountValidator(formKey string, minCount int, maxCount int, customError string) {
+	v.initField(formKey)
+	v.Fields[formKey]["roles"].(map[string]interface{})["count"] = map[string]interface{}{}
+	if minCount != 0 {
+		v.Fields[formKey]["roles"].(map[string]interface{})["count"].(map[string]interface{})["min"] = minCount
+	}
+	if maxCount != 0 {
+		v.Fields[formKey]["roles"].(map[string]interface{})["count"].(map[string]interface{})["max"] = maxCount
+	}
+	if customError != "" {
+		v.addCustomError(formKey, "count", customError)
+	}
+}
+
+func (v *Validator) AddUniqueValidator(formKey string, table string, field string, current interface{}, customError string) {
+	/*
+		"roles":map[string]interface{}{
+			"unique": map[string]interface{}{
+				"table":   "page",
+				"field":   "url_key",
+				"current": Page.UrlKey,
+			},
+		},
+	*/
+	v.initField(formKey)
+	v.Fields[formKey]["roles"].(map[string]interface{})["unique"] = map[string]interface{}{}
+	v.Fields[formKey]["roles"].(map[string]interface{})["unique"] = map[string]interface{}{
+		"table":   table,
+		"field":   field,
+		"current": current,
+	}
+	if customError != "" {
+		v.addCustomError(formKey, "unique", customError)
+	}
+}
+
 func (v *Validator) AddField(key string, properties map[string]interface{}) (bool, error) {
 	_, ok := v.Fields[key]
 	if ok {
-		return false, errors.New(fmt.Sprintf("The key `%v` has already been added to the validator."))
+		return false, errors.New(fmt.Sprintf("The key `%v` has already been added to the validator.", key))
 	} else {
 		v.Fields[key] = properties
 	}
@@ -78,7 +200,7 @@ func (v *Validator) Validate() (bool, map[string]error) {
 func (v *Validator) iterateRegexp(postKey []byte, postValue []byte) {
 	var key = string(postKey)
 	matched, err := regexp.MatchString(strings.Replace(v.cKey, "%", ".*", -1), key)
-	h.Error(err, "", h.ERROR_LVL_NOTICE)
+	h.Error(err, "", h.ErrorLvlNotice)
 	if matched {
 		succ, err := v.ValidateField(key, v.Fields[v.cKey])
 		if !succ {
@@ -107,16 +229,19 @@ func (v *Validator) ValidateField(key string, properties map[string]interface{})
 			succ, err = v.ValidateRequired(key, options, multi)
 			break
 		case "format":
-			succ, err = v.ValidateFormat(key, options, required)
+			succ, err = v.ValidateFormat(key, options, required, multi)
 			break
 		case "sameas":
-			succ, err = v.ValidateSameAs(key, options, required)
+			succ, err = v.ValidateSameAs(key, options, required, multi)
 			break
 		case "length":
-			succ, err = v.ValidateLength(key, options, required)
+			succ, err = v.ValidateLength(key, options, required, multi)
+			break
+		case "count":
+			succ, err = v.ValidateCount(key, options, required, multi)
 			break
 		case "unique":
-			succ, err = v.validateUnique(key, options, required)
+			succ, err = v.ValidateUnique(key, options, required, multi)
 			break
 		case "extension":
 			succ, err = v.ValidateExtension(key, options, required)
@@ -146,7 +271,7 @@ func (v *Validator) ValidateRequired(key string, option interface{}, isMultiValu
 	}
 
 	if v.isEmpty(key) {
-		return false, v.GetErrorToType(key, "required", VALIDATION_ERROR_REQUIRED)
+		return false, v.GetErrorToType(key, "required", ValidationErrorRequired)
 	}
 
 	return true, nil
@@ -155,7 +280,7 @@ func (v *Validator) ValidateRequired(key string, option interface{}, isMultiValu
 func (v Validator) GetErrorToType(key string, typ string, defaultError string) error {
 	properties, ok := v.Fields[key]
 	if !ok {
-		panic(errors.New("Could not find field %s in validator fields."))
+		panic(errors.New("could not find field %s in validator fields"))
 	}
 
 	customError, ok := properties["error"]
@@ -179,10 +304,16 @@ func (v Validator) GetErrorToType(key string, typ string, defaultError string) e
 
 }
 
-func (v *Validator) validateUnique(key string, option interface{}, required bool) (bool, error) {
+func (v *Validator) ValidateUnique(key string, option interface{}, required bool, multi bool) (bool, error) {
 	h.PrintlnIf(fmt.Sprintf("Validating unique"), h.GetConfig().Mode.Debug)
-	postVal := v.getValue(key, false)
-	empty := v.isEmpty(key)
+	postVals := v.getValue(key, multi)
+	var empty bool
+	if multi {
+		empty = v.isEmptyMulti(key)
+	} else {
+		empty = v.isEmpty(key)
+	}
+
 	if empty && required {
 		return true, nil
 	}
@@ -190,29 +321,38 @@ func (v *Validator) validateUnique(key string, option interface{}, required bool
 	uniqOpt := option.(map[string]interface{})
 	table := uniqOpt["table"].(string)
 	field := uniqOpt["field"].(string)
-	current := uniqOpt["current"].(string) //before save
+	current, cok := uniqOpt["current"] // before save
 
-	var strCount = fmt.Sprintf(`SELECT COUNT(id) FROM %v WHERE %v = "%v"`, table, field, postVal)
-	h.PrintlnIf(strCount, h.GetConfig().Mode.Debug)
-	count, err := db.DbMap.SelectInt(strCount)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
-	var countMax int64 = 0
-	if postVal != "" && current == postVal {
-		countMax = 1
-	}
-
-	if countMax < count {
-		return false, v.GetErrorToType(key, "unique", VALIDATION_ERROR_UNIQUE)
+	for _, val := range postVals.([]string) {
+		var countMax int = 0
+		if val != "" && cok && current.(string) == val {
+			countMax = 1
+		}
+		if !v.ValidateUniqueDb(table, field, countMax, val) {
+			return false, v.GetErrorToType(key, "unique", ValidationErrorUnique)
+		}
 	}
 
 	return true, nil
+}
+
+func (v *Validator) ValidateUniqueDb(table string, field string, maxCount int, value interface{}) bool {
+	var strCount = fmt.Sprintf(`SELECT COUNT(id) FROM %s WHERE %s = ?`, table, field)
+	h.PrintlnIf(strCount, h.GetConfig().Mode.Debug)
+	count, err := db.DbMap.SelectInt(strCount, value)
+	h.Error(err, "", h.ErrorLvlError)
+	if maxCount < int(count) {
+		return false
+	}
+
+	return true
 }
 
 func (v *Validator) ValidateExtension(key string, option interface{}, required bool) (bool, error) {
 	h.PrintlnIf(fmt.Sprintf("Validating extensions"), h.GetConfig().Mode.Debug)
 
 	file, err := v.ctx.FormFile(key)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlWarning)
 	postVal := file.Filename
 	if !required {
 		for _, ev := range v.getEmptyValues() {
@@ -230,7 +370,7 @@ func (v *Validator) ValidateExtension(key string, option interface{}, required b
 		}
 	}
 
-	return false, v.GetErrorToType(key, "unique", fmt.Sprintf(VALIDATION_ERROR_EXTENSION, strings.Join(allowedExts, ",")))
+	return false, v.GetErrorToType(key, "unique", fmt.Sprintf(ValidationErrorExtension, strings.Join(allowedExts, ",")))
 }
 
 func (v *Validator) ValidateRequiredMulti(key string, option interface{}) (bool, error) {
@@ -240,68 +380,74 @@ func (v *Validator) ValidateRequiredMulti(key string, option interface{}) (bool,
 	}
 
 	if v.isEmptyMulti(key) {
-		return false, v.GetErrorToType(key, "required", VALIDATION_ERROR_REQUIRED)
+		return false, v.GetErrorToType(key, "required", ValidationErrorRequired)
 	}
 
 	return true, nil
 }
 
-func (v *Validator) ValidateFormat(key string, option interface{}, required bool) (bool, error) {
-	postVal := v.getValue(key, false).(string)
-	empty := v.isEmpty(key)
-	if !required && empty {
-		return true, nil
-	}
+func (v *Validator) ValidateFormat(key string, option interface{}, required bool, multi bool) (bool, error) {
+	var postVals []string
 	var valid bool
 	var err error
 	var optionMap = option.(map[string]interface{})
-	switch optionMap["type"].(string) {
-	case "email":
-		valid = v.validateEmail(postVal)
-		err = v.GetErrorToType(key, "format", VALIDATION_ERROR_EMAIL)
-		break
-	case "link":
-		valid = v.validateLink(postVal)
-		err = v.GetErrorToType(key, "format", VALIDATION_ERROR_LINK)
-		break
-	case "regexp":
-		valid = v.validateRegexp(postVal, optionMap["pattern"].(string))
-		err = v.GetErrorToType(key, "format", VALIDATION_ERROR_REGEXP)
-		break
-	case "password":
-		valid = v.validatePassword(postVal)
-		err = v.GetErrorToType(key, "format", VALIDATION_ERROR_PASSWORD)
-		break
-	}
 
-	if valid == true {
-		err = nil
+	postVals = v.getValue(key, multi).([]string)
+
+	if !required {
+		return true, nil
+	} else if len(postVals) == 0 {
+		return false, v.GetErrorToType(key, "required", ValidationErrorRequired)
+	}
+	for _, postVal := range postVals {
+		switch optionMap["type"].(string) {
+		case "email":
+			valid = v.ValidateEmail(postVal)
+			err = v.GetErrorToType(key, "format", ValidationErrorEmail)
+			break
+		case "link":
+		case "url":
+			valid = v.ValidateLink(postVal)
+			err = v.GetErrorToType(key, "format", ValidationErrorLink)
+			break
+		case "regexp":
+			valid = v.ValidateRegexp(postVal, optionMap["pattern"].(string))
+			err = v.GetErrorToType(key, "format", ValidationErrorRegexp)
+			break
+		case "password":
+			valid = v.ValidatePassword(postVal)
+			err = v.GetErrorToType(key, "format", ValidationErrorPassword)
+			break
+		}
+		if !valid {
+			break
+		}
 	}
 
 	return valid, err
 }
 
-func (v *Validator) validateLink(value string) bool {
-	h.PrintlnIf(fmt.Sprintf("Validating link"), h.GetConfig().Mode.Debug)
+func (v *Validator) ValidateLink(value string) bool {
+	h.PrintlnIf(fmt.Sprintf("Validating link %s", value), h.GetConfig().Mode.Debug)
 	_, err := url.ParseRequestURI(value)
 	return err == nil
 }
 
-func (v *Validator) validateEmail(value string) bool {
-	h.PrintlnIf(fmt.Sprintf("Validating email"), h.GetConfig().Mode.Debug)
-	return v.validateRegexp(value, VALIDATION_FORMAT_EMAIL)
+func (v *Validator) ValidateEmail(value string) bool {
+	h.PrintlnIf(fmt.Sprintf("Validating email %s", value), h.GetConfig().Mode.Debug)
+	return v.ValidateRegexp(value, ValidationFormatEmail)
 }
 
-func (v *Validator) validateRegexp(value string, pattern string) bool {
+func (v *Validator) ValidateRegexp(value string, pattern string) bool {
 	h.PrintlnIf(fmt.Sprintf("Validating regexp %v in %v", pattern, value), h.GetConfig().Mode.Debug)
 	re := regexp.MustCompile(pattern)
 	return re.MatchString(value)
 }
 
-func (v *Validator) validatePassword(value string) bool {
+func (v *Validator) ValidatePassword(value string) bool {
 	h.PrintlnIf("Validating password", h.GetConfig().Mode.Debug)
-	for _, exp := range []string{VALIDATION_FORMAT_PASSWORD_UPPER, VALIDATION_FORMAT_PASSWORD_LOWER, VALIDATION_FORMAT_PASSWORD_DIGIT} {
-		if !v.validateRegexp(value, exp) {
+	for _, exp := range []string{ValidationFormatpasswordUpper, ValidationFormatpasswordLower, ValidationFormatpasswordDigit} {
+		if !v.ValidateRegexp(value, exp) {
 			return false
 		}
 	}
@@ -309,42 +455,85 @@ func (v *Validator) validatePassword(value string) bool {
 	return true
 }
 
-func (v *Validator) ValidateLength(key string, option interface{}, required bool) (bool, error) {
+func (v *Validator) ValidateLength(key string, option interface{}, required bool, multi bool) (bool, error) {
 	minLength, okMin := option.(map[string]interface{})["min"].(int)
 	maxLength, okMax := option.(map[string]interface{})["max"].(int)
 	h.PrintlnIf(fmt.Sprintf("Validating length %v %v", minLength, maxLength), h.GetConfig().Mode.Debug)
-	postVal := v.getValue(key, false).(string)
-	empty := v.isEmpty(key)
+	postVals := v.getValue(key, multi).([]string)
+	var empty bool
+	if multi {
+		empty = v.isEmptyMulti(key)
+	} else {
+		empty = v.isEmpty(key)
+	}
+
 	if !required && empty {
 		return true, nil
 	}
 
-	if (okMin && len(postVal) < minLength) || (okMax && len(postVal) > maxLength) {
-		return false, v.GetErrorToType(key, "length", VALIDATION_ERROR_LENGTH)
+	for _, postVal := range postVals {
+		if (okMin && len(postVal) < minLength) || (okMax && len(postVal) > maxLength) {
+			return false, v.GetErrorToType(key, "length", ValidationErrorLength)
+		}
 	}
 	return true, nil
 }
 
-func (v *Validator) ValidateSameAs(key string, option interface{}, required bool) (bool, error) {
-	h.PrintlnIf(fmt.Sprintf("Validating same as"), h.GetConfig().Mode.Debug)
-	postVal := v.getValue(key, false).(string)
-	empty := v.isEmpty(key)
+func (v *Validator) ValidateCount(key string, option interface{}, required bool, multi bool) (bool, error) {
+	minCount, okMin := option.(map[string]interface{})["min"].(int)
+	maxCount, okMax := option.(map[string]interface{})["max"].(int)
+	h.PrintlnIf(fmt.Sprintf("Validating count %v %v", minCount, maxCount), h.GetConfig().Mode.Debug)
+	postVals := v.getValue(key, multi).([]string)
+	var empty bool
+	if multi {
+		empty = v.isEmptyMulti(key)
+	} else {
+		empty = v.isEmpty(key)
+	}
+
 	if !required && empty {
 		return true, nil
 	}
-	sameValue := v.getValue(option.(string), false).(string)
-	if postVal != sameValue {
-		return false, v.GetErrorToType(key, "sameas", VALIDATION_ERROR_SAMEAS)
+
+	if (okMin && len(postVals) < minCount) || (okMax && len(postVals) > maxCount) {
+		return false, v.GetErrorToType(key, "count", ValidationErrorCount)
+	}
+
+	return true, nil
+}
+
+func (v *Validator) ValidateSameAs(key string, option interface{}, required bool, multi bool) (bool, error) {
+	h.PrintlnIf(fmt.Sprintf("Validating same as"), h.GetConfig().Mode.Debug)
+	var empty bool
+	var postVals []string = v.getValue(key, multi).([]string)
+	if multi {
+		empty = v.isEmptyMulti(key)
+	} else {
+		empty = v.isEmpty(key)
+	}
+
+	if !required && empty {
+		return true, nil
+	}
+
+	for i, postVal := range postVals {
+		sameValue := v.getValue(option.(string), multi).([]string)[i]
+		if postVal != sameValue {
+			return false, v.GetErrorToType(key, "sameas", ValidationErrorSameAs)
+		}
 	}
 
 	return true, nil
 }
 
 func (v *Validator) isEmpty(key string) bool {
-	value := v.getValue(key, false).(string)
+	value := v.getValue(key, false).([]string)
+	if len(value) == 0 {
+		return true
+	}
 	h.PrintlnIf(fmt.Sprintf("Empty check -> Value of %v is %v", key, value), h.GetConfig().Mode.Debug)
 	for _, ev := range v.getEmptyValues() {
-		if ev == value {
+		if ev == value[0] {
 			return true
 		}
 	}
@@ -374,29 +563,24 @@ func (v Validator) getEmptyValues() []interface{} {
 func (v *Validator) getValue(key string, multi bool) interface{} {
 	value, ok := v.values[key]
 	if ok {
-		return value.(string)
+		return value
 	}
 
-	h.PrintlnIf(fmt.Sprintf("value of %v has not set yet, getting from request", key), h.GetConfig().Mode.Debug)
-	if multi {
-		var values []string
-		for _, mv := range v.ctx.FormValue(key) {
-			mvs := string(mv)
-			values = append(values, mvs)
-		}
-		v.values[key] = values
-		return v.values[key]
-	}
-
-	var postVal string
 	if v.Fields[key]["type"] == "file" {
 		file, err := v.ctx.FormFile(key)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
-		postVal = file.Filename
+		h.Error(err, "", h.ErrorLvlWarning)
+		v.values[key] = []string{file.Filename}
 	} else {
-		postVal = string(v.ctx.FormValue(key))
+		h.PrintlnIf(fmt.Sprintf("value of %v has not set yet, getting from request", key), h.GetConfig().Mode.Debug)
+		var values []string
+		for _, mv := range v.ctx.PostArgs().PeekMulti(key) {
+			mvs := string(mv)
+			if mvs != "" {
+				values = append(values, mvs)
+			}
+		}
+		v.values[key] = values
 	}
 
-	v.values[key] = postVal
-	return v.values[key].(string)
+	return v.values[key]
 }

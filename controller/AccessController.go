@@ -46,11 +46,11 @@ func (a AccessController) CheckBan(ctx *fasthttp.RequestCtx, session *h.Session,
 	newRequest.Body = string(ctx.Request.Body())
 
 	err = db.DbMap.Insert(&newRequest)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 
 	var query = fmt.Sprintf("SELECT COUNT(*) FROM %v WHERE `remote_address` = '%s' AND time = '%s'", request.GetTable(), remoteAddress, nowTime.Format(model.MYSQL_TIME_FORMAT))
 	requests, err := db.DbMap.SelectInt(query)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 
 	if int(requests) >= h.GetConfig().Server.MaxRPS {
@@ -58,7 +58,7 @@ func (a AccessController) CheckBan(ctx *fasthttp.RequestCtx, session *h.Session,
 		ban.RemoteAddr = remoteAddress
 		ban.Until = nowTime.Add(time.Duration(h.GetConfig().Server.BanMinutes) * time.Minute)
 		err = db.DbMap.Insert(&ban)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 		return true
 	}
 

@@ -62,7 +62,7 @@ func (b *BlockController) EditAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 	Block, err := ModelBlock.Get(blockId)
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ERROR_LVL_WARNING)
+		h.Error(err, "", h.ErrorLvlWarning)
 		Redirect(ctx, "block/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
@@ -159,7 +159,7 @@ func (b *BlockController) saveBlock(ctx *fasthttp.RequestCtx, session *h.Session
 		} else {
 			err = db.DbMap.Insert(&Block)
 		}
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 		succ = err == nil
 		h.PrintlnIf("Sikeres mentés", h.GetConfig().Mode.Debug && succ)
 		h.PrintlnIf("Sikertelen mentés", h.GetConfig().Mode.Debug && !succ)
@@ -182,14 +182,14 @@ func (b *BlockController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Sess
 	Block, err := ModelBlock.Get(blockId)
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ERROR_LVL_WARNING)
+		h.Error(err, "", h.ErrorLvlWarning)
 		Redirect(ctx, "block/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
 
 	blockIdentifier := Block.Identifier
 	count, err := db.DbMap.Delete(&Block)
-	h.Error(err, "", h.ERROR_LVL_WARNING)
+	h.Error(err, "", h.ErrorLvlWarning)
 	if err != nil || count == 0 {
 		session.AddError("An error occurred, could not delete the block.")
 		status = fasthttp.StatusBadRequest

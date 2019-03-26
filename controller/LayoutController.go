@@ -86,7 +86,7 @@ func (l *LayoutController) RenderAction(ctx *fasthttp.RequestCtx, session *h.Ses
 	independent, ok := routeMap["independent"]
 	if !ok || !independent.(bool) {
 		_, err := ctx.WriteString(h.GetScopeTemplateString(fmt.Sprintf("layout/%v", pageInstance.Layout), pageInstance, pageInstance.Scope))
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 	}
 	return
 }

@@ -64,7 +64,7 @@ var ConfigFilePath string = "./resource/config.yml"
 func GetConfig() Conf {
 	Config, err := parseConfig()
 	if nil != err {
-		Error(err, "Could not retrieve config", ERROR_LVL_ERROR)
+		Error(err, "Could not retrieve config", ErrorLvlError)
 	}
 	return Config
 }
@@ -74,13 +74,13 @@ func parseConfig() (Conf, error) {
 	var err error
 	var dat []byte
 	dat, err = ioutil.ReadFile(ConfigFilePath)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 	if err != nil {
-		Error(err, "", ERROR_LVL_ERROR)
+		Error(err, "", ErrorLvlError)
 	}
 
 	err = yaml.Unmarshal(dat, &Config)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 	if err != nil {
 		return Conf{}, err
 	}

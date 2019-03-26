@@ -44,7 +44,7 @@ func (ur UserRole) BuildStructure(dbmap *gorp.DbMap) {
 	h.PrintlnIf(fmt.Sprintf("Create %v table", ur.GetTable()), Conf.Mode.Rebuild_structure)
 	dbmap.CreateTablesIfNotExists()
 	tablemap, err := dbmap.TableFor(reflect.TypeOf(UserRole{}), false)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	for _, index := range indexes {
 		h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
 		tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))

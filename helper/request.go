@@ -65,9 +65,9 @@ func GetFormData(ctx *fasthttp.RequestCtx, field string, multi bool) interface{}
 func SetLog() *os.File {
 	path := "./system/"
 	err := os.MkdirAll(path, 0775)
-	Error(err, "", ERROR_LVL_WARNING)
+	Error(err, "", ErrorLvlWarning)
 	f, err := os.OpenFile(fmt.Sprintf("%v/%v.log", path, time.Now().Format("06_01_02__15")), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0775)
-	Error(err, "", ERROR_LVL_WARNING)
+	Error(err, "", ErrorLvlWarning)
 	mw := io.MultiWriter(os.Stdout, f)
 
 	log.SetOutput(mw)

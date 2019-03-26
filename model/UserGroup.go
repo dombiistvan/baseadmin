@@ -26,7 +26,7 @@ func (_ UserGroup) Get(id int64) (UserGroup, error) {
 	}
 
 	err := dbHelper.DbMap.SelectOne(&usergroup, fmt.Sprintf("SELECT * FROM %v WHERE %v = ?", usergroup.GetTable(), usergroup.GetPrimaryKey()[0]), id)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	if err != nil {
 		return usergroup, err
 	}
@@ -45,7 +45,7 @@ func (_ UserGroup) GetByIdentifier(identifier string) (UserGroup, error) {
 	}
 
 	err := dbHelper.DbMap.SelectOne(&usergroup, fmt.Sprintf("SELECT * FROM %v WHERE %s = ?", usergroup.GetTable(), "identifier"), identifier)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	if err != nil {
 		return usergroup, err
 	}
@@ -87,7 +87,7 @@ func (ug UserGroup) GetAll() []UserGroup {
 	query := fmt.Sprintf("SELECT * FROM %v ORDER BY %v", ug.GetTable(), "name")
 	h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 	_, err := dbHelper.DbMap.Select(&groups, query)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return groups
 }
 
@@ -98,7 +98,7 @@ func (ug *UserGroup) ModifyRoles(roles []string) {
 	if ug.Id > 0 {
 		_, err := dbHelper.DbMap.Exec(fmt.Sprintf("DELETE FROM %v WHERE user_group_id = ?", ur.GetTable()), ug.Id)
 		if err != nil {
-			h.Error(err, "", h.ERROR_LVL_ERROR)
+			h.Error(err, "", h.ErrorLvlError)
 			return
 		}
 	}
@@ -111,7 +111,7 @@ func (ug *UserGroup) ModifyRoles(roles []string) {
 			role = UserRole{UserGroupId: ug.Id, Role: strRole}
 			err := dbHelper.DbMap.Insert(&role)
 			if err != nil {
-				h.Error(err, "", h.ERROR_LVL_ERROR)
+				h.Error(err, "", h.ErrorLvlError)
 			}
 			return
 		}
@@ -131,7 +131,7 @@ func (ug *UserGroup) ModifyRoles(roles []string) {
 
 		err := dbHelper.DbMap.Insert(&role)
 		if err != nil {
-			h.Error(err, "", h.ERROR_LVL_ERROR)
+			h.Error(err, "", h.ErrorLvlError)
 		}
 	}
 }
@@ -148,7 +148,7 @@ func (ug UserGroup) BuildStructure(dbmap *gorp.DbMap) {
 		h.PrintlnIf(fmt.Sprintf("Create %v table", ug.GetTable()), Conf.Mode.Rebuild_structure)
 		dbmap.CreateTablesIfNotExists()
 		tablemap, err := dbmap.TableFor(reflect.TypeOf(UserGroup{}), false)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 		for _, index := range indexes {
 			h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
 			tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))
@@ -163,7 +163,7 @@ func (ug UserGroup) BuildStructure(dbmap *gorp.DbMap) {
 		adminGroup.Identifier = "admin"
 
 		err = dbmap.Insert(&adminGroup)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 
 		if err == nil {
 			adminGroup.ModifyRoles([]string{"*"})
@@ -175,7 +175,7 @@ func (ug *UserGroup) GetRoles() []string {
 	var UserRoles []UserRole
 	var ReturnRoles []string
 	_, err := dbHelper.DbMap.Select(&UserRoles, "select * from user_role WHERE user_group_id = ?", ug.Id)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	for _, role := range UserRoles {
 		ReturnRoles = append(ReturnRoles, role.Role)
 	}

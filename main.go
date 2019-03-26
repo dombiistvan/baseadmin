@@ -48,7 +48,7 @@ func main() {
 		}
 
 		err := srv.ListenAndServe(fmt.Sprintf(":%s", h.GetConfig().ListenPort))
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 		h.PrintlnIf("The server is listening...", h.GetConfig().Mode.Debug)
 	}()
 }

@@ -41,7 +41,7 @@ func (u User) IsAdmin() bool {
 	var adminGroup UserGroup
 
 	adminGroup, err := adminGroup.GetByIdentifier("admin")
-	h.Error(err, "", h.ERROR_LVL_NOTICE)
+	h.Error(err, "", h.ErrorLvlNotice)
 
 	return u.UserGroupId == adminGroup.Id
 }
@@ -82,7 +82,7 @@ func (_ User) Get(id int64) (User, error) {
 	}
 
 	err := dbHelper.DbMap.SelectOne(&user, fmt.Sprintf("SELECT * FROM %v WHERE %v = ?", user.GetTable(), user.GetPrimaryKey()[0]), id)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	if err != nil {
 		return user, err
 	}
@@ -152,7 +152,7 @@ func (u User) BuildStructure(dbmap *gorp.DbMap) {
 		h.PrintlnIf(fmt.Sprintf("Create %v table", u.GetTable()), Conf.Mode.Rebuild_structure)
 		dbmap.CreateTablesIfNotExists()
 		tablemap, err := dbmap.TableFor(reflect.TypeOf(User{}), false)
-		h.Error(err, "", h.ERROR_LVL_ERROR)
+		h.Error(err, "", h.ErrorLvlError)
 		for _, index := range indexes {
 			h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
 			tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))
@@ -164,7 +164,7 @@ func (u User) BuildStructure(dbmap *gorp.DbMap) {
 			var adminGroup UserGroup
 
 			adminGroup, err = adminGroup.GetByIdentifier("admin")
-			h.Error(err, "", h.ERROR_LVL_ERROR)
+			h.Error(err, "", h.ErrorLvlError)
 
 			chiefAdmin = User{
 				Email:         ca.Email,
@@ -191,7 +191,7 @@ func (u *User) GetRoles() []string {
 	var UserRoles []UserRole
 	var ReturnRoles []string
 	_, err := dbHelper.DbMap.Select(&UserRoles, "select * from user_role WHERE user_group_id = ?", u.UserGroupId)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	for _, role := range UserRoles {
 		ReturnRoles = append(ReturnRoles, role.Role)
 	}

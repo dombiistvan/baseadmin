@@ -46,7 +46,7 @@ func (s Status) GetAll() []Status {
 	query := fmt.Sprintf("SELECT * FROM %v ORDER BY %v", s.GetTable(), s.GetPrimaryKey()[0])
 	h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 	_, err := db.DbMap.Select(&statuses, query)
-	h.Error(err, "", h.ERROR_LVL_ERROR)
+	h.Error(err, "", h.ErrorLvlError)
 	return statuses
 }
 
@@ -80,17 +80,17 @@ func (s Status) BuildStructure(dbmap *gorp.DbMap) {
 	status := NewStatus(STATUS_NOT_CONFIRMED, "Not Confirmed")
 	err := dbmap.Insert(&status)
 	h.PrintlnIf(fmt.Sprintf("Adding Status %s", s.Name), Conf.Mode.Debug)
-	h.Error(err, "", h.ERROR_LVL_WARNING)
+	h.Error(err, "", h.ErrorLvlWarning)
 
 	status = NewStatus(STATUS_CONFIRMED_AND_ACTIVE, "Confirmed and Active")
 	err = dbmap.Insert(&status)
 	h.PrintlnIf(fmt.Sprintf("Adding Status %s", s.Name), Conf.Mode.Debug)
-	h.Error(err, "", h.ERROR_LVL_WARNING)
+	h.Error(err, "", h.ErrorLvlWarning)
 
 	status = NewStatus(STATUS_INACTIVE, "Inactive")
 	err = dbmap.Insert(&status)
 	h.PrintlnIf(fmt.Sprintf("Adding Status %s", s.Name), Conf.Mode.Debug)
-	h.Error(err, "", h.ERROR_LVL_WARNING)
+	h.Error(err, "", h.ErrorLvlWarning)
 }
 
 func (_ Status) IsLanguageModel() bool {

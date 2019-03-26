@@ -43,20 +43,20 @@ func (a *AuthHelper) HasRights(requiredRoles []string, session *Session) bool {
 func GetRoles() RolesStruct {
 	succ, err := parseRolesConfig()
 	if nil != err || !succ {
-		Error(err, "Could not retrieve roles config", ERROR_LVL_ERROR)
+		Error(err, "Could not retrieve roles config", ErrorLvlError)
 	}
 	return Roles
 }
 
 func parseRolesConfig() (bool, error) {
 	dat, err := ioutil.ReadFile(RolesConfigPath)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 	if err != nil {
 		return false, err
 	}
 
 	err = yaml.Unmarshal(dat, &Roles)
-	Error(err, "", ERROR_LVL_ERROR)
+	Error(err, "", ErrorLvlError)
 	if err != nil {
 		return false, err
 	}

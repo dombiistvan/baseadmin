@@ -102,11 +102,12 @@ func (p *Page) AddDefaultMetaData() {
 }
 
 func (p *Page) AddOgMetaData() {
-	p.AddMeta(map[string]string{"name": "og:url", "content": helper.GetConfig().Og.Url})
-	p.AddMeta(map[string]string{"name": "og:type", "content": helper.GetConfig().Og.Type})
-	p.AddMeta(map[string]string{"name": "og:title", "content": helper.GetConfig().Og.Title})
-	p.AddMeta(map[string]string{"name": "og:description", "content": helper.GetConfig().Og.Description})
-	p.AddMeta(map[string]string{"name": "og:image", "content": helper.GetConfig().Og.Url + "/" + strings.TrimLeft(helper.GetConfig().Og.Image, "/")})
+	var c = helper.GetConfig()
+	p.AddMeta(map[string]string{"name": "og:url", "content": c.OpenGraph.Url})
+	p.AddMeta(map[string]string{"name": "og:type", "content": c.OpenGraph.Type})
+	p.AddMeta(map[string]string{"name": "og:title", "content": c.OpenGraph.Title})
+	p.AddMeta(map[string]string{"name": "og:description", "content": c.OpenGraph.Description})
+	p.AddMeta(map[string]string{"name": "og:image", "content": c.OpenGraph.Url + "/" + strings.TrimLeft(c.OpenGraph.Image, "/")})
 }
 
 func (p Page) GetMetaTags() template.HTML {

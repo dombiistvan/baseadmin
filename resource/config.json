@@ -1,0 +1,59 @@
+{
+  "listenPort": "8080",
+  "viewDirectory": "view",
+  "chiefAdmin": [
+    {
+      "email": "dombiistvan28@gmail.com",
+      "password": "BaseAdmin20060102",
+      "superAdmin": true
+    }
+  ],
+  "environment": "local",
+  "db": {
+    "environment": {
+      "local": {
+        "host": "localhost",
+        "name": "baseadmin",
+        "username": "root",
+        "password": "NootNoot"
+      }
+    }
+  },
+  "maxIdleConn": 20,
+  "maxOpenConn": 20,
+  "maxConLifetimeMinutes": 60,
+  "server": {
+    "readTimeoutSeconds": 20,
+    "writeTimeoutSeconds": 20,
+    "maxRps": 5,
+    "banMinutes": 10,
+    "sessionKey": "sessionkey",
+    "banActive": false,
+    "name": "Server Name"
+  },
+  "mode": {
+    "live": false,
+    "debug": true,
+    "rebuildStructure": true,
+    "rebuildData": false
+  },
+  "cache": {
+    "enabled": true,
+    "type": "file",
+    "directory": "view/cache"
+  },
+  "adminRouter": "admin",
+  "openGraph": {
+    "url": "http://example.com",
+    "type": "website",
+    "title": "Site Default Name",
+    "description": "Site Default Description",
+    "image": "/opengraph/default/image.png"
+  },
+  "language": {
+    "allowed": [
+      "hu",
+      "en"
+    ]
+  }
+}

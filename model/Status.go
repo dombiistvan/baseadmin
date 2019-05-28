@@ -69,12 +69,12 @@ func (s Status) ToOptions(defOption map[string]string) []map[string]string {
 func (s Status) BuildStructure(dbmap *gorp.DbMap) {
 	Conf := h.GetConfig()
 
-	if Conf.Mode.Rebuild_structure {
-		h.PrintlnIf(fmt.Sprintf("Drop %v table", s.GetTable()), Conf.Mode.Rebuild_structure)
+	if Conf.Mode.RebuildStructure {
+		h.PrintlnIf(fmt.Sprintf("Drop %v table", s.GetTable()), Conf.Mode.RebuildStructure)
 		dbmap.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s;", s.GetTable()))
 	}
 
-	h.PrintlnIf(fmt.Sprintf("Create %v table", s.GetTable()), Conf.Mode.Rebuild_structure)
+	h.PrintlnIf(fmt.Sprintf("Create %v table", s.GetTable()), Conf.Mode.RebuildStructure)
 	dbmap.CreateTablesIfNotExists()
 
 	status := NewStatus(STATUS_NOT_CONFIRMED, "Not Confirmed")

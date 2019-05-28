@@ -65,12 +65,12 @@ func (_ EntityAttributeValue) IsAutoIncrement() bool {
 
 func (eav EntityAttributeValue) BuildStructure(dbmap *gorp.DbMap) {
 	Conf := h.GetConfig()
-	if Conf.Mode.Rebuild_structure {
-		h.PrintlnIf(fmt.Sprintf("Drop %s table", eav.GetTable()), Conf.Mode.Rebuild_structure)
+	if Conf.Mode.RebuildStructure {
+		h.PrintlnIf(fmt.Sprintf("Drop %s table", eav.GetTable()), Conf.Mode.RebuildStructure)
 		dbmap.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s;", eav.GetTable()))
 	}
 
-	h.PrintlnIf(fmt.Sprintf("Create %s table", eav.GetTable()), Conf.Mode.Rebuild_structure)
+	h.PrintlnIf(fmt.Sprintf("Create %s table", eav.GetTable()), Conf.Mode.RebuildStructure)
 	dbmap.CreateTablesIfNotExists()
 	var indexes map[int]map[string]interface{} = make(map[int]map[string]interface{})
 
@@ -91,7 +91,7 @@ func (eav EntityAttributeValue) BuildStructure(dbmap *gorp.DbMap) {
 	tablemap, err := dbmap.TableFor(reflect.TypeOf(EntityAttributeValue{}), false)
 	h.Error(err, "", h.ErrorLvlError)
 	for _, index := range indexes {
-		h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
+		h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.RebuildStructure)
 		tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))
 	}
 

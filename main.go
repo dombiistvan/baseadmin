@@ -37,12 +37,12 @@ func init() {
 	_, err := dbhelper.DbMap.Exec("SET GLOBAL FOREIGN_KEY_CHECKS=0;")
 	h.Error(err, "", h.ErrorLvlError)
 
-	h.PrintlnIf("Rebuild table structure because config rebuild flag is true", h.GetConfig().Mode.Rebuild_structure)
+	h.PrintlnIf("Rebuild table structure because config rebuild flag is true", h.GetConfig().Mode.RebuildStructure)
 	var tablemap *gorp.TableMap
 	for _, cm := range tableModels {
 		tablemap = dbhelper.DbMap.AddTableWithName(cm, cm.GetTable())
 		tablemap.SetKeys(cm.IsAutoIncrement(), cm.GetPrimaryKey()...)
-		if h.GetConfig().Mode.Rebuild_structure {
+		if h.GetConfig().Mode.RebuildStructure {
 			cm.BuildStructure(dbhelper.DbMap)
 		}
 	}

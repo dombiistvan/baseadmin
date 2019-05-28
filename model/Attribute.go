@@ -503,12 +503,12 @@ func GetAttributeFormValidator(ctx *fasthttp.RequestCtx, Attribute *Attribute) V
 
 func (a Attribute) BuildStructure(dbmap *gorp.DbMap) {
 	Conf := h.GetConfig()
-	if Conf.Mode.Rebuild_structure {
-		h.PrintlnIf(fmt.Sprintf("Drop %s table", a.GetTable()), Conf.Mode.Rebuild_structure)
+	if Conf.Mode.RebuildStructure {
+		h.PrintlnIf(fmt.Sprintf("Drop %s table", a.GetTable()), Conf.Mode.RebuildStructure)
 		dbmap.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s;", a.GetTable()))
 	}
 
-	h.PrintlnIf(fmt.Sprintf("Create %s table", a.GetTable()), Conf.Mode.Rebuild_structure)
+	h.PrintlnIf(fmt.Sprintf("Create %s table", a.GetTable()), Conf.Mode.RebuildStructure)
 	err := dbmap.CreateTablesIfNotExists()
 	h.Error(err, "", h.ErrorLvlError)
 	var indexes = make(map[int]map[string]interface{})
@@ -554,7 +554,7 @@ func (a Attribute) BuildStructure(dbmap *gorp.DbMap) {
 	tablemap, err := dbmap.TableFor(reflect.TypeOf(Attribute{}), false)
 	h.Error(err, "", h.ErrorLvlError)
 	for _, index := range indexes {
-		h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
+		h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.RebuildStructure)
 		tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))
 	}
 

@@ -1,21 +1,21 @@
 package helper
 
 import (
+	"encoding/json"
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
 
-var MenuFilePath string = "./resource/menu.yml"
+var MenuFilePath string = "./resource/menu.json"
 
 type MenuGroup struct {
-	Label      string           `yml:"label"`
-	Group      string           `yml:"group"`
-	Url        string           `yml:"url"`
-	Children   map[int]MenuItem `yml:"children"`
-	Icon       string           `yml:"icon"`
-	Visibility string           `yml:"visibility"`
-	IsVisible  bool             `yml:"-"`
+	Label      string     `json:"label"`
+	Group      string     `json:"group"`
+	Url        string     `json:"url"`
+	Children   []MenuItem `json:"children"`
+	Icon       string     `json:"icon"`
+	Visibility string     `json:"visibility"`
+	IsVisible  bool       `json:"-"`
 }
 
 func (mg MenuGroup) GetUrl() string {
@@ -27,12 +27,12 @@ func (mg *MenuGroup) SetIsVisible(visible bool) {
 }
 
 type MenuItem struct {
-	Label      string `yml:"label"`
-	Url        string `yml:"url"`
-	Type       string `yml:"type"`
-	Visibility string `yml:"visibility"`
-	Icon       string `yml:"icon"`
-	IsVisible  bool   `yml:"-"`
+	Label      string `json:"label"`
+	Url        string `json:"url"`
+	Type       string `json:"type"`
+	Visibility string `json:"visibility"`
+	Icon       string `json:"icon"`
+	IsVisible  bool   `json:"-"`
 }
 
 func (mi MenuItem) GetUrl() string {
@@ -44,7 +44,7 @@ func (mi *MenuItem) SetIsVisible(visible bool) {
 }
 
 type Menu struct {
-	Menu        []MenuGroup `yml:"menu"`
+	Menu        []MenuGroup `json:"menu"`
 	LogoutUrl   string
 	LogoutLabel string
 	IsLoggedIn  bool
@@ -82,7 +82,7 @@ func GetMenu(session *Session) Menu {
 	menu.LogoutLabel = "Log out"
 	menu.IsLoggedIn = session.IsLoggedIn()
 
-	menu.Title = GetConfig().Og.Title
+	menu.Title = GetConfig().OpenGraph.Title
 	menu.Lang = fmt.Sprintf("[%v]", session.GetActiveLang())
 
 	return menu
@@ -95,7 +95,7 @@ func parseMenu(menu *Menu) (bool, error) {
 		return false, err
 	}
 
-	err = yaml.Unmarshal(dat, menu)
+	err = json.Unmarshal(dat, menu)
 	Error(err, "Yaml reading error", ErrorLvlError)
 	if err != nil {
 		return false, err

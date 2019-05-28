@@ -19,11 +19,11 @@ func Error(err error, msg string, lvl int) {
 		default:
 			log.Println(msg)
 		case ErrorLvlWarning:
-			panic(err)
 			log.Println(msg)
+			panic(err)
 		case ErrorLvlError:
-			panic(err)
 			log.Println(msg)
+			panic(err)
 			break
 		}
 	}

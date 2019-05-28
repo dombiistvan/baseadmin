@@ -1,90 +1,104 @@
 package helper
 
 import (
-	"gopkg.in/yaml.v2"
+	"encoding/json"
 	"io/ioutil"
 )
 
 type Conf struct {
-	ViewDir    string `yml:"viewdir"`
-	ListenPort string `yml:"listenport"`
-	BrandUrl   string `yml:"brandurl"`
-	ChiefAdmin map[int]struct {
-		Email      string `yml:"email"`
-		Password   string `yml:"password"`
-		SuperAdmin bool   `yml:"superadmin"`
-	} `yml:"chiefadmin"`
-	Og struct {
-		Url         string `yml:"url"`
-		Type        string `yml:"type"`
-		Title       string `yml:"title"`
-		Description string `yml:"description"`
-		Image       string `yml:"image"`
-	} `yml:"og"`
-	Environment string `yml:"environment"`
+	Parsed     bool
+	ViewDir    string `json:"viewDirectory"`
+	ListenPort string `json:"listenPort"`
+	BrandUrl   string `json:"brandUrl"`
+	ChiefAdmin []struct {
+		Email      string `json:"email"`
+		Password   string `json:"password"`
+		SuperAdmin bool   `json:"superAdmin"`
+	} `json:"chiefAdmin"`
+	OpenGraph struct {
+		Url         string `json:"url"`
+		Type        string `json:"type"`
+		Title       string `json:"title"`
+		Description string `json:"description"`
+		Image       string `json:"image"`
+	} `json:"openGraph"`
+	Environment string `json:"environment"`
 	Db          struct {
 		Environment map[string]struct {
-			Host     string `yml:"host"`
-			Username string `yml:"username"`
-			Password string `yml:"password"`
-			Name     string `yml:"name"`
-		} `yml:"environment"`
-		MaxIdleCons            int `yml:"maxidleconns"`
-		MaxOpenCons            int `yml:"maxopenconns"`
-		MaxConnLifetimeMinutes int `yml:"maxconnlifetimeminutes"`
-	} `yml:"db"`
+			Host     string `json:"host"`
+			Username string `json:"username"`
+			Password string `json:"password"`
+			Name     string `json:"name"`
+		} `json:"environment"`
+		MaxIdleCons            int `json:"maxIdleCons"`
+		MaxOpenCons            int `json:"maxOpenCons"`
+		MaxConnLifetimeMinutes int `json:"maxConLifetimeMinutes"`
+	} `json:"db"`
 	Server struct {
-		ReadTimeoutSeconds  int    `yml:"readtimeoutseconds"`
-		WriteTimeoutSeconds int    `yml:"writetimeoutseconds"`
-		SessionKey          string `yml:"sessionkey"`
-		MaxRPS              int    `yml:"maxrps"`
-		BanMinutes          int    `yml:"banminutes"`
-		BanActive           bool   `yml:"banactive"`
-		Name                string `yml:"name"`
-	} `yml:"server"`
+		ReadTimeoutSeconds  int    `json:"readTimeoutSeconds"`
+		WriteTimeoutSeconds int    `json:"writeTimeoutSeconds"`
+		SessionKey          string `json:"sessionKey"`
+		MaxRPS              int    `json:"maxRps"`
+		BanMinutes          int    `json:"banMinutes"`
+		BanActive           bool   `json:"banActive"`
+		Name                string `json:"name"`
+	} `json:"server"`
 	Mode struct {
-		Live              bool `yml:"live"`
-		Debug             bool `yml:"debug"`
-		Rebuild_structure bool `yml:"rebuild_structure"`
-	} `yml:"mode"`
+		Live             bool `json:"live"`
+		Debug            bool `json:"debug"`
+		RebuildStructure bool `json:"rebuildStructure"`
+	} `json:"mode"`
 	Cache struct {
-		Enabled bool   `yml:"enabled"`
-		Type    string `yml:"type"`
-		Dir     string `yml:"dir"`
-	} `yml:"cache"`
-	AdminRouter  string            `yml:"adminrouter"`
-	ConfigValues map[string]string `yml:"configvalues"`
+		Enabled bool   `json:"enabled"`
+		Type    string `json:"type"`
+		Dir     string `json:"directory"`
+	} `json:"cache"`
+	AdminRouter  string            `json:"adminRouter"`
+	ConfigValues map[string]string `json:"configValues"`
 	Language     struct {
-		Allowed []string `yml:"allowed"`
-	} `yml:"language"`
+		Allowed []string `json:"allowed"`
+	} `json:"language"`
 }
 
-var ConfigFilePath string = "./resource/config.yml"
+var ConfigFilePath string = "./resource/config.json"
+var Config Conf = Conf{}
 
 func GetConfig() Conf {
-	Config, err := parseConfig()
+	var err error
+
+	if Config.Parsed {
+		return Config
+	}
+
+	err = parseConfig()
 	if nil != err {
 		Error(err, "Could not retrieve config", ErrorLvlError)
 	}
+
 	return Config
 }
 
-func parseConfig() (Conf, error) {
-	var Config Conf
+func parseConfig() error {
 	var err error
 	var dat []byte
+
+	if Config.Parsed {
+		return nil
+	}
+
 	dat, err = ioutil.ReadFile(ConfigFilePath)
 	Error(err, "", ErrorLvlError)
 	if err != nil {
 		Error(err, "", ErrorLvlError)
 	}
 
-	err = yaml.Unmarshal(dat, &Config)
+	err = json.Unmarshal(dat, &Config)
+	Config.Parsed = true
 	Error(err, "", ErrorLvlError)
 	if err != nil {
-		return Conf{}, err
+		return err
 	}
 
 	Config.Cache.Dir = TrimPath(Config.Cache.Dir)
-	return Config, nil
+	return nil
 }

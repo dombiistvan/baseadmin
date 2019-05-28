@@ -10,20 +10,20 @@ import (
 type AuthHelper struct{}
 
 type RoleGroupStruct struct {
-	Title    string `yml:"title"`
-	Value    string `yml:"value"`
+	Title    string `json:"title"`
+	Value    string `json:"value"`
 	Children map[string]struct {
-		Title string `yml:"title"`
-		Value string `yml:"value"`
-	} `yml:"children"`
+		Title string `json:"title"`
+		Value string `json:"value"`
+	} `json:"children"`
 }
 type RolesStruct struct {
-	Roles map[string]RoleGroupStruct `yml:"roles"`
+	Roles map[string]RoleGroupStruct `json:"roles"`
 }
 
 var Roles RolesStruct
 
-var RolesConfigPath string = "./resource/roles.yml"
+var RolesConfigPath string = "./resource/roles.json"
 
 func (a *AuthHelper) HasRights(requiredRoles []string, session *Session) bool {
 	for _, role := range requiredRoles {
@@ -32,7 +32,7 @@ func (a *AuthHelper) HasRights(requiredRoles []string, session *Session) bool {
 		}
 	}
 
-	if session.Value(USER_SESSION_SUPERADMIN_KEY) == true && !GetConfig().Mode.Debug {
+	if session.Value(USER_SESSION_SUPERADMIN_KEY) == true {
 		PrintlnIf("Superadmin user -> GODMODE -> Let me know your wishes", GetConfig().Mode.Debug)
 		return true
 	}

@@ -38,16 +38,16 @@ func (l Language) GetLanguageMenuGroup(session *Session) MenuGroup {
 		session.IsLoggedIn() && session.IsAdmin(),
 	}
 
-	langGroup.Children = map[int]MenuItem{}
+	langGroup.Children = []MenuItem{}
 	for _, lc := range Lang.GetAvailableLanguageCodes() {
-		langGroup.Children[len(langGroup.Children)] = MenuItem{
+		langGroup.Children = append(langGroup.Children, MenuItem{
 			lc,
 			GetUrl("user/switchlanguage", []string{lc}, false, "admin"),
 			"",
 			"@a",
 			"fa fa-flag",
 			session.IsLoggedIn() && session.IsAdmin(),
-		}
+		})
 	}
 
 	return langGroup

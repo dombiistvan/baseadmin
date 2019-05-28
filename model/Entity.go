@@ -214,12 +214,12 @@ func GetEntityFormValidator(ctx *fasthttp.RequestCtx, entityType EntityType, ent
 
 func (e Entity) BuildStructure(dbmap *gorp.DbMap) {
 	Conf := h.GetConfig()
-	if Conf.Mode.Rebuild_structure {
-		h.PrintlnIf(fmt.Sprintf("Drop %s table", e.GetTable()), Conf.Mode.Rebuild_structure)
+	if Conf.Mode.RebuildStructure {
+		h.PrintlnIf(fmt.Sprintf("Drop %s table", e.GetTable()), Conf.Mode.RebuildStructure)
 		dbmap.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s;", e.GetTable()))
 	}
 
-	h.PrintlnIf(fmt.Sprintf("Create %s table", e.GetTable()), Conf.Mode.Rebuild_structure)
+	h.PrintlnIf(fmt.Sprintf("Create %s table", e.GetTable()), Conf.Mode.RebuildStructure)
 	dbmap.CreateTablesIfNotExists()
 	var indexes map[int]map[string]interface{} = make(map[int]map[string]interface{})
 
@@ -240,7 +240,7 @@ func (e Entity) BuildStructure(dbmap *gorp.DbMap) {
 	tablemap, err := dbmap.TableFor(reflect.TypeOf(Entity{}), false)
 	h.Error(err, "", h.ErrorLvlError)
 	for _, index := range indexes {
-		h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
+		h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.RebuildStructure)
 		tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))
 	}
 
@@ -286,7 +286,7 @@ func GetEntityMenuGroups(session *h.Session) []h.MenuGroup {
 			h.CanAccess(fmt.Sprintf("%s/edit", et.Code), session),
 		}
 
-		group.Children = map[int]h.MenuItem{
+		group.Children = []h.MenuItem{
 			0: childList,
 			1: childNew,
 		}

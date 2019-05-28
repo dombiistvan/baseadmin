@@ -154,16 +154,16 @@ func (ug UserGroup) BuildStructure(dbmap *gorp.DbMap) {
 
 	var indexes map[int]map[string]interface{} = make(map[int]map[string]interface{})
 
-	if Conf.Mode.Rebuild_structure {
-		h.PrintlnIf(fmt.Sprintf("Drop %v table", ug.GetTable()), Conf.Mode.Rebuild_structure)
+	if Conf.Mode.RebuildStructure {
+		h.PrintlnIf(fmt.Sprintf("Drop %v table", ug.GetTable()), Conf.Mode.RebuildStructure)
 		dbmap.Exec(fmt.Sprintf("DROP TABLE IF EXISTS %s;", ug.GetTable()))
 
-		h.PrintlnIf(fmt.Sprintf("Create %v table", ug.GetTable()), Conf.Mode.Rebuild_structure)
+		h.PrintlnIf(fmt.Sprintf("Create %v table", ug.GetTable()), Conf.Mode.RebuildStructure)
 		dbmap.CreateTablesIfNotExists()
 		tablemap, err := dbmap.TableFor(reflect.TypeOf(UserGroup{}), false)
 		h.Error(err, "", h.ErrorLvlError)
 		for _, index := range indexes {
-			h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.Rebuild_structure)
+			h.PrintlnIf(fmt.Sprintf("Create %s index", index["name"].(string)), Conf.Mode.RebuildStructure)
 			tablemap.AddIndex(index["name"].(string), index["type"].(string), index["field"].([]string)).SetUnique(index["unique"].(bool))
 		}
 		dbmap.CreateIndex()

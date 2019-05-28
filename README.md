@@ -17,13 +17,13 @@ There is one config, one menu, and one roles yml which are containing the settin
 
 ### Example of config parts ```config.json```
 ```
-listenPort: "8080",
+"listenPort": "8080",
 ```
 listenPort is saying to the application which port should it listen on obviusly
 
 
 ```
-viewDirectory: "view",
+"viewDirectory": "view",
 ```
 viewdir is the html template files path inside the application directory
 

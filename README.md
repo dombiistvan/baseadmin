@@ -17,13 +17,13 @@ There is one config, one menu, and one roles yml which are containing the settin
 
 ### Example of config parts ```config.json```
 ```
-listenPort: "8080"
+listenPort: "8080",
 ```
 listenPort is saying to the application which port should it listen on obviusly
 
 
 ```
-viewDirectory: "view"
+viewDirectory: "view",
 ```
 viewdir is the html template files path inside the application directory
 
@@ -34,6 +34,7 @@ viewdir is the html template files path inside the application directory
     "password": "BaseAdmin20060102",
     "superadmin": true
   }
+]
 ```
 chiefAdmin is an array of admins will be made by the application if the ```rebuildStructure``` flag is ```true```
 
@@ -59,12 +60,12 @@ db is an object with the oportunity of setting up multiple environment without r
 still inside ```db``` config we have these three option to configure mysql pool, ```maxIdleCons```, ```maxOpenCons```, and ```maxLifetimeMinutes```. These are existing configurations, you can search for to understand how it is working.
 
 ```
-"environment": "local"
+"environment": "local",
 ```
 and this is the part we choose our current (currently only database) environment the app should use
 
 ```
-"server":
+"server":{
   "readTimeoutSeconds": 20,
   "writeTimeoutSeconds": 20,
   "maxRps": 5,
@@ -72,6 +73,7 @@ and this is the part we choose our current (currently only database) environment
   "banActive": false,
   "sessionKey": "baseadmin",
   "name": "Base Admin Server"
+}
 ```
 the next parameter is the app's server config, read (```readTimeoutSeconds```) and write (```writeTimeoutSeconds```) timeout in seconds, max request per seconds (```maxRps```: this is because of defending against hackers, don't know if currently is working or not because there was a proxy problem which occured with this some error, will check about it soon) - it has a related ```banMinutes``` (obviusly meaning), and a ```banActive``` key which is for activate and deactivate this entire feature.
 
@@ -84,6 +86,7 @@ The last key here is the ```name``` which is only an informative key what is rea
   "debug": true,
   "rebuildStructure": false,
   "rebuildData": false,
+}
 ```
 Well, under ```mode``` there are 
 ```live``` which is not sure is used right now
@@ -96,11 +99,12 @@ Well, under ```mode``` there are
   "enabled": true,
   "type": "file",
   "directory": "view/cache"
+}
 ```
 cache has two types now, ```"file"``` and ```"memory"```. File cache can not store models and values, so if you change from one type to other, maybe it can occur some fail because of this. If you use file cache, there is the ```directory``` option to set the file cache directory. As you see in this example, this is the cache directory under view.
 
 ```
-"adminRouter": "admin"
+"adminRouter": "admin",
 ```
 this is the administration panel access url under our site url. You can find the login to administrative portal on this path. In this example, this is admin, so on localhost it should be accessible via http://localhost:8080/admin url.
 
@@ -141,11 +145,12 @@ these are default opengraph works, can can overwrite from controller, will see s
 ```default``` is for spefify the default to save to the new users
 
 ```
-language:
-  allowed:[
+"language":{
+  "allowed":[
     "hu",
     "en"
   ]
+}
 ```
 under language, ```allowed``` key contains the allowed language codes (notISO, just as you see). This is not enough to set language, I will write more about it later.
 

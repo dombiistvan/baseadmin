@@ -15,115 +15,125 @@ Other way is to download archive, and extract into your project's directory.
 
 There is one config, one menu, and one roles yml which are containing the settings and related informations and that is not neccesary to place in database.
 
-### Example of config parts ```config.yml```
+### Example of config parts ```config.json```
 ```
-listenport: 8080
+listenPort: "8080"
 ```
-listenport is saying to the application which port should it listen on obviusly
+listenPort is saying to the application which port should it listen on obviusly
 
 
 ```
-viewdir: view
+viewDirectory: "view"
 ```
 viewdir is the html template files path inside the application directory
 
 ```
-chiefadmin:
-  0:
-    email:  istvan.dombi@agl.group
-    password: Scl181003
-    superdmin: true 
+"chiefAdmin":[
+  {
+    "email":  "dombiistvan28@gmail.com",
+    "password": "BaseAdmin20060102",
+    "superadmin": true
+  }
 ```
-chiefadmin is an array of admins will be made by the application if the ```rebuild_structure``` flag is true
+chiefAdmin is an array of admins will be made by the application if the ```rebuildStructure``` flag is ```true```
 
 ```
-db:
-  environment:
-    local:
-      host: "host"
-      name: "database_name"
-      username: "database_user"
-      password: "database_password"
+"db":{
+  "environment":{
+    "local":{
+      "host": "host",
+      "name": "database_name",
+      "username": "database_user",
+      "password": "database_password"
+    }
+  }
+}
 ```
-db is a string map with the oportunity of setting up multiple environment without removing and modifying the previous one. we will use later the key under the ```environment``` to idenfity which environment we want to use
+db is an object with the oportunity of setting up multiple environment without removing and modifying the previous one. we will use later the key under the ```environment``` to idenfity which environment we want to use
 
 ```
-  maxidleconns: 20
-  maxopenconns: 20
-  maxconnlifetimeminutes: 60
+  "maxIdleCons": 20,
+  "maxOpenCons": 20,
+  "maxConLifetimeMinutes": 60,
 ```
-still inside ```db``` config we have these three option to configure mysql pool, ```maxidleconns```, ```maxopenconns```, and ```maxlifetimeminutes```. These are existing configurations, you can search for to understand how it is working.
+still inside ```db``` config we have these three option to configure mysql pool, ```maxIdleCons```, ```maxOpenCons```, and ```maxLifetimeMinutes```. These are existing configurations, you can search for to understand how it is working.
 
 ```
-environment: local
+"environment": "local"
 ```
-and this is the part we choose our current environment the app should use
+and this is the part we choose our current (currently only database) environment the app should use
 
 ```
-server:
-  readtimeoutseconds: 20
-  writetimeoutseconds: 20
-  maxrps: 5
-  banminutes: 10
-  banactive: false
-  sessionkey: "baseadmin"
-  name: "Base Admin Server"
+"server":
+  "readTimeoutSeconds": 20,
+  "writeTimeoutSeconds": 20,
+  "maxRps": 5,
+  "banMinutes": 10,
+  "banActive": false,
+  "sessionKey": "baseadmin",
+  "name": "Base Admin Server"
 ```
-the next parameter is the app's server config, read (```readtimeoutseconds```) and write (```writetimeoutseconds```) timeout in seconds, max request per seconds (```maxrps```: this is because of defending against hackers, don't know if currently is working or not because there was a proxy problem which occured with this some error, will check about it soon) - it has a related ```banminutes``` (obviusly meaning), and a ```banactive``` key which is for activate and deactivate this entire feature.
+the next parameter is the app's server config, read (```readTimeoutSeconds```) and write (```writeTimeoutSeconds```) timeout in seconds, max request per seconds (```maxRps```: this is because of defending against hackers, don't know if currently is working or not because there was a proxy problem which occured with this some error, will check about it soon) - it has a related ```banMinutes``` (obviusly meaning), and a ```banActive``` key which is for activate and deactivate this entire feature.
 
-Also there are ```sessionkey``` which is a string what will be used to encode/decode session content.
+Also there are ```sessionKey``` which is a string what will be used to encode/decode session content.
 The last key here is the ```name``` which is only an informative key what is reachable from response headers if I remember good :D.
 
 ```
-mode:
-  live: false
-  debug: true
-  rebuild_structure: false
-  rebuild_data: false
+"mode":{
+  "live": false,
+  "debug": true,
+  "rebuildStructure": false,
+  "rebuildData": false,
 ```
 Well, under ```mode``` there are 
 ```live``` which is not sure is used right now
 ```debug``` which is for debugging, if you set it true, you will get much more log
-```rebuild_structure``` which is the database rebuild flag: If this is true, the process will remove its tables if these were configured good, and remake them
-```rebuild_data``` is similar to rebuild_strucure process, not for structure but the data
+```rebuildStructure``` which is the database rebuild flag: If this is true, the process will remove its tables if these were configured good, and remake them
+```rebuildData``` is similar to rebuild_strucure process, not for structure but the data
 
 ```
-cache:
-  enabled: true
-  type: "file"
-  dir: "view/cache"
+"cache":{
+  "enabled": true,
+  "type": "file",
+  "directory": "view/cache"
 ```
-cache has two types now, ```"file"``` and ```"memory"```. File cache can not store models and values, so if you change from one type to other, maybe it can occur some fail because of this. If you use file cache, there is the ```dir``` option to set the file cache directory. As you see in this example, this is the cache directory under view.
+cache has two types now, ```"file"``` and ```"memory"```. File cache can not store models and values, so if you change from one type to other, maybe it can occur some fail because of this. If you use file cache, there is the ```directory``` option to set the file cache directory. As you see in this example, this is the cache directory under view.
 
 ```
-adminrouter: admin
+"adminRouter": "admin"
 ```
 this is the administration panel access url under our site url. You can find the login to administrative portal on this path. In this example, this is admin, so on localhost it should be accessible via http://localhost:8080/admin url.
 
 ```
-og:
-  url: "OG Url"
-  type: website
-  title: "Site Default Name"
-  description: "Site Default Description"
-  image: "/opengraph/default/image.png"
+"openGraph":{
+  "url": "OG Url",
+  "type": "website",
+  "title": "Site Default Name",
+  "description": "Site Default Description",
+  "image": "/opengraph/default/image.png",
+}
 ```
 these are default opengraph works, can can overwrite from controller, will see soon.
 
 ```
-ug:
-  - value: "usergroup1"
-    label: "User Group 1"
-    description: "User Group 1 Description"
-    default: true
-  - value: "usergroup2"
-    label: "User Group 2"
-    description: "User Group 2 Description"
-    default: false
-  - value: "admin"
-    label: "Admin"
-    description: "Admin"
-    default: false
+"userGroup":[
+  {
+    "value": "usergroup1",
+    "label": "User Group 1",
+    "description": "User Group 1 Description",
+    "default": true
+  },{
+    "value": "usergroup2",
+    "label": "User Group 2",
+    "description": "User Group 2 Description",
+    "default": false
+  },{
+    "value": "admin",
+    "label": "Admin",
+    "description": "Admin",
+    "default": false
+  }
+]
 ```
 ```value``` is the saved value
 ```label``` is the select option string
@@ -132,58 +142,66 @@ ug:
 
 ```
 language:
-  allowed:
-    - hu
-    - en
+  allowed:[
+    "hu",
+    "en"
+  ]
 ```
 under language, ```allowed``` key contains the allowed language codes (notISO, just as you see). This is not enough to set language, I will write more about it later.
 
-### Explanation and example of roles ```roles.yml```
+### Explanation and example of roles ```roles.json```
 
 ```
-roles:
-  user:
-    title: "<strong>All User Role</strong>"
-    value: "user/*"
-    children:
-      list:
-        title: "List/Search Users"
-        value: "user/list"
-      new:
-        title: "Add User"
-        value: "user/new"
-      edit:
-        title: "Edit User"
-        value: "user/edit"
-      delete:
-        title: "Delete User"
-        value: "user/delete"
-  block:
-    title: "<strong>All Block Roles</strong>"
-    value: "block/*"
-    children:
-      list:
-        title: "List/Search Blocks"
-        value: "block/list"
-      new:
-        title: "Add Block"
-        value: "block/new"
-      edit:
-        title: "Edit Block"
-        value: "block/edit"
-      delete:
-        title: "Delete Block"
-        value: "block/delete"
-  config:
-    title: "<strong>Config</strong>"
-    value: "config/*"
-    children:
-      index:
-        title: "Edit config"
-        value: "config/index"
+"roles": {
+    "user": {
+      "title": "User Roles (all)",
+      "value": "user/*",
+      "children": {
+        "list": {
+          "title": "List/Search Users",
+          "value": "user/list"
+        },
+        "edit": {
+          "title": "Add/Edit User",
+          "value": "user/edit"
+        },
+        "delete": {
+          "title": "Delete User",
+          "value": "user/delete"
+        }
+      }
+    },
+  "block": {
+      "title": "Block Roles (all)",
+      "value": "block/*",
+      "children": {
+        "list": {
+          "title": "List/Search Blocks",
+          "value": "block/list"
+        },
+        "edit": {
+          "title": "Add/Edit Block",
+          "value": "block/edit"
+        },
+        "delete": {
+          "title": "Delete Block",
+          "value": "block/delete"
+        }
+      }
+    },
+  "config": {
+      "title": "Config Roles (all)",
+      "value": "config/*",
+      "children": {
+        "index": {
+          "title": "Edit config",
+          "value": "config/index"
+        }
+      }
+    }
 ```
 
-roles.yml contains every role, it has to be update, because if you want to add a new user, you can chose from the role only are in this file. The roles structure is a ```map[string]...``` so ever group must be unique.
+roles.json contains every role, it has to be update, because if you want to add a new user, you can chose from the role only are in this file. The roles structure is a json object so ever group (==key) must be unique.
 
 under the ```roles``` key, you can see the role groups, fe.: ```user```, ```block```, ```config```
 under the groups, there are 3 keys: ```title```, ```value``` and ```children```
@@ -195,34 +213,40 @@ the ```children``` key is the container of all group related subrole. For exampl
 
 now, the role is available, and the admin can be set to allow/deny to edit users' images, "later" I will show you how, this is only for explaining how to add a new role to the existing ones.
 
-### Explanation and example of menu tree ```menu.yml```
+### Explanation and example of menu tree ```menu.json```
 
 ```
-menu:
-  - label: "User"
-    group: "user"
-    url: "user/index"
-    icon: "fa fa-user"
-    visibility: "*"
-    children:
-      0:
-        label: "Log In"
-        url: "user/login"
-        visibility: "!@"
-        icon: "fa fa-user"
-      1:
-        label: "List"
-        url: "user/index"
-        visibility: "user/list"
-        icon: "fa fa-list"
-      2:
-        label: "Add New"
-        url: "user/new"
-        visibility: "user/new"
-        icon: "fa fa-plus"
+"menu": [
+    {
+      "label": "User",
+      "group": "user",
+      "url": "user/index",
+      "icon": "fa fa-user",
+      "visibility": "*",
+      "children": [
+        {
+          "label": "Log In",
+          "url": "user/login",
+          "visibility": "!@",
+          "icon": "fa fa-user"
+        },
+        {
+          "label": "List",
+          "url": "user/index",
+          "visibility": "user/list",
+          "icon": "fa fa-list"
+        },
+        {
+          "label": "Add New",
+          "url": "user/new",
+          "visibility": "user/new",
+          "icon": "fa fa-plus"
+        }
+      ]
+    },
     ...
 ```
-As you see the ```menu.yml``` is an array of ```map[string]...```.
+As you see the ```menu.json``` is an array of json objects.
 Every menu group item, has ```label```,```group```,```url```,```icon```, ```visibility``` and ```children``` keys.
 
 ```label``` is obvious, it is readable in the menu tree 
@@ -231,15 +255,16 @@ Every menu group item, has ```label```,```group```,```url```,```icon```, ```visi
 ```visibility``` is the role we define the user has to have to see this menupoint
 ```icon``` is just a display bootstrap icon in the menu tree
 
-This ```yml``` still not authenticate, just hide/show urls and menupoints. Without specify the accessibility in the controllers (soon) the user can reach the action from url.
+This ```json``` still not authenticate, just hide/show urls and menupoints. Without specify the accessibility in the controllers (soon) the user can reach the action from url.
 
 There are static roles also you can define in menu, and also to the actions later.
 The roles are the following:
+```-```: noone
 ```*```: anyone
 ```!@```: not logged in user (can be admin or simple user also)
 ```@```: logged in user (can be admin or simple user also)
 ```@a```: logged in admin
+```@!a```: logged in not admin
 ```@sa```: logged in superadmin
-```-```: none
 
 Easy to add more, and plan to do in the future :) 

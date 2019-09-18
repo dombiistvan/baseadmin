@@ -140,7 +140,7 @@ func GetAttributeOptionForm(data map[string]interface{}, action string) Form {
 
 func GetAttributeOptionFormValidator(ctx *fasthttp.RequestCtx, attributeOption *AttributeOption) Validator {
 	var Validator Validator
-	Validator.Init(ctx)
+	Validator.Init(ctx, nil)
 
 	Validator.AddField("id", map[string]interface{}{
 		"roles": map[string]interface{}{

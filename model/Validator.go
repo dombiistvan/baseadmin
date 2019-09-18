@@ -37,11 +37,15 @@ type Validator struct {
 	values map[string]interface{}
 }
 
-func (v *Validator) Init(ctx *fasthttp.RequestCtx) {
+func (v *Validator) Init(ctx *fasthttp.RequestCtx, data map[string]interface{}) {
 	v.ctx = ctx
 	v.values = make(map[string]interface{})
 	v.Fields = make(map[string]map[string]interface{})
 	v.Errors = make(map[string]error)
+
+	if data != nil {
+		v.values = data
+	}
 }
 
 func (v *Validator) SetFields(fields map[string]map[string]interface{}) {
@@ -184,10 +188,6 @@ func (v *Validator) Validate() (bool, map[string]error) {
 	h.PrintlnIf("Validation start", h.GetConfig().Mode.Debug)
 	for key, properties := range v.Fields {
 		v.cKey = key
-		if strings.Index(key, `%`) != -1 {
-			v.ctx.PostArgs().VisitAll(v.iterateRegexp)
-			continue
-		}
 		succ, err := v.ValidateField(key, properties)
 		if !succ {
 			v.Errors[key] = err
@@ -195,21 +195,6 @@ func (v *Validator) Validate() (bool, map[string]error) {
 	}
 
 	return len(v.Errors) == 0, v.Errors
-}
-
-func (v *Validator) iterateRegexp(postKey []byte, postValue []byte) {
-	var key = string(postKey)
-	matched, err := regexp.MatchString(strings.Replace(v.cKey, "%", ".*", -1), key)
-	h.Error(err, "", h.ErrorLvlNotice)
-	if matched {
-		succ, err := v.ValidateField(key, v.Fields[v.cKey])
-		if !succ {
-			_, ok := v.Errors[key]
-			if !ok {
-				v.Errors[key] = err
-			}
-		}
-	}
 }
 
 func (v *Validator) ValidateField(key string, properties map[string]interface{}) (bool, error) {

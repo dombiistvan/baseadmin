@@ -131,7 +131,7 @@ buildForm:
 
 func GetEntityFormValidator(ctx *fasthttp.RequestCtx, entityType EntityType, entity *Entity) Validator {
 	var Validator Validator
-	Validator.Init(ctx)
+	Validator.Init(ctx, nil)
 
 	Validator.AddField("name", map[string]interface{}{
 		"roles": map[string]interface{}{

@@ -450,7 +450,7 @@ func GetAttributeForm(data map[string]interface{}, action string, attribute *Att
 
 func GetAttributeFormValidator(ctx *fasthttp.RequestCtx, Attribute *Attribute) Validator {
 	var Validator Validator
-	Validator.Init(ctx)
+	Validator.Init(ctx, nil)
 
 	Validator.AddField("entity_type_id", map[string]interface{}{
 		"roles": map[string]interface{}{

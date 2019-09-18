@@ -55,7 +55,7 @@
       }
     },
     "entity_type": {
-      "title": "All Entity Type Roles",
+      "title": "Entity Type Roles (all)",
       "value": "entitytype/*",
       "children": {
         "list": {
@@ -73,7 +73,7 @@
       }
     },
     "attribute": {
-      "title": "All Attribute Roles",
+      "title": "Attribute Roles (all)",
       "value": "attribute/*",
       "children": {
         "list": {
@@ -91,7 +91,7 @@
       }
     },
     "config": {
-      "title": "<strong>Config</strong>",
+      "title": "Config Roles (all)",
       "value": "config/*",
       "children": {
         "index": {

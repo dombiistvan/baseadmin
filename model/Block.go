@@ -109,7 +109,7 @@ func NewEmptyBlock() Block {
 
 func GetBlockFormValidator(ctx *fasthttp.RequestCtx, Block *Block) Validator {
 	var Validator Validator
-	Validator.Init(ctx)
+	Validator.Init(ctx, nil)
 
 	Validator.AddField("id", map[string]interface{}{
 		"roles": map[string]interface{}{

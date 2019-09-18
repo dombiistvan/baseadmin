@@ -264,7 +264,7 @@ func GetUserGroupForm(data map[string]interface{}, action string) Form {
 
 func GetUserGroupFormValidator(ctx *fasthttp.RequestCtx, UserGroup *UserGroup) Validator {
 	var Validator Validator
-	Validator.Init(ctx)
+	Validator.Init(ctx, nil)
 	Validator.AddField("id", map[string]interface{}{
 		"roles": map[string]interface{}{
 			"required": false,

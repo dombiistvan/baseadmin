@@ -261,7 +261,7 @@ func GetUserForm(data map[string]interface{}, action string) Form {
 
 func GetUserFormValidator(ctx *fasthttp.RequestCtx, User *User) Validator {
 	var Validator Validator
-	Validator.Init(ctx)
+	Validator.Init(ctx, nil)
 	Validator.AddField("id", map[string]interface{}{
 		"roles": map[string]interface{}{
 			"required": false,

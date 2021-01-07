@@ -47,13 +47,13 @@ func (etl *EntityTypeList) Render(elements []m.EntityType) string {
 		actions = append(actions, h.Replace(
 			`<a href="%link%">%title%</a>`,
 			[]string{"%link%", "%title%"},
-			[]string{h.GetUrl("entity_type/edit", []string{strconv.Itoa(int(b.Id))}, true, "admin"), "[Edit]"},
+			[]string{h.GetURL("entity_type/edit", []string{strconv.Itoa(int(b.Id))}, true, "admin"), "[Edit]"},
 		))
 
 		actions = append(actions, h.Replace(
 			`<a href="%link%" onclick="return window.confirm('Biztosan törölni szeretné?')">%title%</a>`,
 			[]string{"%link%", "%title%"},
-			[]string{h.GetUrl("entity_type/delete", []string{strconv.Itoa(int(b.Id))}, true, "admin"), "[Delete]"},
+			[]string{h.GetURL("entity_type/delete", []string{strconv.Itoa(int(b.Id))}, true, "admin"), "[Delete]"},
 		))
 
 		rows = append(rows, map[string]string{

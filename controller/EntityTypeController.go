@@ -64,7 +64,7 @@ func (et *EntityTypeController) EditAction(ctx *fasthttp.RequestCtx, session *h.
 	err = etModel.Load(id)
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		Redirect(ctx, "entity_type/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
@@ -188,13 +188,13 @@ func (et *EntityTypeController) DeleteAction(ctx *fasthttp.RequestCtx, session *
 
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		Redirect(ctx, "entity_type/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
 
 	count, err := db.DbMap.Delete(&entityType)
-	h.Error(err, "", h.ErrorLvlWarning)
+	h.Error(err, "", h.ErrLvlWarning)
 	if err != nil || count == 0 {
 		session.AddError("An error occurred, could not delete the entity type.")
 		status = fasthttp.StatusBadRequest
@@ -258,7 +258,7 @@ func (et *EntityTypeController) EntityEditAction(ctx *fasthttp.RequestCtx, sessi
 	err = entityModel.Load(entityId)
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		Redirect(ctx, "entity_type/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
@@ -469,13 +469,13 @@ func (et *EntityTypeController) EntityDeleteAction(ctx *fasthttp.RequestCtx, ses
 	err = entityModel.Load(entityId)
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		Redirect(ctx, fmt.Sprintf("entity/%s", entityType.Code), fasthttp.StatusBadRequest, true, pageInstance)
 		return
 	}
 
 	err = entityModel.Delete()
-	h.Error(err, "", h.ErrorLvlWarning)
+	h.Error(err, "", h.ErrLvlWarning)
 
 	if err != nil {
 		session.AddError("An error occurred, could not delete the entity type.")

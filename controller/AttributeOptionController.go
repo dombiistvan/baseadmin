@@ -61,7 +61,7 @@ func (aoc *AttributeOptionController) EditAction(ctx *fasthttp.RequestCtx, sessi
 	err = optionModel.Load(id)
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		Redirect(ctx, "attribute_option/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
@@ -204,13 +204,13 @@ func (aoc *AttributeOptionController) DeleteAction(ctx *fasthttp.RequestCtx, ses
 
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		Redirect(ctx, "attribute_option/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
 
 	count, err := db.DbMap.Delete(&option)
-	h.Error(err, "", h.ErrorLvlWarning)
+	h.Error(err, "", h.ErrLvlWarning)
 	if err != nil || count == 0 {
 		session.AddError("An error occurred, could not delete the entity type.")
 		status = fasthttp.StatusBadRequest

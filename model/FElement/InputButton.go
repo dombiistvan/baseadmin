@@ -58,17 +58,17 @@ func (b InputButton) Render(errs map[string]error) string {
 	var attr []string
 
 	for attrKey, attrValue := range b.Attributes {
-		attr = append(attr, h.HtmlAttribute(attrKey, attrValue))
+		attr = append(attr, h.HTMLAttribute(attrKey, attrValue))
 	}
 
 	if b.Name != "" {
-		attr = append(attr, h.HtmlAttribute("name", b.Name))
+		attr = append(attr, h.HTMLAttribute("name", b.Name))
 	}
 	if b.Id != "" {
-		attr = append(attr, h.HtmlAttribute("id", b.Id))
+		attr = append(attr, h.HTMLAttribute("id", b.Id))
 	}
 	if b.Disabled == true {
-		attr = append(attr, h.HtmlAttribute("disabled", "disabled"))
+		attr = append(attr, h.HTMLAttribute("disabled", "disabled"))
 	}
 
 	var btnType = "button"
@@ -76,7 +76,7 @@ func (b InputButton) Render(errs map[string]error) string {
 		btnType = "submit"
 	}
 
-	attr = append(attr, h.HtmlAttribute("type", btnType))
+	attr = append(attr, h.HTMLAttribute("type", btnType))
 
 	replaces["%attrs%"] = strings.Join(attr, " ")
 

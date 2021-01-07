@@ -44,19 +44,14 @@ func GetOption(object map[string]interface{}, key string) interface{} {
 		switch val.(type) {
 		case string:
 			return val.(string)
-			break
 		case []string:
 			return val.([]string)
-			break
 		case int:
 			return val.(int)
-			break
 		case bool:
 			return val.(bool)
-			break
 		default:
 			return val
-			break
 		}
 	}
 	return nil

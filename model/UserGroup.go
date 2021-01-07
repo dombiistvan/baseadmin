@@ -257,7 +257,7 @@ func GetUserGroupForm(data map[string]interface{}, action string) Form {
 
 	Fieldsets = append(Fieldsets, Fieldset{"bottom", []FormElement{button}, map[string]string{"lg": "12", "md": "12", "sm": "12", "xs": "12"}})
 
-	var form = Form{h.GetUrl(action, nil, true, "admin"), "POST", false, Fieldsets, false, nil, nil}
+	var form = Form{h.GetURL(action, nil, true, "admin"), "POST", false, Fieldsets, false, nil, nil}
 
 	return form
 }

@@ -9,15 +9,14 @@ import (
 	"strings"
 )
 
-var Lang *Language
-
-var DefLang string = "hu"
-
-var LangQueryKey string = "lang"
+var (
+	Lang         *Language = &Language{}
+	DefLang      string    = "hu"
+	LangQueryKey string    = "lang"
+)
 
 func init() {
 	PrintlnIf("Initializing translator", GetConfig().Mode.Debug)
-	Lang = &Language{}
 	Lang.Init()
 	PrintlnIf("Translator initialization done", GetConfig().Mode.Debug)
 }
@@ -42,7 +41,7 @@ func (l Language) GetLanguageMenuGroup(session *Session) MenuGroup {
 	for _, lc := range Lang.GetAvailableLanguageCodes() {
 		langGroup.Children = append(langGroup.Children, MenuItem{
 			lc,
-			GetUrl("user/switchlanguage", []string{lc}, false, "admin"),
+			GetURL("user/switchlanguage", []string{lc}, false, "admin"),
 			"",
 			"@a",
 			"fa fa-flag",

@@ -59,7 +59,7 @@ func (b *BlockController) EditAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 	err := block.Load(id)
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		Redirect(ctx, "block/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
@@ -179,14 +179,14 @@ func (b *BlockController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Sess
 
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		Redirect(ctx, "block/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
 
 	blockIdentifier := block.Identifier
 	count, err := db.DbMap.Delete(&block)
-	h.Error(err, "", h.ErrorLvlWarning)
+	h.Error(err, "", h.ErrLvlWarning)
 	if err != nil || count == 0 {
 		session.AddError("An error occurred, could not delete the block.")
 		status = fasthttp.StatusBadRequest

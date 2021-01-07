@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 )
 
-type Conf struct {
+type Config struct {
 	Parsed     bool
 	ViewDir    string `json:"viewDirectory"`
 	ListenPort string `json:"listenPort"`
@@ -61,13 +61,13 @@ type Conf struct {
 }
 
 var ConfigFilePath string = "./resource/config.json"
-var Config Conf = Conf{}
+var Conf Config = Config{}
 
-func GetConfig() Conf {
+func GetConfig() Config {
 	var err error
 
-	if Config.Parsed {
-		return Config
+	if Conf.Parsed {
+		return Conf
 	}
 
 	err = parseConfig()
@@ -75,14 +75,14 @@ func GetConfig() Conf {
 		Error(err, "Could not retrieve config", ErrorLvlError)
 	}
 
-	return Config
+	return Conf
 }
 
 func parseConfig() error {
 	var err error
 	var dat []byte
 
-	if Config.Parsed {
+	if Conf.Parsed {
 		return nil
 	}
 
@@ -92,13 +92,13 @@ func parseConfig() error {
 		Error(err, "", ErrorLvlError)
 	}
 
-	err = json.Unmarshal(dat, &Config)
-	Config.Parsed = true
+	err = json.Unmarshal(dat, &Conf)
+	Conf.Parsed = true
 	Error(err, "", ErrorLvlError)
 	if err != nil {
 		return err
 	}
 
-	Config.Cache.Dir = TrimPath(Config.Cache.Dir)
+	Conf.Cache.Dir = TrimPath(Conf.Cache.Dir)
 	return nil
 }

@@ -59,7 +59,7 @@ func (ac *AttributeController) EditAction(ctx *fasthttp.RequestCtx, session *h.S
 	err = attributeModel.Load(id)
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		Redirect(ctx, "attribute/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
@@ -260,13 +260,13 @@ func (ac *AttributeController) DeleteAction(ctx *fasthttp.RequestCtx, session *h
 
 	if err != nil {
 		session.AddError(err.Error())
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		Redirect(ctx, "attribute/index", fasthttp.StatusOK, true, pageInstance)
 		return
 	}
 
 	count, err := db.DbMap.Delete(&attribute)
-	h.Error(err, "", h.ErrorLvlWarning)
+	h.Error(err, "", h.ErrLvlWarning)
 	if err != nil || count == 0 {
 		session.AddError("An error occurred, could not delete the entity type.")
 		status = fasthttp.StatusBadRequest

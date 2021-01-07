@@ -75,23 +75,23 @@ func (t InputTextarea) Render(errs map[string]error) string {
 		cols = t.Cols
 	}
 
-	attr = append(attr, h.HtmlAttribute("rows", strconv.Itoa(rows)))
-	attr = append(attr, h.HtmlAttribute("cols", strconv.Itoa(cols)))
+	attr = append(attr, h.HTMLAttribute("rows", strconv.Itoa(rows)))
+	attr = append(attr, h.HTMLAttribute("cols", strconv.Itoa(cols)))
 
 	if t.Name != "" {
-		attr = append(attr, h.HtmlAttribute("name", t.Name))
+		attr = append(attr, h.HTMLAttribute("name", t.Name))
 	}
 	if t.Id != "" {
-		attr = append(attr, h.HtmlAttribute("id", t.Id))
+		attr = append(attr, h.HTMLAttribute("id", t.Id))
 	}
 	if t.Placeholder != "" {
-		attr = append(attr, h.HtmlAttribute("placeholder", t.Placeholder))
+		attr = append(attr, h.HTMLAttribute("placeholder", t.Placeholder))
 	}
 	if t.Disabled == true {
-		attr = append(attr, h.HtmlAttribute("disabled", "disabled"))
+		attr = append(attr, h.HTMLAttribute("disabled", "disabled"))
 	}
 	if t.Readonly == true {
-		attr = append(attr, h.HtmlAttribute("readonly", "readonly"))
+		attr = append(attr, h.HTMLAttribute("readonly", "readonly"))
 	}
 
 	replaces["%attrs%"] = strings.Join(attr, " ")

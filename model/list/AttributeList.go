@@ -58,13 +58,13 @@ func (al *AttributeList) Render(elements []m.Attribute) string {
 		actions = append(actions, h.Replace(
 			`<a href="%link%">%title%</a>`,
 			[]string{"%link%", "%title%"},
-			[]string{h.GetUrl("attribute/edit", []string{strconv.Itoa(int(a.Id))}, true, "admin"), "[Edit]"},
+			[]string{h.GetURL("attribute/edit", []string{strconv.Itoa(int(a.Id))}, true, "admin"), "[Edit]"},
 		))
 
 		actions = append(actions, h.Replace(
 			`<a href="%link%" onclick="return window.confirm('Biztosan törölni szeretné?')">%title%</a>`,
 			[]string{"%link%", "%title%"},
-			[]string{h.GetUrl("attribute/delete", []string{strconv.Itoa(int(a.Id))}, true, "admin"), "[Delete]"},
+			[]string{h.GetURL("attribute/delete", []string{strconv.Itoa(int(a.Id))}, true, "admin"), "[Delete]"},
 		))
 
 		rows = append(rows, map[string]string{

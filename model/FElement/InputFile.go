@@ -50,15 +50,15 @@ func (f InputFile) Render(errs map[string]error) string {
 
 	replaces["%attrs%"] = ""
 	var attr []string
-	attr = append(attr, h.HtmlAttribute("type", "file"))
+	attr = append(attr, h.HTMLAttribute("type", "file"))
 	if f.Name != "" {
-		attr = append(attr, h.HtmlAttribute("name", f.Name))
+		attr = append(attr, h.HTMLAttribute("name", f.Name))
 	}
 	if f.Id != "" {
-		attr = append(attr, h.HtmlAttribute("id", f.Id))
+		attr = append(attr, h.HTMLAttribute("id", f.Id))
 	}
 	if f.Disabled == true {
-		attr = append(attr, h.HtmlAttribute("disabled", "disabled"))
+		attr = append(attr, h.HTMLAttribute("disabled", "disabled"))
 	}
 
 	replaces["%attrs%"] = strings.Join(attr, " ")

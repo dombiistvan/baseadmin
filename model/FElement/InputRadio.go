@@ -48,24 +48,24 @@ func (r InputRadio) Render(errs map[string]error) string {
 	replaces["%class%"] = r.Class
 	replaces["%attrs%"] = ""
 	var attr []string
-	attr = append(attr, h.HtmlAttribute("type", "radio"))
+	attr = append(attr, h.HTMLAttribute("type", "radio"))
 	if r.Name != "" {
-		attr = append(attr, h.HtmlAttribute("name", r.Name))
+		attr = append(attr, h.HTMLAttribute("name", r.Name))
 	}
 	if r.Id != "" {
-		attr = append(attr, h.HtmlAttribute("id", r.Id))
+		attr = append(attr, h.HTMLAttribute("id", r.Id))
 	}
 	if r.Value != "" {
-		attr = append(attr, h.HtmlAttribute("value", html.EscapeString(r.Value)))
+		attr = append(attr, h.HTMLAttribute("value", html.EscapeString(r.Value)))
 	}
 	if r.Value != "" && r.SelectedValue != "" && r.Value == r.SelectedValue {
-		attr = append(attr, h.HtmlAttribute("checked", "checked"))
+		attr = append(attr, h.HTMLAttribute("checked", "checked"))
 	}
 	if r.Disabled == true {
-		attr = append(attr, h.HtmlAttribute("disabled", "disabled"))
+		attr = append(attr, h.HTMLAttribute("disabled", "disabled"))
 	}
 	if r.Readonly == true {
-		attr = append(attr, h.HtmlAttribute("readonly", "readonly"))
+		attr = append(attr, h.HTMLAttribute("readonly", "readonly"))
 	}
 
 	replaces["%attrs%"] = strings.Join(attr, " ")

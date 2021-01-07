@@ -29,22 +29,22 @@ func (i InputHidden) Render(errs map[string]error) string {
 	replaces["%attrs%"] = ""
 	var attr []string
 
-	attr = append(attr, h.HtmlAttribute("type", "hidden"))
+	attr = append(attr, h.HTMLAttribute("type", "hidden"))
 
 	if i.Name != "" {
-		attr = append(attr, h.HtmlAttribute("name", i.Name))
+		attr = append(attr, h.HTMLAttribute("name", i.Name))
 	}
 	if i.Id != "" {
-		attr = append(attr, h.HtmlAttribute("id", i.Id))
+		attr = append(attr, h.HTMLAttribute("id", i.Id))
 	}
 	if i.Value != "" {
-		attr = append(attr, h.HtmlAttribute("value", html.EscapeString(i.Value)))
+		attr = append(attr, h.HTMLAttribute("value", html.EscapeString(i.Value)))
 	}
 	if i.Disabled == true {
-		attr = append(attr, h.HtmlAttribute("disabled", "disabled"))
+		attr = append(attr, h.HTMLAttribute("disabled", "disabled"))
 	}
 	if i.Readonly == true {
-		attr = append(attr, h.HtmlAttribute("readonly", "readonly"))
+		attr = append(attr, h.HTMLAttribute("readonly", "readonly"))
 	}
 
 	replaces["%attrs%"] = strings.Join(attr, " ")

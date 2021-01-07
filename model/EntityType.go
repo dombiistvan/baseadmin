@@ -101,7 +101,7 @@ func GetEntityTypeForm(data map[string]interface{}, action string) Form {
 	Fieldsets = append(Fieldsets, Fieldset{"left", Elements, fullColMap})
 	button := FElement.InputButton{"Submit", "submit", "submit", "pull-right", false, "", true, false, false, nil}
 	Fieldsets = append(Fieldsets, Fieldset{"bottom", []FormElement{button}, fullColMap})
-	var form = Form{h.GetUrl(action, nil, true, "admin"), "POST", false, Fieldsets, false, nil, nil}
+	var form = Form{h.GetURL(action, nil, true, "admin"), "POST", false, Fieldsets, false, nil, nil}
 
 	return form
 }

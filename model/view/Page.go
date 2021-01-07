@@ -154,7 +154,7 @@ func (p Page) GetContent() template.HTML {
 			strAttr := ""
 			if ok {
 				for attrK, attrV := range attr {
-					strAttr += fmt.Sprintf(" %v", helper.HtmlAttribute(attrK, attrV))
+					strAttr += fmt.Sprintf(" %v", helper.HTMLAttribute(attrK, attrV))
 				}
 			}
 			tagPre = fmt.Sprintf(`<%v%v>`, wrapper["tag"], strAttr)

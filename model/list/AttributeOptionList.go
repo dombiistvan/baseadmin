@@ -66,13 +66,13 @@ func (aol *AttributeOptionList) Render(elements []m.AttributeOption) string {
 		actions = append(actions, h.Replace(
 			`<a href="%link%">%title%</a>`,
 			[]string{"%link%", "%title%"},
-			[]string{h.GetUrl("attribute_option/edit", []string{strconv.Itoa(int(option.Id))}, true, "admin"), "[Edit]"},
+			[]string{h.GetURL("attribute_option/edit", []string{strconv.Itoa(int(option.Id))}, true, "admin"), "[Edit]"},
 		))
 
 		actions = append(actions, h.Replace(
 			`<a href="%link%" onclick="return window.confirm('Biztosan törölni szeretné?')">%title%</a>`,
 			[]string{"%link%", "%title%"},
-			[]string{h.GetUrl("attribute_option/delete", []string{strconv.Itoa(int(option.Id))}, true, "admin"), "[Delete]"},
+			[]string{h.GetURL("attribute_option/delete", []string{strconv.Itoa(int(option.Id))}, true, "admin"), "[Delete]"},
 		))
 
 		rows = append(rows, map[string]string{

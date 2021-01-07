@@ -47,13 +47,13 @@ func (ugl *UserGroupList) Render(elements []m.UserGroup) string {
 		actions = append(actions, h.Replace(
 			`<a href="%link%">%title%</a>`,
 			[]string{"%link%", "%title%"},
-			[]string{h.GetUrl("usergroup/edit", []string{strconv.Itoa(int(u.Id))}, true, "admin"), "[Edit]"},
+			[]string{h.GetURL("usergroup/edit", []string{strconv.Itoa(int(u.Id))}, true, "admin"), "[Edit]"},
 		))
 
 		actions = append(actions, h.Replace(
 			`<a href="%link%" onclick="return window.confirm('Biztosan törölni szeretné?')">%title%</a>`,
 			[]string{"%link%", "%title%"},
-			[]string{h.GetUrl("usergroup/delete", []string{strconv.Itoa(int(u.Id))}, true, "admin"), "[Delete]"},
+			[]string{h.GetURL("usergroup/delete", []string{strconv.Itoa(int(u.Id))}, true, "admin"), "[Delete]"},
 		))
 
 		rows = append(rows, map[string]string{

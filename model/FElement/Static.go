@@ -43,10 +43,10 @@ func (s Static) Render(errs map[string]error) string {
 	replaces["%attrs%"] = ""
 	var attr []string
 	if s.Name != "" {
-		attr = append(attr, h.HtmlAttribute("name", s.Name))
+		attr = append(attr, h.HTMLAttribute("name", s.Name))
 	}
 	if s.Id != "" {
-		attr = append(attr, h.HtmlAttribute("id", s.Id))
+		attr = append(attr, h.HTMLAttribute("id", s.Id))
 	}
 
 	replaces["%attrs%"] = strings.Join(attr, " ")

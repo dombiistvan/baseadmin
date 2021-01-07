@@ -46,7 +46,7 @@ func (u *UserController) LoginAction(ctx *fasthttp.RequestCtx, session *h.Sessio
 		AdminContent.SubTitle = "Log in"
 		AdminContent.Content = template.HTML(h.GetScopeTemplateString("user/login.html", adminview.LoginForm{
 			"POST",
-			h.GetUrl("user/loginpost", nil, true, pageInstance.Scope),
+			h.GetURL("user/loginpost", nil, true, pageInstance.Scope),
 		}, pageInstance.Scope))
 
 		pageInstance.AddContent(h.GetScopeTemplateString("layout/content.html", AdminContent, pageInstance.Scope), "", nil, false, 0)
@@ -97,8 +97,8 @@ func (u *UserController) LoginpostAction(ctx *fasthttp.RequestCtx, session *h.Se
 
 func (u *UserController) LogoutAction(ctx *fasthttp.RequestCtx, session *h.Session, pageInstance *view.Page) {
 	if Ah.HasRights(u.AuthAction["logout"], session) {
-		h.PrintlnIf("Logged in -> logout", h.GetConfig().Mode.Debug && session.Value(h.USER_SESSION_LOGGEDIN_KEY).(bool))
-		h.PrintlnIf("Not logged in -> access denied", h.GetConfig().Mode.Debug && !session.Value(h.USER_SESSION_LOGGEDIN_KEY).(bool))
+		h.PrintlnIf("Logged in -> logout", h.GetConfig().Mode.Debug && session.Value(h.UserSessionLoggedinKey).(bool))
+		h.PrintlnIf("Not logged in -> access denied", h.GetConfig().Mode.Debug && !session.Value(h.UserSessionLoggedinKey).(bool))
 		session.Logout()
 		Redirect(ctx, "user/login", fasthttp.StatusOK, true, pageInstance)
 		return
@@ -160,7 +160,7 @@ func (u *UserController) EditAction(ctx *fasthttp.RequestCtx, session *h.Session
 
 		if err != nil {
 			session.AddError(err.Error())
-			h.Error(err, "", h.ErrorLvlWarning)
+			h.Error(err, "", h.ErrLvlWarning)
 			Redirect(ctx, "user/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
@@ -235,7 +235,7 @@ func (u *UserController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Sessi
 
 		if err != nil {
 			session.AddError(err.Error())
-			h.Error(err, "", h.ErrorLvlWarning)
+			h.Error(err, "", h.ErrLvlWarning)
 			Redirect(ctx, "user/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
@@ -248,7 +248,7 @@ func (u *UserController) DeleteAction(ctx *fasthttp.RequestCtx, session *h.Sessi
 
 		emailAddress := user.Email
 		count, err := db.DbMap.Delete(&user)
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		if err != nil {
 			session.AddError("Could not delete user.")
 			Redirect(ctx, "user/index", fasthttp.StatusBadRequest, true, pageInstance)
@@ -325,11 +325,11 @@ func (u *UserController) saveUser(ctx *fasthttp.RequestCtx, session *h.Session, 
 		User.Email = h.GetFormData(ctx, "email", false).(string)
 
 		userGroupId, err := strconv.Atoi(h.GetFormData(ctx, "user_group_id", false).(string))
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		User.UserGroupId = int64(userGroupId)
 
 		statusId, err := strconv.Atoi(h.GetFormData(ctx, "status_id", false).(string))
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		User.StatusId = int64(statusId)
 		if h.GetFormData(ctx, "password", false).(string) != "" {
 			User.Password = h.GetFormData(ctx, "password", false).(string)

@@ -200,7 +200,7 @@ func (v *Validator) Validate() (bool, map[string]error) {
 func (v *Validator) iterateRegexp(postKey []byte, postValue []byte) {
 	var key = string(postKey)
 	matched, err := regexp.MatchString(strings.Replace(v.cKey, "%", ".*", -1), key)
-	h.Error(err, "", h.ErrorLvlNotice)
+	h.Error(err, "", h.ErrLvlNotice)
 	if matched {
 		succ, err := v.ValidateField(key, v.Fields[v.cKey])
 		if !succ {
@@ -352,7 +352,7 @@ func (v *Validator) ValidateExtension(key string, option interface{}, required b
 	h.PrintlnIf(fmt.Sprintf("Validating extensions"), h.GetConfig().Mode.Debug)
 
 	file, err := v.ctx.FormFile(key)
-	h.Error(err, "", h.ErrorLvlWarning)
+	h.Error(err, "", h.ErrLvlWarning)
 	postVal := file.Filename
 	if !required {
 		for _, ev := range v.getEmptyValues() {
@@ -568,7 +568,7 @@ func (v *Validator) getValue(key string, multi bool) interface{} {
 
 	if v.Fields[key]["type"] == "file" {
 		file, err := v.ctx.FormFile(key)
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		v.values[key] = []string{file.Filename}
 	} else {
 		h.PrintlnIf(fmt.Sprintf("value of %v has not set yet, getting from request", key), h.GetConfig().Mode.Debug)

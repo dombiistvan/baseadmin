@@ -11,15 +11,15 @@ var MenuFilePath string = "./resource/menu.json"
 type MenuGroup struct {
 	Label      string     `json:"label"`
 	Group      string     `json:"group"`
-	Url        string     `json:"url"`
+	URL        string     `json:"url"`
 	Children   []MenuItem `json:"children"`
 	Icon       string     `json:"icon"`
 	Visibility string     `json:"visibility"`
 	IsVisible  bool       `json:"-"`
 }
 
-func (mg MenuGroup) GetUrl() string {
-	return GetUrl(mg.Url, nil, true, "admin")
+func (mg MenuGroup) GetURL() string {
+	return GetURL(mg.URL, nil, true, "admin")
 }
 
 func (mg *MenuGroup) SetIsVisible(visible bool) {
@@ -28,15 +28,15 @@ func (mg *MenuGroup) SetIsVisible(visible bool) {
 
 type MenuItem struct {
 	Label      string `json:"label"`
-	Url        string `json:"url"`
+	URL        string `json:"url"`
 	Type       string `json:"type"`
 	Visibility string `json:"visibility"`
 	Icon       string `json:"icon"`
 	IsVisible  bool   `json:"-"`
 }
 
-func (mi MenuItem) GetUrl() string {
-	return GetUrl(mi.Url, nil, true, "admin")
+func (mi MenuItem) GetURL() string {
+	return GetURL(mi.URL, nil, true, "admin")
 }
 
 func (mi *MenuItem) SetIsVisible(visible bool) {
@@ -45,7 +45,7 @@ func (mi *MenuItem) SetIsVisible(visible bool) {
 
 type Menu struct {
 	Menu        []MenuGroup `json:"menu"`
-	LogoutUrl   string
+	LogoutURL   string
 	LogoutLabel string
 	IsLoggedIn  bool
 	Title       string
@@ -78,7 +78,7 @@ func GetMenu(session *Session) Menu {
 		menu.Init(session)
 	}
 
-	menu.LogoutUrl = GetUrl("user/logout", nil, true, "admin")
+	menu.LogoutURL = GetURL("user/logout", nil, true, "admin")
 	menu.LogoutLabel = "Log out"
 	menu.IsLoggedIn = session.IsLoggedIn()
 

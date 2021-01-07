@@ -35,7 +35,7 @@ func PostValue(ctx *fasthttp.RequestCtx, key string) string {
 	return html.EscapeString(string(ctx.PostArgs().Peek(key)))
 }
 
-func GetUrl(controllerAction string, params []string, withScope bool, scope string) string {
+func GetURL(controllerAction string, params []string, withScope bool, scope string) string {
 	var scopeReplace string = ""
 
 	if withScope {
@@ -53,21 +53,21 @@ func GetUrl(controllerAction string, params []string, withScope bool, scope stri
 func GetFormData(ctx *fasthttp.RequestCtx, field string, multi bool) interface{} {
 	if !multi {
 		return string(ctx.FormValue(field))
-	} else {
-		var retVal []string
-		for _, val := range ctx.PostArgs().PeekMulti(field) {
-			retVal = append(retVal, string(val))
-		}
-		return retVal
 	}
+
+	var retVal []string
+	for _, val := range ctx.PostArgs().PeekMulti(field) {
+		retVal = append(retVal, string(val))
+	}
+	return retVal
 }
 
 func SetLog() *os.File {
 	path := "./system/"
 	err := os.MkdirAll(path, 0775)
-	Error(err, "", ErrorLvlWarning)
+	Error(err, "", ErrLvlWarning)
 	f, err := os.OpenFile(fmt.Sprintf("%v/%v.log", path, time.Now().Format("06_01_02__15")), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0775)
-	Error(err, "", ErrorLvlWarning)
+	Error(err, "", ErrLvlWarning)
 	mw := io.MultiWriter(os.Stdout, f)
 
 	log.SetOutput(mw)

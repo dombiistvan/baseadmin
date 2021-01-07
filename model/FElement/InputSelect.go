@@ -56,19 +56,19 @@ func (s InputSelect) Render(errs map[string]error) string {
 	replaces["%attrs%"] = ""
 	var attr []string
 	if s.Name != "" {
-		attr = append(attr, h.HtmlAttribute("name", s.Name))
+		attr = append(attr, h.HTMLAttribute("name", s.Name))
 	}
 	if s.Id != "" {
-		attr = append(attr, h.HtmlAttribute("id", s.Id))
+		attr = append(attr, h.HTMLAttribute("id", s.Id))
 	}
 	if s.Multiple == true {
-		attr = append(attr, h.HtmlAttribute("multiple", "multiple"))
+		attr = append(attr, h.HTMLAttribute("multiple", "multiple"))
 	}
 	if s.Disabled == true {
-		attr = append(attr, h.HtmlAttribute("disabled", "disabled"))
+		attr = append(attr, h.HTMLAttribute("disabled", "disabled"))
 	}
 	if s.Readonly == true {
-		attr = append(attr, h.HtmlAttribute("readonly", "readonly"))
+		attr = append(attr, h.HTMLAttribute("readonly", "readonly"))
 	}
 
 	replaces["%attrs%"] = strings.Join(attr, " ")

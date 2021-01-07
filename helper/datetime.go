@@ -9,7 +9,7 @@ func GetTimeNow() time.Time {
 	m["Hungary"] = "+01.00h"
 
 	offSet, err := time.ParseDuration(m["Hungary"])
-	Error(err, "", ErrorLvlWarning)
+	Error(err, "", ErrLvlWarning)
 	t := time.Now().UTC().Add(offSet)
 
 	return t

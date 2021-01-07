@@ -49,7 +49,7 @@ func Redirect(ctx *fasthttp.RequestCtx, route string, status int, includeScope b
 	if strings.Contains(route, "http://") || strings.Contains(route, "https://") {
 		url = route
 	} else {
-		url = h.GetUrl(route, nil, includeScope, page.Scope)
+		url = h.GetURL(route, nil, includeScope, page.Scope)
 	}
 	ctx.Redirect(url, status)
 }
@@ -58,8 +58,13 @@ func Route(ctx *fasthttp.RequestCtx) {
 	var Log = h.SetLog()
 	var p view.Page
 
-	var page *view.Page = p.Instantiates()
-	var session = h.SessionGet(&ctx.Request.Header)
+	page := p.Instantiates()
+	session, err := h.SessionGet(&ctx.Request.Header)
+	if err != nil {
+		ctx.Response.Header.SetStatusCode(fasthttp.StatusInternalServerError)
+		ctx.WriteString("session error")
+		return
+	}
 	var firstInRequest bool = true
 	var hadMach bool = false
 	var staticCompile = regexp.MustCompile("^/(vendor|assets|images|frontend)/?")

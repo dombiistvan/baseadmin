@@ -80,17 +80,17 @@ func (s Status) BuildStructure(dbmap *gorp.DbMap) {
 	status := NewStatus(STATUS_NOT_CONFIRMED, "Not Confirmed")
 	err := dbmap.Insert(&status)
 	h.PrintlnIf(fmt.Sprintf("Adding Status %s", s.Name), Conf.Mode.Debug)
-	h.Error(err, "", h.ErrorLvlWarning)
+	h.Error(err, "", h.ErrLvlWarning)
 
 	status = NewStatus(STATUS_CONFIRMED_AND_ACTIVE, "Confirmed and Active")
 	err = dbmap.Insert(&status)
 	h.PrintlnIf(fmt.Sprintf("Adding Status %s", s.Name), Conf.Mode.Debug)
-	h.Error(err, "", h.ErrorLvlWarning)
+	h.Error(err, "", h.ErrLvlWarning)
 
 	status = NewStatus(STATUS_INACTIVE, "Inactive")
 	err = dbmap.Insert(&status)
 	h.PrintlnIf(fmt.Sprintf("Adding Status %s", s.Name), Conf.Mode.Debug)
-	h.Error(err, "", h.ErrorLvlWarning)
+	h.Error(err, "", h.ErrLvlWarning)
 }
 
 func (_ Status) IsLanguageModel() bool {

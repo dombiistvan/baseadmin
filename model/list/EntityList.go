@@ -87,7 +87,7 @@ func (el *EntityList) Render(elements []map[string]interface{}) string {
 			`<a href="%link%">%title%</a>`,
 			[]string{"%link%", "%title%"},
 			[]string{
-				h.GetUrl(
+				h.GetURL(
 					fmt.Sprintf("%s/%s/edit", "entity", el.EntityType.Code),
 					[]string{string(e["id"].([]byte))},
 					true,
@@ -101,7 +101,7 @@ func (el *EntityList) Render(elements []map[string]interface{}) string {
 			`<a href="%link%" onclick="return window.confirm('Biztosan törölni szeretné?')">%title%</a>`,
 			[]string{"%link%", "%title%"},
 			[]string{
-				h.GetUrl(
+				h.GetURL(
 					fmt.Sprintf("%s/%s/delete", "entity", el.EntityType.Code),
 					[]string{string(e["id"].([]byte))},
 					true,

@@ -5,8 +5,8 @@ import (
 	"log"
 )
 
-const ErrorLvlNotice = 0
-const ErrorLvlWarning = 1
+const ErrLvlNotice = 0
+const ErrLvlWarning = 1
 const ErrorLvlError = 2
 
 func Error(err error, msg string, lvl int) {
@@ -18,7 +18,7 @@ func Error(err error, msg string, lvl int) {
 		switch lvl {
 		default:
 			log.Println(msg)
-		case ErrorLvlWarning:
+		case ErrLvlWarning:
 			log.Println(msg)
 			panic(err)
 		case ErrorLvlError:

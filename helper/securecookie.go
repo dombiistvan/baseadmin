@@ -1,12 +1,10 @@
 package helper
 
 import (
-	"time"
-
 	"errors"
 	"fmt"
-
 	"strings"
+	"time"
 
 	"github.com/gorilla/securecookie"
 	"github.com/valyala/fasthttp"
@@ -16,12 +14,12 @@ type Session struct {
 	val map[string]interface{}
 }
 
-const USER_SESSION_LOGGEDIN_KEY = "loggedin"
-const USER_SESSION_ID_KEY = "uid"
-const USER_SESSION_ADMIN_KEY = "a"
-const USER_SESSION_SUPERADMIN_KEY = "sa"
-const USER_SESSION_ROLE_KEY = "role"
-const USER_SESSION_KEEP_LOGGED_IN = "kli"
+const UserSessionLoggedinKey = "loggedin"
+const UserSessionIdKey = "uid"
+const UserSessionAdminKey = "a"
+const UserSessionSuperadminKey = "sa"
+const UserSessionRoleKey = "role"
+const UserSessionKeepLoggedIn = "kli"
 
 var (
 	SessionName           string = GetConfig().Server.SessionKey
@@ -36,18 +34,18 @@ func init() {
 	cookieHandler = securecookie.New([]byte(Salt), nil)
 }
 
-func SessionGet(h *fasthttp.RequestHeader) *Session {
+func SessionGet(h *fasthttp.RequestHeader) (*Session, error) {
 	s := &Session{}
 	s.val = make(map[string]interface{})
 	cookie := h.Cookie(SessionName)
-	cookieHandler.Decode(SessionName, string(cookie), &s.val)
-	return s
+	err := cookieHandler.Decode(SessionName, string(cookie), &s.val)
+	return s, err
 }
 
 func (s *Session) Set(name string, value interface{}) {
 	for _, key := range predefinedSessionKeys {
 		if key == name {
-			Error(errors.New(fmt.Sprintf("The key \"%v\" is predefined to inner usage.\nProbably you can use by calling other method(s).", name)), "", ErrorLvlWarning)
+			Error(errors.New(fmt.Sprintf("The key \"%v\" is predefined to inner usage.\nProbably you can use by calling other method(s).", name)), "", ErrLvlWarning)
 			return
 		}
 	}
@@ -59,11 +57,11 @@ func (s *Session) Value(name string) interface{} {
 }
 
 func (s Session) GetUserId() int64 {
-	return s.Value(USER_SESSION_ID_KEY).(int64)
+	return s.Value(UserSessionIdKey).(int64)
 }
 
 func (s Session) GetKeepLoggedIn() bool {
-	var kli = s.Value(USER_SESSION_KEEP_LOGGED_IN)
+	var kli = s.Value(UserSessionKeepLoggedIn)
 	if kli != nil {
 		return kli.(bool)
 	}
@@ -72,28 +70,28 @@ func (s Session) GetKeepLoggedIn() bool {
 }
 
 func (s *Session) Login(uId int64, sa bool, a bool, roles []string, keepLoggedIn bool) {
-	s.Set(USER_SESSION_LOGGEDIN_KEY, true)
-	s.Set(USER_SESSION_ID_KEY, uId)
-	s.Set(USER_SESSION_SUPERADMIN_KEY, sa)
-	s.Set(USER_SESSION_ADMIN_KEY, a)
+	s.Set(UserSessionLoggedinKey, true)
+	s.Set(UserSessionIdKey, uId)
+	s.Set(UserSessionSuperadminKey, sa)
+	s.Set(UserSessionAdminKey, a)
 	s.SetRoles(roles)
-	s.Set(USER_SESSION_KEEP_LOGGED_IN, keepLoggedIn)
+	s.Set(UserSessionKeepLoggedIn, keepLoggedIn)
 }
 
 func (s *Session) IsLoggedIn() bool {
-	return s.Value(USER_SESSION_LOGGEDIN_KEY) == true
+	return s.Value(UserSessionLoggedinKey) == true
 }
 
 func (s *Session) IsSuperAdmin() bool {
-	return s.IsLoggedIn() && s.Value(USER_SESSION_SUPERADMIN_KEY) == true
+	return s.IsLoggedIn() && s.Value(UserSessionSuperadminKey) == true
 }
 
 func (s *Session) IsAdmin() bool {
-	return s.IsLoggedIn() && s.Value(USER_SESSION_ADMIN_KEY) == true
+	return s.IsLoggedIn() && s.Value(UserSessionAdminKey) == true
 }
 
 func (s *Session) Logout() {
-	s.Delete(USER_SESSION_LOGGEDIN_KEY, USER_SESSION_ID_KEY, USER_SESSION_SUPERADMIN_KEY, USER_SESSION_ADMIN_KEY, USER_SESSION_ROLE_KEY, USER_SESSION_KEEP_LOGGED_IN)
+	s.Delete(UserSessionLoggedinKey, UserSessionIdKey, UserSessionSuperadminKey, UserSessionAdminKey, UserSessionRoleKey, UserSessionKeepLoggedIn)
 }
 
 func (s *Session) GetActiveLang() string {
@@ -109,7 +107,7 @@ func (s *Session) SetActiveLang(lang string) {
 }
 
 func (s *Session) GetRoles() []string {
-	roles := s.Value(USER_SESSION_ROLE_KEY)
+	roles := s.Value(UserSessionRoleKey)
 	if nil != roles {
 		return roles.([]string)
 	}
@@ -117,7 +115,7 @@ func (s *Session) GetRoles() []string {
 }
 
 func (s *Session) SetRoles(roles []string) {
-	s.Set(USER_SESSION_ROLE_KEY, roles)
+	s.Set(UserSessionRoleKey, roles)
 }
 
 func (s *Session) GetErrors() []string {

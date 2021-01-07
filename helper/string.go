@@ -7,10 +7,16 @@ import (
 	"time"
 )
 
-const letterCharset = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-const charset = letterCharset + "0123456789"
+const (
+	letterCharset = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	charset       = letterCharset + "0123456789"
+)
 
-var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+var (
+	seededRand    *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	PasswordChars []string   = []string{"a", "A", "b", "B", "c", "C", "d", "D", "e", "E", "f", "F", "g", "G", "h", "H", "i", "I", "j", "J", "k", "K", "l", "L", "m", "M", "n", "N", "o", "O", "p", "P", "q", "Q", "r", "R", "s", "S", "t", "T", "v", "V", "w", "W", "x", "X", "y", "Y", "z", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", "_", ".", "-", "+"}
+	UrlChars      []string   = []string{"a", "A", "b", "B", "c", "C", "d", "D", "e", "E", "f", "F", "g", "G", "h", "H", "i", "I", "j", "J", "k", "K", "l", "L", "m", "M", "n", "N", "o", "O", "p", "P", "q", "Q", "r", "R", "s", "S", "t", "T", "v", "V", "w", "W", "x", "X", "y", "Y", "z", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
+)
 
 func StringWithCharset(length int, charset string) string {
 	b := make([]byte, length)
@@ -31,16 +37,16 @@ func RandomLetters(length int) string {
 func Replace(replaceIn string, replaceKeys []string, replaceVals []string) string {
 	for i, replaceKey := range replaceKeys {
 		replaceVal := replaceVals[i]
-		replaceIn = strings.Replace(replaceIn, replaceKey, replaceVal, -1)
+		replaceIn = strings.ReplaceAll(replaceIn, replaceKey, replaceVal)
 	}
 
 	return replaceIn
 }
 
-func HtmlAttribute(key string, value string) string {
+func HTMLAttribute(key string, value string) string {
 	var attrTemp string = `%key%="%val%"`
-	attrVal := strings.Replace(attrTemp, "%key%", key, -1)
-	attrVal = strings.Replace(attrVal, "%val%", value, -1)
+	attrVal := strings.ReplaceAll(attrTemp, "%key%", key)
+	attrVal = strings.ReplaceAll(attrVal, "%val%", value)
 
 	return attrVal
 }
@@ -80,9 +86,6 @@ func Contains(slice []string, entry string) bool {
 	return false
 }
 
-var PasswordChars []string = []string{"a", "A", "b", "B", "c", "C", "d", "D", "e", "E", "f", "F", "g", "G", "h", "H", "i", "I", "j", "J", "k", "K", "l", "L", "m", "M", "n", "N", "o", "O", "p", "P", "q", "Q", "r", "R", "s", "S", "t", "T", "v", "V", "w", "W", "x", "X", "y", "Y", "z", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "@", "_", ".", "-", "+"}
-var UrlChars []string = []string{"a", "A", "b", "B", "c", "C", "d", "D", "e", "E", "f", "F", "g", "G", "h", "H", "i", "I", "j", "J", "k", "K", "l", "L", "m", "M", "n", "N", "o", "O", "p", "P", "q", "Q", "r", "R", "s", "S", "t", "T", "v", "V", "w", "W", "x", "X", "y", "Y", "z", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
-
 func GenerateRandomString(chars []string, lengthMin int, lengthMax int) string {
 	var returnString string
 
@@ -97,7 +100,7 @@ func GenerateRandomString(chars []string, lengthMin int, lengthMax int) string {
 	for {
 		var key int = rand.Intn(len(chars) - 1)
 
-		returnString = returnString + chars[key]
+		returnString += chars[key]
 		if len(returnString) == length {
 			break
 		}

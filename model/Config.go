@@ -82,7 +82,7 @@ func GetConfigForm(data map[string]interface{}, action string) Form {
 	Fieldsets = append(Fieldsets, Fieldset{"left", Elements, fullColMap})
 	button := FElement.InputButton{"Submit", "submit", "submit", "pull-right", false, "", true, false, false, nil}
 	Fieldsets = append(Fieldsets, Fieldset{"bottom", []FormElement{button}, fullColMap})
-	var form = Form{h.GetUrl(action, nil, true, "admin"), "POST", false, Fieldsets, false, nil, nil}
+	var form = Form{h.GetURL(action, nil, true, "admin"), "POST", false, Fieldsets, false, nil, nil}
 
 	return form
 }
@@ -140,7 +140,7 @@ func (c Config) GetValueByPath(path string) string {
 	var query string = fmt.Sprintf("SELECT `value` FROM %v WHERE %v = ?", c.GetTable(), "path")
 	h.PrintlnIf(query, h.GetConfig().Mode.Debug)
 	value, err := db.DbMap.SelectStr(query, path)
-	h.Error(err, "", h.ErrorLvlWarning)
+	h.Error(err, "", h.ErrLvlWarning)
 
 	return value
 }

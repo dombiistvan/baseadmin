@@ -47,13 +47,13 @@ func (bl *BlockList) Render(elements []m.Block) string {
 		actions = append(actions, h.Replace(
 			`<a href="%link%">%title%</a>`,
 			[]string{"%link%", "%title%"},
-			[]string{h.GetUrl("block/edit", []string{strconv.Itoa(int(b.Id))}, true, "admin"), "[Edit]"},
+			[]string{h.GetURL("block/edit", []string{strconv.Itoa(int(b.Id))}, true, "admin"), "[Edit]"},
 		))
 
 		actions = append(actions, h.Replace(
 			`<a href="%link%" onclick="return window.confirm('Biztosan törölni szeretné?')">%title%</a>`,
 			[]string{"%link%", "%title%"},
-			[]string{h.GetUrl("block/delete", []string{strconv.Itoa(int(b.Id))}, true, "admin"), "[Delete]"},
+			[]string{h.GetURL("block/delete", []string{strconv.Itoa(int(b.Id))}, true, "admin"), "[Delete]"},
 		))
 
 		rows = append(rows, map[string]string{

@@ -67,7 +67,7 @@ func (c *ConfigController) IndexAction(ctx *fasthttp.RequestCtx, session *h.Sess
 		h.PrintlnIf(sql, h.GetConfig().Mode.Debug)
 		_, err := db.DbMap.Select(&results, sql)
 		h.Error(err, "", h.ErrorLvlError)
-		form := model.NewForm("POST", h.GetUrl("config/index", nil, true, "admin"), false, false)
+		form := model.NewForm("POST", h.GetURL("config/index", nil, true, "admin"), false, false)
 
 		colmap := map[string]string{"lg": "6", "md": "6", "sm": "12", "xs": "12"}
 

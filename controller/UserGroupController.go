@@ -59,14 +59,14 @@ func (ug *UserGroupController) EditAction(ctx *fasthttp.RequestCtx, session *h.S
 
 		if err != nil {
 			session.AddError(err.Error())
-			h.Error(err, "", h.ErrorLvlWarning)
+			h.Error(err, "", h.ErrLvlWarning)
 			Redirect(ctx, "usergroup/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
 
 		if userGroup.Identifier == "admin" {
 			session.AddError("the admin usergroup can not be edited")
-			h.Error(err, "", h.ErrorLvlWarning)
+			h.Error(err, "", h.ErrLvlWarning)
 			Redirect(ctx, "usergroup/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
@@ -125,7 +125,7 @@ func (ug *UserGroupController) DeleteAction(ctx *fasthttp.RequestCtx, session *h
 
 		if err != nil {
 			session.AddError(err.Error())
-			h.Error(err, "", h.ErrorLvlWarning)
+			h.Error(err, "", h.ErrLvlWarning)
 			Redirect(ctx, "usergroup/index", fasthttp.StatusOK, true, pageInstance)
 			return
 		}
@@ -138,7 +138,7 @@ func (ug *UserGroupController) DeleteAction(ctx *fasthttp.RequestCtx, session *h
 
 		name := userGroup.Name
 		count, err := db.DbMap.Delete(&userGroup)
-		h.Error(err, "", h.ErrorLvlWarning)
+		h.Error(err, "", h.ErrLvlWarning)
 		if err != nil {
 			session.AddError("Could not delete usergroup.")
 			Redirect(ctx, "usergroup/index", fasthttp.StatusBadRequest, true, pageInstance)

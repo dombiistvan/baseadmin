@@ -71,22 +71,22 @@ func (p InputPassword) Render(errs map[string]error) string {
 	replaces["%attrs%"] = ""
 	var attr []string
 
-	attr = append(attr, h.HtmlAttribute("type", "password"))
+	attr = append(attr, h.HTMLAttribute("type", "password"))
 
 	if p.Name != "" {
-		attr = append(attr, h.HtmlAttribute("name", p.Name))
+		attr = append(attr, h.HTMLAttribute("name", p.Name))
 	}
 	if p.Id != "" {
-		attr = append(attr, h.HtmlAttribute("id", p.Id))
+		attr = append(attr, h.HTMLAttribute("id", p.Id))
 	}
 	if p.Value != "" {
-		attr = append(attr, h.HtmlAttribute("value", html.EscapeString(p.Value)))
+		attr = append(attr, h.HTMLAttribute("value", html.EscapeString(p.Value)))
 	}
 	if p.Disabled == true {
-		attr = append(attr, h.HtmlAttribute("disabled", "disabled"))
+		attr = append(attr, h.HTMLAttribute("disabled", "disabled"))
 	}
 	if p.Readonly == true {
-		attr = append(attr, h.HtmlAttribute("readonly", "readonly"))
+		attr = append(attr, h.HTMLAttribute("readonly", "readonly"))
 	}
 
 	replaces["%attrs%"] = strings.Join(attr, " ")
